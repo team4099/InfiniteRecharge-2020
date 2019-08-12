@@ -16,9 +16,7 @@ import org.usfirst.frc.team4099.robot.loops.Looper
 import org.usfirst.frc.team4099.robot.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot.subsystems.*
 
-class Robot : IterativeRobot() {
-
-
+class Robot : TimedRobot() {
     init {
         CrashTracker.logRobotConstruction()
     }
