@@ -55,7 +55,7 @@ object Drive : Subsystem() {
 
     private var pathFollowController = RamseteController()
     private var kinematics = DifferentialDriveKinematics(Units.inchesToMeters(Constants.Drive.WHEEL_TRACK_WIDTH_INCHES))
-    private var path: Trajectory = TrajectoryGenerator.generateTrajectory(listOf(), TrajectoryConfig(0.0, 0.0))
+    var path: Trajectory = TrajectoryGenerator.generateTrajectory(listOf(), TrajectoryConfig(0.0, 0.0))
         set(value) {
             configureTalonsForVelocityControl()
             zeroSensors()

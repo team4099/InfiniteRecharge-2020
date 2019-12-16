@@ -60,6 +60,9 @@ object Constants {
 
         const val GYRO_BAD_VALUE = -31337.0
 
+        const val MAX_VEL_METERS_PER_SEC = 3.5
+        const val MAX_ACCEL_METERS_PER_SEC_SQ = 3.5
+
         object Gains {
             const val RAMSETE_B = 2.0
             const val RAMSETE_ZETA = 0.7

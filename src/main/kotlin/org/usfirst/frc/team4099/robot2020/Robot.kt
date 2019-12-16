@@ -9,6 +9,7 @@ import org.usfirst.frc.team4099.lib.auto.AutoModeExecuter
 import org.usfirst.frc.team4099.lib.loop.Looper
 import org.usfirst.frc.team4099.lib.util.CrashTracker
 import org.usfirst.frc.team4099.lib.util.around
+import org.usfirst.frc.team4099.robot2020.auto.PathStore
 import org.usfirst.frc.team4099.robot2020.config.Constants
 import org.usfirst.frc.team4099.robot2020.config.ControlBoard
 import org.usfirst.frc.team4099.robot2020.config.DashboardConfigurator
@@ -24,6 +25,8 @@ object Robot : TimedRobot() {
     private val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
 
     init {
+        PathStore // Invoke path store to initialize it and generate the contained trajectories
+        
         HelixEvents.addEvent("ROBOT", "Robot Construction")
         HelixLogger.addSource("Battery Voltage", RobotController::getBatteryVoltage)
 
