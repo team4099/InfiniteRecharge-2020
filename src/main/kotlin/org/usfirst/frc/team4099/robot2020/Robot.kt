@@ -26,7 +26,7 @@ object Robot : TimedRobot() {
 
     init {
         PathStore // Invoke path store to initialize it and generate the contained trajectories
-        
+
         HelixEvents.addEvent("ROBOT", "Robot Construction")
         HelixLogger.addSource("Battery Voltage", RobotController::getBatteryVoltage)
 
