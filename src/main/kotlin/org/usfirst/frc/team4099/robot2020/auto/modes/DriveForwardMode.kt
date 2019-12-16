@@ -10,7 +10,5 @@ class DriveForwardMode(delay: Double) : AutoMode(delay, Constants.Autonomous.AUT
         runAction(FollowPathAction(PathStore.driveForward))
     }
 
-    override fun done() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun done() {}
 }

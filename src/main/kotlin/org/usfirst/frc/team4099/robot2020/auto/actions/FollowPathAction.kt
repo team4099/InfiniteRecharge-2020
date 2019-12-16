@@ -5,7 +5,7 @@ import org.usfirst.frc.team4099.lib.auto.Action
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot2020.subsystems.Drive
 
-class FollowPathAction(private val path: Trajectory): Action {
+class FollowPathAction(private val path: Trajectory) : Action {
     override fun isFinished(timestamp: Double): Boolean {
         return Drive.isPathFinished(timestamp)
     }
