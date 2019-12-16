@@ -197,7 +197,6 @@ object Drive : Subsystem() {
         setOpenLoop(DriveSignal.NEUTRAL)
 
         this.zeroSensors()
-        registerLogging()
     }
 
     override fun stop() {
@@ -240,7 +239,7 @@ object Drive : Subsystem() {
         override fun onStop(timestamp: Double) = stop()
     }
 
-    private fun registerLogging() {
+    override fun registerLogging() {
         HelixLogger.addSource("DT Left Output %") { leftMasterTalon.motorOutputPercent }
         HelixLogger.addSource("DT Right Output %") { rightMasterTalon.motorOutputPercent }
 
@@ -262,7 +261,7 @@ object Drive : Subsystem() {
         HelixLogger.addSource("DT Pathfollow Timestamp") { trajCurTime }
     }
 
-    override fun outputToSmartDashboard() {
+    override fun outputTelemetry() {
         if (ahrs.isConnected) {
             SmartDashboard.putNumber("gyro", yaw)
         } else {

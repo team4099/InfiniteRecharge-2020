@@ -32,15 +32,17 @@ object SubsystemManager {
     }
 
     fun register(subsystem: Subsystem) {
+        subsystem.registerLogging()
         subsystems.add(subsystem)
     }
 
     fun register(subsystemColl: Collection<Subsystem>) {
+        subsystems.forEach { it.registerLogging() }
         subsystems.addAll(subsystemColl)
     }
 
     fun outputTelemetry() {
-        subsystems.forEach { it.outputToSmartDashboard() }
+        subsystems.forEach { it.outputTelemetry() }
         HelixLogger.saveLogs()
     }
 
