@@ -18,7 +18,7 @@ import org.usfirst.frc.team4099.robot2020.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot2020.subsystems.Drive
 
 object Robot : TimedRobot() {
-    private lateinit var autoModeExecutor: AutoModeExecuter
+    private lateinit var autoModeExecuter: AutoModeExecuter
 
     private val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
     private val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
@@ -69,7 +69,15 @@ object Robot : TimedRobot() {
 
     override fun autonomousInit() {
         try {
-            autoModeExecutor = AutoModeExecuter()
+            if (::autoModeExecuter.isInitialized) autoModeExecuter.stop()
+
+            disabledLooper.stop() // end DisabledLooper
+            enabledLooper.start() // start EnabledLooper
+            Drive.zeroSensors()
+
+            autoModeExecuter = AutoModeExecuter()
+            autoModeExecuter.autoMode = DashboardConfigurator.getSelectedAutoMode()
+            autoModeExecuter.start()
             HelixEvents.addEvent("ROBOT", "Autonomous Enabled")
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("autonomousInit", t)
@@ -97,7 +105,12 @@ object Robot : TimedRobot() {
     }
 
     override fun autonomousPeriodic() {
-        teleopPeriodic()
+        try {
+            // outputAllToSmartDashboard()
+        } catch (t: Throwable) {
+            CrashTracker.logThrowableCrash("autonomousPeriodic", t)
+            throw t
+        }
     }
 
     override fun teleopPeriodic() {
