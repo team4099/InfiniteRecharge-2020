@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Joystick
  */
 
 class LogitechF310Gamepad(port: Int) : Joystick(port), Gamepad {
-
     override val leftXAxis: Double
         get() = this.getRawAxis(0)
 

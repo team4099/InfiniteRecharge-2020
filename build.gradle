@@ -1,11 +1,27 @@
-    plugins {
-    id "idea"
-    id "org.jetbrains.kotlin.jvm" version "1.3.11"
-    id "edu.wpi.first.GradleRIO" version "2019.3.2"
+import edu.wpi.first.gradlerio.GradleRIOPlugin
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:9.1.1"
+    }
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+plugins {
+    id "idea"
+    id "org.jetbrains.kotlin.jvm" version "1.3.60"
+    id "edu.wpi.first.GradleRIO" version "2020.1.1-beta-4" // TODO: change after kickoff release
+//    id "edu.wpi.first.GradleRIO" version "2019.4.1"
+    id "io.gitlab.arturbosch.detekt" version "1.1.1"
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 def TEAM = 4099
 // do not change main class (does not run without it being Main
@@ -40,9 +56,17 @@ deploy {
     }
 }
 
+// Linter configuration
+detekt {
+    toolVersion = "1.1.1"
+    input = files("src/main/kotlin")
+    config = files("config/detekt/detekt.yml")
+}
+
 repositories {
     mavenCentral()
     jcenter()
+    maven { url "https://jitpack.io" }
     maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
@@ -55,6 +79,10 @@ dependencies {
 
     // We need to add the Kotlin stdlib in order to use most Kotlin language features.
     compile "org.jetbrains.kotlin:kotlin-stdlib"
+
+    // HelixLogger and HelixEvents
+    compile 'com.github.team4099:HelixUtilities:2020-SNAPSHOT'
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
@@ -62,9 +90,9 @@ dependencies {
 // knows where to look for our Robot Class.
 jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    manifest GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 }
 
 wrapper {
-    gradleVersion = '5.1'
+    gradleVersion = '5.6.4'
 }

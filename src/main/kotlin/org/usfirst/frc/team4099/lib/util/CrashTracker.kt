@@ -1,10 +1,12 @@
 package org.usfirst.frc.team4099.lib.util
 
+import com.team2363.logger.HelixEvents
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException
 import java.io.PrintWriter
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 /**
  * Tracks startup and caught crash events, logging them to a file
@@ -12,42 +14,18 @@ import java.util.*
  */
 
 object CrashTracker {
-
     private val RUN_INSTANCE_UUID = UUID.randomUUID()
 
-    fun logRobotStartup() {
-        logMarker("Robot Startup")
-    }
-
-    fun logRobotConstruction() {
-        logMarker("Robot Constructed")
-    }
-
-    fun logRobotInit() {
-        logMarker("Robot Initialized")
-    }
-
-    fun logAutoInit() {
-        logMarker("Autonomous Initialized")
-    }
-
-    fun logTeleopInit() {
-        logMarker("Teleop Initialized")
-    }
-
-    fun logDisabledInit() {
-        logMarker("Disabled Initialized")
-    }
-
     fun logThrowableCrash(function: String, throwable: Throwable) {
-        logMarker("Exception @ " + function, throwable)
+        logMarker("Exception @ $function, ${throwable.message}", throwable)
     }
 
     fun logMarker(mark: String) {
         logMarker(mark, null)
     }
 
-    private fun logMarker(mark: String, nullableException: Throwable?) {
+    private fun logMarker(mark: String, exception: Throwable?) {
+        HelixEvents.addEvent("CRASH", mark)
         try {
             FileWriter(
                     "/home/lvuser/crash_tracking.txt",
@@ -61,9 +39,9 @@ object CrashTracker {
                         out.print(", ")
                         out.print(Date().toString())
 
-                        if (nullableException != null) {
+                        if (exception != null) {
                             out.print(", ")
-                            nullableException.printStackTrace(out)
+                            exception.printStackTrace(out)
                         }
 
                         out.println()
@@ -73,6 +51,5 @@ object CrashTracker {
         } catch (ex: IOException) {
             ex.printStackTrace()
         }
-
     }
 }

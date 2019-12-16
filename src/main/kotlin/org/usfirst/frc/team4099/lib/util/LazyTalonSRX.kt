@@ -2,15 +2,16 @@ package org.usfirst.frc.team4099.lib.util
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import kotlin.Double.Companion.NaN
 
-class LazyTalonSRX(deviceNumber: Int) : TalonSRX(deviceNumber)  {
-    protected var mLastSet = java.lang.Double.NaN
-    protected var mLastControlMode: ControlMode = ControlMode.PercentOutput
+class LazyTalonSRX(deviceNumber: Int) : TalonSRX(deviceNumber) {
+    private var lastSet = NaN
+    private var lastControlMode = ControlMode.PercentOutput
 
     override fun set(controlMode: ControlMode, value: Double) {
-        if (value != mLastSet || getControlMode() !== mLastControlMode) {
-            mLastSet = value
-            mLastControlMode = getControlMode()
+        if (value != lastSet || getControlMode() !== lastControlMode) {
+            lastSet = value
+            lastControlMode = getControlMode()
             super.set(controlMode, value)
         }
     }
