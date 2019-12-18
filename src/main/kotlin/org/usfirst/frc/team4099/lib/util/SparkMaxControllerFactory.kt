@@ -1,10 +1,8 @@
 package org.usfirst.frc.team4099.lib.util
 
-import com.revrobotics.CANError
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.ControlType
-import org.usfirst.frc.team4099.lib.util.conversions.LazySparkMax
 import edu.wpi.first.wpilibj.Timer
 
 

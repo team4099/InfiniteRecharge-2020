@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.lib.util.conversions
+package org.usfirst.frc.team4099.lib.util
 
 import com.fasterxml.jackson.core.sym.NameN
 import com.revrobotics.CANSparkMax
