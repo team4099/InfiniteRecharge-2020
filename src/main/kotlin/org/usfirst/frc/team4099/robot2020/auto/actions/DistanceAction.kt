@@ -9,9 +9,9 @@ import org.usfirst.frc.team4099.robot2020.subsystems.Drive
 import kotlin.math.abs
 import kotlin.math.sign
 
-class DistanceAction(inchesToMove: Double, slowMode: Boolean) : Action {
-    private val direction = sign(inchesToMove)
-    private val inchesToMove: Double = abs(inchesToMove)
+class DistanceAction(metersToMove: Double, slowMode: Boolean) : Action {
+    private val direction = sign(metersToMove)
+    private val metersToMove: Double = abs(metersToMove)
     private var startDist = 0.0
     private var otherStart = 0.0
     private var power = Constants.Autonomous.FORWARD_POWER
@@ -26,13 +26,13 @@ class DistanceAction(inchesToMove: Double, slowMode: Boolean) : Action {
     }
 
     override fun isFinished(timestamp: Double): Boolean {
-        return abs(Drive.getLeftDistanceInches()) - startDist >= inchesToMove ||
-                abs(Drive.getRightDistanceInches()) - otherStart >= inchesToMove ||
+        return abs(Drive.leftDistanceMeters) - startDist >= metersToMove ||
+                abs(Drive.rightDistanceMeters) - otherStart >= metersToMove ||
                 abort ||
-                Timer.getFPGATimestamp() - startTime > Constants.Autonomous.FORWARD_MAX_TIME_SECONDS
+                timestamp - startTime > Constants.Autonomous.FORWARD_MAX_TIME_SECONDS
     }
 
-    override fun onLoop(timestamp: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         val correctionAngle = startAngle - Drive.angle
         if (abs(correctionAngle) > Constants.Autonomous.FORWARD_GIVE_UP_ANGLE) {
             abort = true
@@ -40,7 +40,7 @@ class DistanceAction(inchesToMove: Double, slowMode: Boolean) : Action {
         }
         Drive.arcadeDrive(power * direction,
                 correctionAngle * Constants.Autonomous.FORWARD_CORRECTION_KP * direction)
-        SmartDashboard.putNumber("distanceInAction", abs(Drive.getRightDistanceInches()) - otherStart)
+        SmartDashboard.putNumber("distanceInAction", abs(Drive.rightDistanceMeters) - otherStart)
     }
 
     override fun onStop(timestamp: Double) {
@@ -50,7 +50,7 @@ class DistanceAction(inchesToMove: Double, slowMode: Boolean) : Action {
     override fun onStart(timestamp: Double) {
         startTime = Timer.getFPGATimestamp()
         startAngle = Drive.angle
-        startDist = Drive.getLeftDistanceInches()
-        otherStart = Drive.getRightDistanceInches()
+        startDist = Drive.leftDistanceMeters
+        otherStart = Drive.leftDistanceMeters
     }
 }

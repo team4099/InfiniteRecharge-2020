@@ -22,7 +22,7 @@ class BrownoutDefender private constructor() : Loop {
         pdp.clearStickyFaults()
     }
 
-    override fun onLoop(timestamp: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         if (pdp.voltage < Constants.BrownoutDefender.COMPRESSOR_STOP_VOLTAGE ||
                 pdp.totalCurrent > Constants.BrownoutDefender.COMPRESSOR_STOP_CURRENT) {
             compressor.stop()

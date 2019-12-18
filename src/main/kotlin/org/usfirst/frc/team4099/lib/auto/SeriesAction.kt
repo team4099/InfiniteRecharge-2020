@@ -19,7 +19,7 @@ class SeriesAction(actions: List<Action>) : Action {
 
     override fun onStart(timestamp: Double) {}
 
-    override fun onLoop(timestamp: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         if (currentAction == null) {
             if (remainingActions.isEmpty()) {
                 return
@@ -27,7 +27,7 @@ class SeriesAction(actions: List<Action>) : Action {
             currentAction = remainingActions.removeAt(0)
             currentAction?.onStart(timestamp)
         }
-        currentAction?.onLoop(timestamp)
+        currentAction?.onLoop(timestamp, dT)
         if (currentAction?.isFinished(timestamp) == true) {
             currentAction?.onStop(timestamp)
             currentAction = null

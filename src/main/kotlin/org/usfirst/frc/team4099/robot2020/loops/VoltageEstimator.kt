@@ -23,7 +23,7 @@ class VoltageEstimator : Loop {
     }
 
     @Synchronized
-    override fun onLoop(timestamp: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         val curVoltage = RobotController.getBatteryVoltage()
         averageVoltage = (curVoltage + weight * averageVoltage) / (1.0 + weight)
     }

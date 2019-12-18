@@ -12,7 +12,7 @@ open class Looper(private val name: String, val targetDt: Double) {
                 if (running) {
                     val now = Timer.getFPGATimestamp()
                     for (loop in loops) {
-                        loop.onLoop(now)
+                        loop.onLoop(now, dt)
                     }
                     dt = now - timestamp
                     timestamp = now

@@ -25,21 +25,15 @@ class ParallelAction(actions: List<Action>) : Action {
         return allFinished
     }
 
-    override fun onLoop(timestamp: Double) {
-        for (action in actions) {
-            action.onLoop(timestamp)
-        }
+    override fun onLoop(timestamp: Double, dT: Double) {
+        actions.forEach { it.onLoop(timestamp, dT) }
     }
 
     override fun onStop(timestamp: Double) {
-        for (action in actions) {
-            action.onStop(timestamp)
-        }
+        actions.forEach { it.onStop(timestamp) }
     }
 
     override fun onStart(timestamp: Double) {
-        for (action in actions) {
-            action.onStart(timestamp)
-        }
+        actions.forEach { it.onStart(timestamp) }
     }
 }

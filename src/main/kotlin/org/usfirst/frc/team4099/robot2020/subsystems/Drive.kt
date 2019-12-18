@@ -12,13 +12,14 @@ import com.team2363.logger.HelixLogger
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.controller.RamseteController
-import edu.wpi.first.wpilibj.geometry.Pose2d
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
-import edu.wpi.first.wpilibj.util.Units
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.lib.loop.Loop
 import org.usfirst.frc.team4099.lib.subsystem.Subsystem
@@ -53,25 +54,44 @@ object Drive : Subsystem() {
     private var leftTargetVel = 0.0
     private var rightTargetVel = 0.0
 
+    val leftDistanceMeters
+        get() = nativeToMeters(leftMasterTalon.selectedSensorPosition)
+
+    val rightDistanceMeters
+        get() = nativeToMeters(rightMasterTalon.selectedSensorPosition)
+
+    val leftVelocityMetersPerSec
+        get() = nativeToMetersPerSecond(leftMasterTalon.selectedSensorVelocity)
+
+    val rightVelocityMetersPerSec
+        get() = nativeToMetersPerSecond(rightMasterTalon.selectedSensorVelocity)
+
+    private val autoOdometry = DifferentialDriveOdometry(Rotation2d())
     private var pathFollowController = RamseteController()
-    private var kinematics = DifferentialDriveKinematics(Units.inchesToMeters(Constants.Drive.WHEEL_TRACK_WIDTH_INCHES))
+    private var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
     var path: Trajectory = TrajectoryGenerator.generateTrajectory(listOf(), TrajectoryConfig(0.0, 0.0))
         set(value) {
-            configureTalonsForVelocityControl()
-            zeroSensors()
             trajDuration = value.totalTimeSeconds
             trajStartTime = Timer.getFPGATimestamp()
-            lastPose = path.sample(0.0).poseMeters
+
+            configureTalonsForVelocityControl()
+            zeroSensors()
+            val initialSample = value.sample(0.0)
+            autoOdometry.resetPosition(initialSample.poseMeters, Rotation2d.fromDegrees(-angle))
             pathFollowController = RamseteController(
                     Constants.Drive.Gains.RAMSETE_B,
                     Constants.Drive.Gains.RAMSETE_ZETA
             )
+            lastWheelSpeeds = kinematics.toWheelSpeeds(
+                pathFollowController.calculate(autoOdometry.poseMeters, initialSample)
+            )
+
             currentState = DriveControlState.PATH_FOLLOWING
             HelixEvents.addEvent("DRIVETRAIN", "Path following")
 
             field = value
         }
-    private var lastPose: Pose2d = path.sample(0.0).poseMeters
+    private lateinit var lastWheelSpeeds: DifferentialDriveWheelSpeeds
 
     var yaw: Double = 0.0
         get() {
@@ -212,7 +232,7 @@ object Drive : Subsystem() {
             setOpenLoop(DriveSignal.NEUTRAL)
         }
 
-        override fun onLoop(timestamp: Double) {
+        override fun onLoop(timestamp: Double, dT: Double) {
             synchronized(this@Drive) {
                 when (currentState) {
                     DriveControlState.OPEN_LOOP -> {
@@ -222,7 +242,7 @@ object Drive : Subsystem() {
                     DriveControlState.VELOCITY_SETPOINT -> {
                     }
                     DriveControlState.PATH_FOLLOWING -> {
-                        updatePathFollowing(timestamp)
+                        updatePathFollowing(timestamp, dT)
                     }
                     DriveControlState.TURN_TO_HEADING -> {
                         leftTargetVel = 0.0
@@ -248,13 +268,13 @@ object Drive : Subsystem() {
         HelixLogger.addSource("DT Right Master Input Current") { rightMasterTalon.outputCurrent }
         HelixLogger.addSource("DT Right Slave Input Current") { rightSlaveTalon.outputCurrent }
 
-        HelixLogger.addSource("DT Left Velocity (in/s)") { getLeftVelocityInchesPerSec() }
-        HelixLogger.addSource("DT Right Velocity (in/s)") { getRightVelocityInchesPerSec() }
+        HelixLogger.addSource("DT Left Velocity (in/s)") { leftVelocityMetersPerSec }
+        HelixLogger.addSource("DT Right Velocity (in/s)") { rightVelocityMetersPerSec }
         HelixLogger.addSource("DT Left Target Velocity (in/s)") { leftTargetVel }
         HelixLogger.addSource("DT Left Target Velocity (in/s)") { rightTargetVel }
 
-        HelixLogger.addSource("DT Left Position (in)") { getLeftDistanceInches() }
-        HelixLogger.addSource("DT Right Position (in)") { getRightDistanceInches() }
+        HelixLogger.addSource("DT Left Position (in)") { leftDistanceMeters }
+        HelixLogger.addSource("DT Right Position (in)") { rightDistanceMeters }
 
         HelixLogger.addSource("DT Gyro Angle") { angle }
 
@@ -397,32 +417,31 @@ object Drive : Subsystem() {
 
     @Synchronized
     fun setVelocitySetpoint(
-        leftFeetPerSec: Double,
-        rightFeetPerSec: Double,
-        leftFeetPerSecSq: Double,
-        rightFeetPerSecSq: Double
+        leftMetersPerSec: Double,
+        rightMetersPerSec: Double,
+        leftMetersPerSecSq: Double,
+        rightMetersPerSecSq: Double
     ) {
         if (usesTalonVelocityControl(currentState)) {
-            // TODO: change constants
-            leftTargetVel = leftFeetPerSec * Constants.Drive.FEET_PER_SEC_TO_NATIVE
-            rightTargetVel = rightFeetPerSec * Constants.Drive.FEET_PER_SEC_TO_NATIVE
+            leftTargetVel = metersPerSecondToNative(leftMetersPerSec)
+            rightTargetVel = metersPerSecondToNative(rightMetersPerSec)
 
-            val leftFeedForward: Double = if (leftFeetPerSec > 0) {
-                Constants.Drive.LEFT_KV_FORWARD * leftFeetPerSec +
-                        Constants.Drive.LEFT_KA_FORWARD * leftFeetPerSecSq +
+            val leftFeedForward: Double = if (leftMetersPerSec > 0) {
+                Constants.Drive.LEFT_KV_FORWARD * leftMetersPerSec +
+                        Constants.Drive.LEFT_KA_FORWARD * leftMetersPerSecSq +
                         Constants.Drive.LEFT_V_INTERCEPT_FORWARD
             } else {
-                Constants.Drive.LEFT_KV_REVERSE * leftFeetPerSec +
-                        Constants.Drive.LEFT_KA_REVERSE * leftFeetPerSecSq +
+                Constants.Drive.LEFT_KV_REVERSE * leftMetersPerSec +
+                        Constants.Drive.LEFT_KA_REVERSE * leftMetersPerSecSq +
                         Constants.Drive.LEFT_V_INTERCEPT_REVERSE
             }
-            val rightFeedForward: Double = if (rightFeetPerSec > 0) {
-                Constants.Drive.RIGHT_KV_FORWARD * rightFeetPerSec +
-                        Constants.Drive.RIGHT_KA_FORWARD * rightFeetPerSecSq +
+            val rightFeedForward: Double = if (rightMetersPerSec > 0) {
+                Constants.Drive.RIGHT_KV_FORWARD * rightMetersPerSec +
+                        Constants.Drive.RIGHT_KA_FORWARD * rightMetersPerSecSq +
                         Constants.Drive.RIGHT_V_INTERCEPT_FORWARD
             } else {
-                Constants.Drive.RIGHT_KV_REVERSE * rightFeetPerSec +
-                        Constants.Drive.RIGHT_KA_REVERSE * rightFeetPerSecSq +
+                Constants.Drive.RIGHT_KV_REVERSE * rightMetersPerSec +
+                        Constants.Drive.RIGHT_KA_REVERSE * rightMetersPerSecSq +
                         Constants.Drive.RIGHT_V_INTERCEPT_REVERSE
             }
 
@@ -436,19 +455,19 @@ object Drive : Subsystem() {
         } else {
             configureTalonsForVelocityControl()
             currentState = DriveControlState.VELOCITY_SETPOINT
-            setVelocitySetpoint(leftFeetPerSec, rightFeetPerSec, leftFeetPerSecSq, rightFeetPerSecSq)
+            setVelocitySetpoint(leftMetersPerSec, rightMetersPerSec, leftMetersPerSecSq, rightMetersPerSecSq)
         }
     }
 
     @Synchronized
-    fun setPositionSetpoint(leftInches: Double, rightInches: Double) {
+    fun setPositionSetpoint(leftMeters: Double, rightMeters: Double) {
         if (usesTalonPositionControl(currentState)) {
-            leftMasterTalon.set(ControlMode.MotionMagic, leftInches * Constants.Drive.FEET_PER_SEC_TO_NATIVE)
-            rightMasterTalon.set(ControlMode.MotionMagic, rightInches * Constants.Drive.FEET_PER_SEC_TO_NATIVE)
+            leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters))
+            rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters))
         } else {
             configureTalonsForPositionControl()
             currentState = DriveControlState.MOTION_MAGIC
-            setPositionSetpoint(leftInches, rightInches)
+            setPositionSetpoint(leftMeters, rightMeters)
         }
     }
 
@@ -520,96 +539,51 @@ object Drive : Subsystem() {
         HelixEvents.addEvent("DRIVETRAIN", "Configured Talons for position control")
     }
 
-    fun updatePathFollowing(timestamp: Double) {
+    fun updatePathFollowing(timestamp: Double, dT: Double) {
         trajCurTime = timestamp - trajStartTime
+        autoOdometry.update(Rotation2d.fromDegrees(-angle), leftDistanceMeters, rightDistanceMeters)
+
         val sample = path.sample(trajCurTime)
+        val wheelSpeeds = kinematics.toWheelSpeeds(pathFollowController.calculate(autoOdometry.poseMeters, sample))
+        val leftAcceleration = (wheelSpeeds.leftMetersPerSecond - lastWheelSpeeds.leftMetersPerSecond) / dT
+        val rightAcceleration = (wheelSpeeds.rightMetersPerSecond - lastWheelSpeeds.rightMetersPerSecond) / dT
 
-        val wheelVelocities = kinematics.toWheelSpeeds(pathFollowController.calculate(lastPose, sample))
-        lastPose = sample.poseMeters
-        // TODO: finish path follow
+        setVelocitySetpoint(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond,
+            leftAcceleration, rightAcceleration)
+
+        lastWheelSpeeds = wheelSpeeds
     }
-
-//    fun updatePathFollowing() {
-//        var leftTurn = path.getLeftVelocityIndex(segment)
-//        var rightTurn = path.getRightVelocityIndex(segment)
-//
-//        val desiredHeading = Math.toDegrees(path.getHeadingIndex(segment))
-//        val angleDifference = boundHalfDegrees(desiredHeading - yaw)
-//        val turn: Double = Constants.Autonomous.PATH_FOLLOW_TURN_KP * angleDifference
-//
-//        val leftDistance: Double = getLeftDistanceInches()
-//        val rightDistance: Double = getRightDistanceInches()
-//
-//        val leftErrorDistance: Double = path.getLeftDistanceIndex(segment) - leftDistance
-//        val rightErrorDistance: Double = path.getRightDistanceIndex(segment) - rightDistance
-//
-//        val leftVelocityAdjustment =
-//                Constants.Gains.LEFT_LOW_KP * leftErrorDistance +
-//                        Constants.Gains.LEFT_LOW_KD * ((leftErrorDistance - lastLeftError) / path.getDeltaTime())
-//        val rightVelocityAdjustment =
-//                Constants.Gains.RIGHT_LOW_KP * rightErrorDistance +
-//                        Constants.Gains.RIGHT_LOW_KD * ((rightErrorDistance - lastRightError) / path.getDeltaTime())
-//
-//        leftTurn += leftVelocityAdjustment
-//        rightTurn += rightVelocityAdjustment
-//
-//        lastLeftError = leftErrorDistance
-//        lastRightError = rightErrorDistance
-//
-//        leftTurn += turn
-//        rightTurn -= turn
-//
-//        setVelocitySetpoint(
-//                leftTurn,
-//                rightTurn,
-//                path.getLeftAccelerationIndex(segment),
-//                path.getRightAccelerationIndex(segment)
-//        )
-//        segment++
-//    }
 
     fun isPathFinished(timestamp: Double): Boolean {
         trajCurTime = timestamp - trajStartTime
         return trajCurTime > trajDuration
     }
 
-    private fun nativeToInches(nativeUnits: Int): Double {
-        return nativeUnits * Constants.Drive.NATIVE_TO_REVS * Constants.Drive.WHEEL_DIAMETER_INCHES * Math.PI
+    private fun nativeToMeters(nativeUnits: Int): Double {
+        return nativeUnits * Constants.Drive.NATIVE_TO_REVS * Constants.Drive.WHEEL_DIAMETER_METERS * Math.PI
     }
 
-    private fun rpmToInchesPerSecond(rpm: Double): Double {
-        return (rpm) / 60 * Math.PI * Constants.Drive.WHEEL_DIAMETER_INCHES
+    private fun metersToNative(meters: Double): Double {
+        return meters / (Constants.Drive.NATIVE_TO_REVS * Constants.Drive.WHEEL_DIAMETER_METERS * Math.PI)
     }
 
-    private fun nativeToInchesPerSecond(nativeUnits: Int): Double {
-        return nativeToInches(nativeUnits) * 10
+    private fun rpmToMetersPerSecond(rpm: Double): Double {
+        return (rpm) / 60 * Math.PI * Constants.Drive.WHEEL_DIAMETER_METERS
     }
 
-    private fun inchesToRotations(inches: Double): Double {
-        return inches / (Constants.Drive.WHEEL_DIAMETER_INCHES * Math.PI)
+    private fun nativeToMetersPerSecond(nativeUnits: Int): Double {
+        return nativeToMeters(nativeUnits) * 10
     }
 
-    private fun inchesPerSecondToRpm(inchesPerSecond: Double): Double {
-        return inchesToRotations(inchesPerSecond) * 60
+    private fun metersPerSecondToNative(meters: Double): Double {
+        return metersToNative(meters) / 10
     }
 
-    fun getLeftDistanceInches(): Double {
-        return nativeToInches(leftMasterTalon.selectedSensorPosition)
+    private fun metersToRotations(meters: Double): Double {
+        return meters / (Constants.Drive.WHEEL_DIAMETER_METERS * Math.PI)
     }
 
-    fun getRightDistanceInches(): Double {
-        return nativeToInches(rightMasterTalon.selectedSensorPosition)
-    }
-
-    fun getLeftVelocityInchesPerSec(): Double {
-        return nativeToInchesPerSecond(leftMasterTalon.selectedSensorVelocity)
-    }
-
-    fun getRightVelocityInchesPerSec(): Double {
-        return nativeToInchesPerSecond(rightMasterTalon.selectedSensorVelocity)
-    }
-
-    fun boundHalfDegrees(angleDegrees: Double): Double {
-        return ((angleDegrees + 180.0) % 360.0) - 180.0
+    private fun metersPerSecondToRpm(metersPerSecond: Double): Double {
+        return metersToRotations(metersPerSecond) * 60
     }
 }

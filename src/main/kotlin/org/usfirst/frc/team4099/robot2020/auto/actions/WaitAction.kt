@@ -13,7 +13,7 @@ class WaitAction(private val timeToWait: Double) : Action {
         return timestamp - startTime >= timeToWait
     }
 
-    override fun onLoop(timestamp: Double) {}
+    override fun onLoop(timestamp: Double, dT: Double) {}
 
     override fun onStop(timestamp: Double) {}
 

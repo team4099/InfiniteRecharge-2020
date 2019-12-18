@@ -29,7 +29,7 @@ object FaultDetector : Loop {
 
     override fun onStart(timestamp: Double) {}
 
-    override fun onLoop(timestamp: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         rio3v3Faults = RobotController.getFaultCount3V3()
         rio5vFaults = RobotController.getFaultCount5V()
         rio6vFaults = RobotController.getFaultCount6V()
