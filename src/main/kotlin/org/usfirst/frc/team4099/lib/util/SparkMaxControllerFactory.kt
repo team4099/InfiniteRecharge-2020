@@ -5,13 +5,14 @@ import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.ControlType
 import edu.wpi.first.wpilibj.Timer
 
-
 object SparkMaxControllerFactory {
+    @Suppress("MagicNumber")
     class Configuration {
         var ENABLE_BRAKE = CANSparkMax.IdleMode.kCoast
         var INVERTED = false
 
-        var RAMP_RATE = 0.0
+        var OPEN_LOOP_RAMP_RATE = 0.0
+        var CLOSED_LOOP_RAMP_RATE = 0.0
 
         var STATUS_FRAME_0_RATE_MS = 10
         var STATUS_FRAME_1_RATE_MS = 1000
@@ -34,8 +35,8 @@ object SparkMaxControllerFactory {
         return createSparkMax(id, kDefaultConfiguration)
     }
 
-    fun createPermanentSlaveSparkMax(id: Int, master: CANSparkMax) : LazySparkMax {
-        val sparkMax : LazySparkMax = createSparkMax(id, kSlaveConfiguration)
+    fun createPermanentSlaveSparkMax(id: Int, master: CANSparkMax): LazySparkMax {
+        val sparkMax: LazySparkMax = createSparkMax(id, kSlaveConfiguration)
         sparkMax.follow(master)
         return sparkMax
     }
@@ -43,7 +44,7 @@ object SparkMaxControllerFactory {
     fun createSparkMax(id: Int, config: Configuration): LazySparkMax {
         // Apparently to wait for CAN bus bandwidth to clear up
         Timer.delay(0.25)
-        val sparkMax : LazySparkMax = LazySparkMax(id).apply {
+        val sparkMax: LazySparkMax = LazySparkMax(id).apply {
             set(ControlType.kDutyCycle, 0.0)
 
             setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, config.STATUS_FRAME_0_RATE_MS)
@@ -54,13 +55,14 @@ object SparkMaxControllerFactory {
 
             setIdleMode(config.ENABLE_BRAKE)
             setInverted(config.INVERTED)
-            setOpenLoopRampRate(config.RAMP_RATE) //assumes same ramp rate for closed and open loop
-            setClosedLoopRampRate(config.RAMP_RATE)
+            setOpenLoopRampRate(config.OPEN_LOOP_RAMP_RATE) //assumes same ramp rate for closed and open loop
+            setClosedLoopRampRate(config.CLOSED_LOOP_RAMP_RATE)
 
-            if (config.ENABLE_VOLTAGE_COMPENSATION)
+            if (config.ENABLE_VOLTAGE_COMPENSATION) {
                 enableVoltageCompensation(config.NOMINAL_VOLTAGE)
-            else
+            } else {
                 disableVoltageCompensation()
+            }
         }
 
         return sparkMax

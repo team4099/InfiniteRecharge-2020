@@ -14,7 +14,6 @@ class LazySparkMax(deviceNumber: Int) : CANSparkMax(deviceNumber, MotorType.kBru
             lastSet = value
             lastControlMode = controlMode
             super.getPIDController().setReference(value, controlMode)
-
         }
     }
 }
