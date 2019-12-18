@@ -21,8 +21,8 @@ import org.usfirst.frc.team4099.robot2020.subsystems.Drive
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
 
-    private val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
-    private val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
+    val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
+    val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
 
     init {
         PathStore // Invoke path store to initialize it and generate the contained trajectories
@@ -90,6 +90,7 @@ object Robot : TimedRobot() {
 
     override fun teleopInit() {
         try {
+            autoModeExecuter.stop()
             enabledLooper.start()
             HelixEvents.addEvent("ROBOT", "Teleop Enabled")
         } catch (t: Throwable) {

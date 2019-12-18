@@ -38,8 +38,6 @@ object Constants {
         const val LEFT_V_INTERCEPT_REVERSE = -0.1856
         const val RIGHT_V_INTERCEPT_REVERSE = -0.2003
 
-        const val FEET_PER_SEC_TO_NATIVE = 6.8 * 60.0 // 10.4
-
         const val CLOSED_LOOP_RAMP = 0.0
 
         const val PERCENT_DEADBAND = 0.04
@@ -51,8 +49,9 @@ object Constants {
 
         const val NATIVE_TO_REVS = 12 / 2336
 
-        const val WHEEL_DIAMETER_INCHES = 6
+        const val WHEEL_DIAMETER_METERS = 0.1524
         const val WHEEL_TRACK_WIDTH_INCHES = 27.0
+        const val WHEEL_TRACK_WIDTH_METERS = WHEEL_TRACK_WIDTH_INCHES * 0.0254
         const val WHEEL_GAIN = 0.05
         const val WHEEL_NON_LINEARITY = 0.05
 

@@ -43,10 +43,11 @@ abstract class AutoMode(private val delay: Double, private val targetDt: Double)
     fun runAction(action: Action) {
         runningWithThrow
         action.onStart(Timer.getFPGATimestamp())
+        HelixEvents.addEvent("AUTONOMOUS", "Beginning autonomous action")
         var now = Timer.getFPGATimestamp()
         while (runningWithThrow && !action.isFinished(now)) {
             now = Timer.getFPGATimestamp()
-            action.onLoop(now)
+            action.onLoop(now, targetDt)
             val waitTime = (targetDt * 1000.0).toLong()
             try {
                 Thread.sleep(waitTime)

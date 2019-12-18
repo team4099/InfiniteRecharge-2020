@@ -26,7 +26,7 @@ class TurnAction(angleToTurn: Double, slowMode: Boolean) : Action {
         return abs(Drive.angle - startAngle) >= angleToTurn || done
     }
 
-    override fun onLoop(timestamp: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         Drive.setOpenLoop(turnSignal)
     }
 

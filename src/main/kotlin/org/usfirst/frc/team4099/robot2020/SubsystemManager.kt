@@ -11,8 +11,8 @@ object SubsystemManager {
             subsystems.forEach { it.loop.onStart(timestamp) }
         }
 
-        override fun onLoop(timestamp: Double) {
-            subsystems.forEach { it.loop.onLoop(timestamp) }
+        override fun onLoop(timestamp: Double, dT: Double) {
+            subsystems.forEach { it.loop.onLoop(timestamp, dT) }
             outputTelemetry()
         }
 
@@ -24,7 +24,7 @@ object SubsystemManager {
     val disabledLoop = object : Loop {
         override fun onStart(timestamp: Double) {}
 
-        override fun onLoop(timestamp: Double) {
+        override fun onLoop(timestamp: Double, dT: Double) {
             outputTelemetry()
         }
 

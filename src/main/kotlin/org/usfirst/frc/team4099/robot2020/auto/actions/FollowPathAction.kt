@@ -14,7 +14,7 @@ class FollowPathAction(private val path: Trajectory) : Action {
         Drive.path = path
     }
 
-    override fun onLoop(timestamp: Double) {}
+    override fun onLoop(timestamp: Double, dT: Double) {}
 
     override fun onStop(timestamp: Double) {
         Drive.setOpenLoop(DriveSignal.NEUTRAL)
