@@ -71,27 +71,27 @@ interface GenericSmartMotorController {
 
     val id: Int
     // TODO: add "no controller" here to avoid making this null
-    val master: GenericSmartMotorController
+    var master: GenericSmartMotorController
 
     var idleMode: IdleMode
 
-    val sensorPhase: Boolean
-    val inverted: InvertType
+    var sensorPhase: Boolean
+    var inverted: InvertType
 
     val timeout: Double
 
-    val openLoopRampSecs: Double
-    val closedLoopRampSecs: Double
+    var openLoopRampSecs: Double
+    var closedLoopRampSecs: Double
 
-    val peakOutputForward: Double
-    val peakOutputReverse: Double
-    val nominalOutputForward: Double
-    val nominalOutputReverse: Double
+    var peakOutputForward: Double
+    var peakOutputReverse: Double
+    var nominalOutputForward: Double
+    var nominalOutputReverse: Double
 
-    val neutralDeadband: Double
+    var neutralDeadband: Double
 
-    val maxCompensatedVoltage: Double
-    val useVoltageCompensation: Boolean
+    var maxCompensatedVoltage: Double
+    var useVoltageCompensation: Boolean
 
     // TODO: voltage measurement filter
 
@@ -100,7 +100,7 @@ interface GenericSmartMotorController {
     val motorOutputVoltage: Double
 
     // TODO: Determine if we ever want to use different encoders for different PID slots
-    val selectedEncoder: EncoderType
+    var selectedEncoder: EncoderType
 
     // TODO: figure out absolute versions of these
     val encoderPPR: Double
@@ -112,24 +112,24 @@ interface GenericSmartMotorController {
     var rawEncoderPosition: Double
     val rawEncoderVelocity: Double
 
-    val velocityMeasPeriod: VelocityMeasPeriod
-    val velocityMeasWindow: Int
+    var velocityMeasPeriod: VelocityMeasPeriod
+    var velocityMeasWindow: Int
 
-    val useLimitSwitches: Boolean
-    val useSoftLimits: Boolean
+    var useLimitSwitches: Boolean
+    var useSoftLimits: Boolean
 
-    val useForwardSoftLimit: Boolean
-    val useReverseSoftLimit: Boolean
+    var useForwardSoftLimit: Boolean
+    var useReverseSoftLimit: Boolean
 
-    val allowableClosedLoopError: Double
-    val rawAllowableClosedLoopError: Int
+    var allowableClosedLoopError: Double
+    var rawAllowableClosedLoopError: Int
 
-    val maxIntegralAccumulator: Double
+    var maxIntegralAccumulator: Double
     var currIntegralAccumulator: Double
 
-    val closedLoopPeakOutput: Double
+    var closedLoopPeakOutput: Double
 
-    val closedLoopTarget: Double
+    var closedLoopTarget: Double
 
     var motionCruiseVelocity: Double
     var rawMotionCruiseVelocity: Int
@@ -138,6 +138,14 @@ interface GenericSmartMotorController {
     var rawMotionAcceleration: Int
 
     var motionSCurveStrength: Int
+
+    var continuousInputCurrentLimit: Int
+    var continuousStatorCurrentLimit: Int
+
+    var peakInputCurrentLimit: Int
+    var peakStatorCurrentLimit: Int
+
+    var peakCurrentDurationMs: Int
 
     fun set(mode: ControlMode, outputValue: Double)
     fun set(mode: ControlMode, outputValue: Double, feedForward: Double)
