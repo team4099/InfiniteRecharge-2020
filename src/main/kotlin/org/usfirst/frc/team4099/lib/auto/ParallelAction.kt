@@ -1,19 +1,13 @@
 package org.usfirst.frc.team4099.lib.auto
 
 /**
- * Composite action, running all sub-actions at the same time All actions are
+ * Composite action, running all sub-actions at the same time. All actions are
  * started then updated until all actions report being done.
  *
  * @param actions List of Action objects
  */
 class ParallelAction(actions: List<Action>) : Action {
-    private val actions = mutableListOf<Action>()
-
-    init {
-        for (action in actions) {
-            this.actions.add(action)
-        }
-    }
+    private val actions = ArrayList(actions)
 
     override fun isFinished(timestamp: Double): Boolean {
         var allFinished = true

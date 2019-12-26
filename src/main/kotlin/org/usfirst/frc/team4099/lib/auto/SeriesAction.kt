@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4099.lib.auto
 
 /**
- * Executes one action at a time. Useful as a member of [ParallelAction]
+ * Executes one action at a time. Useful as a member of [ParallelAction].
  */
 class SeriesAction(actions: List<Action>) : Action {
     private var currentAction: Action? = null

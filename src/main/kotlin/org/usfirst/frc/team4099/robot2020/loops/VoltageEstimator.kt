@@ -4,8 +4,8 @@ import com.team2363.logger.HelixLogger
 import edu.wpi.first.wpilibj.RobotController
 import org.usfirst.frc.team4099.lib.loop.Loop
 
-/** Constantly measures battery voltage before the match begins.
- *
+/**
+ * Constantly measures battery voltage before the match begins.
  */
 
 class VoltageEstimator : Loop {

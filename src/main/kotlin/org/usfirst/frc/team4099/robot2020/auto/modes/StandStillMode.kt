@@ -6,7 +6,7 @@ import org.usfirst.frc.team4099.robot2020.config.Constants
 
 /**
  * Fallback for when all autonomous modes do not work, resulting in a robot
- * standstill
+ * standstill.
  */
 class StandStillMode(delay: Double) : AutoMode(delay, Constants.Autonomous.AUTON_DT) {
     @Throws(AutoModeEndedException::class)

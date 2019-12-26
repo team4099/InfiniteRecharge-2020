@@ -4,9 +4,8 @@ import com.team2363.logger.HelixEvents
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.usfirst.frc.team4099.lib.auto.AutoMode
+import org.usfirst.frc.team4099.lib.auto.AutoModeProvider
 import org.usfirst.frc.team4099.robot2020.auto.modes.StandStillMode
-
-typealias AutoModeProvider = (startingPos: DashboardConfigurator.StartingPosition, delay: Double) -> AutoMode
 
 /**
  * Controls the interactive elements of SmartDashboard.
@@ -15,19 +14,28 @@ typealias AutoModeProvider = (startingPos: DashboardConfigurator.StartingPositio
  * invariants.
  */
 object DashboardConfigurator {
-    private val defaultStart = StartingPosition.CENTER
-    private val defaultMode = { _: StartingPosition, _: Double -> StandStillMode(0.0) }
-
+    /**
+     * Enumerates possible starting positions for the robot.
+     *
+     * @param dashboardName A human readable name for the location.
+     */
     enum class StartingPosition(val dashboardName: String) {
         LEFT("LEFT"),
         CENTER("CENTER"),
         RIGHT("RIGHT")
     }
 
+    private val defaultStart = StartingPosition.CENTER
+    private val defaultMode = { _: StartingPosition, _: Double -> StandStillMode(0.0) }
+
+    // Maps the name of a mode to a function that creates an instance of it.
     private val allModes = mapOf<String, AutoModeProvider>(
             Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode
     )
 
+    /**
+     * Adds keys to SmartDashboard containing the possible modes and starting locations.
+     */
     fun initDashboard() {
         var color = ""
         while (color == "")
@@ -46,6 +54,11 @@ object DashboardConfigurator {
         SmartDashboard.putNumber(Constants.Dashboard.SELECTED_AUTO_START_DELAY_KEY, Constants.Autonomous.DEFAULT_DELAY)
     }
 
+    /**
+     * Gets the selected autonomous mode from SmartDashboard.
+     *
+     * @return An instance of the selected [AutoMode].
+     */
     fun getSelectedAutoMode(): AutoMode {
         val selectedModeName = SmartDashboard.getString(
                 Constants.Dashboard.SELECTED_AUTO_MODE_KEY,
@@ -72,7 +85,7 @@ object DashboardConfigurator {
         val mode = allModes.getOrDefault(selectedModeName, defaultMode)
 
         HelixEvents.addEvent("Autonomous",
-                "Selected autonomous: $selectedModeName ${selectedStartEnum.dashboardName}")
+                "Selected autonomous: $selectedModeName from ${selectedStartEnum.dashboardName}")
         return mode(selectedStartEnum, selectedStartingDelay)
     }
 }

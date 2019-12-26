@@ -3,22 +3,27 @@ package org.usfirst.frc.team4099.lib.auto
 import org.usfirst.frc.team4099.lib.util.CrashTrackingRunnable
 
 /**
- * Created by plato2000 on 2/13/17.
+ * Executes an autonomous mode within a [CrashTrackingRunnable].
+ * @param autoMode The mode to execute
  */
-class AutoModeExecuter {
-    var autoMode: AutoMode? = null
-    private lateinit var thread: Thread
+class AutoModeExecuter(private val autoMode: AutoMode) {
+    private var thread: Thread = Thread(object : CrashTrackingRunnable("AutoModeExecuter") {
+        override fun runCrashTracked() {
+            autoMode.run()
+        }
+    })
 
+    /**
+     * Starts the autonomous mode.
+     */
     fun start() {
-        thread = Thread(object : CrashTrackingRunnable() {
-            override fun runCrashTracked() {
-                autoMode?.run()
-            }
-        })
         thread.start()
     }
 
+    /**
+     * Stops the autonomous mode.
+     */
     fun stop() {
-        autoMode?.stop()
+        autoMode.stop()
     }
 }

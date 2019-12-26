@@ -1,8 +1,11 @@
 package org.usfirst.frc.team4099.robot2020.config
 
+/**
+ * Stores constants used by the robot.
+ */
 object Constants {
     object Universal {
-        const val TIMEOUT = 10
+        const val TIMEOUT = 0
         const val EPSILON = 1E-9
     }
 
@@ -40,7 +43,7 @@ object Constants {
 
         const val CLOSED_LOOP_RAMP = 0.0
 
-        const val PERCENT_DEADBAND = 0.04
+        const val OUTPUT_POWER_DEADBAND = 0.04
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 

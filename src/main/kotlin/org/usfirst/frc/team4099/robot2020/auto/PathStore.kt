@@ -7,6 +7,10 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import org.usfirst.frc.team4099.robot2020.config.Constants
 
+/**
+ * Stores trajectories for use in autonomous modes. Must be invoked before autonomous
+ * starts in order to not need to wait for trajectories to be created.
+ */
 object PathStore {
     val driveForward: Trajectory = TrajectoryGenerator.generateTrajectory(
         listOf(Pose2d(0.0, 0.0, Rotation2d(0.0)), Pose2d(1.0, 0.0, Rotation2d(0.0))),

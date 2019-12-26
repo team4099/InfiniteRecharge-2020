@@ -8,35 +8,35 @@ import edu.wpi.first.wpilibj.Timer
 object SparkMaxControllerFactory {
     @Suppress("MagicNumber")
     class Configuration {
-        var ENABLE_BRAKE = CANSparkMax.IdleMode.kCoast
-        var INVERTED = false
+        var idleMode = CANSparkMax.IdleMode.kCoast
+        var inverted = false
 
-        var OPEN_LOOP_RAMP_RATE = 0.0
-        var CLOSED_LOOP_RAMP_RATE = 0.0
+        var openLoopRampRate = 0.0
+        var closedLoopRampRate = 0.0
 
-        var STATUS_FRAME_0_RATE_MS = 10
-        var STATUS_FRAME_1_RATE_MS = 1000
-        var STATUS_FRAME_2_RATE_MS = 1000
+        var statusFrame0RateMs = 10
+        var statusFrame1RateMs = 1000
+        var statusFrame2RateMs = 1000
 
-        var ENABLE_VOLTAGE_COMPENSATION = false
-        var NOMINAL_VOLTAGE = 12.0
+        var enableVoltageCompensation = false
+        var nominalVoltage = 12.0
     }
 
-    private val kDefaultConfiguration = Configuration()
-    private val kSlaveConfiguration = Configuration()
+    private val defaultConfiguration = Configuration()
+    private val slaveConfiguration = Configuration()
 
     init {
-        kSlaveConfiguration.STATUS_FRAME_0_RATE_MS = 1000
-        kSlaveConfiguration.STATUS_FRAME_1_RATE_MS = 1000
-        kSlaveConfiguration.STATUS_FRAME_2_RATE_MS = 1000
+        slaveConfiguration.statusFrame0RateMs = 1000
+        slaveConfiguration.statusFrame1RateMs = 1000
+        slaveConfiguration.statusFrame2RateMs = 1000
     }
 
     fun createDefaultSparkMax(id: Int): LazySparkMax {
-        return createSparkMax(id, kDefaultConfiguration)
+        return createSparkMax(id, defaultConfiguration)
     }
 
     fun createPermanentSlaveSparkMax(id: Int, master: CANSparkMax): LazySparkMax {
-        val sparkMax: LazySparkMax = createSparkMax(id, kSlaveConfiguration)
+        val sparkMax: LazySparkMax = createSparkMax(id, slaveConfiguration)
         sparkMax.follow(master)
         return sparkMax
     }
@@ -44,27 +44,26 @@ object SparkMaxControllerFactory {
     fun createSparkMax(id: Int, config: Configuration): LazySparkMax {
         // Apparently to wait for CAN bus bandwidth to clear up
         Timer.delay(0.25)
-        val sparkMax: LazySparkMax = LazySparkMax(id).apply {
+
+        return LazySparkMax(id).apply {
             set(ControlType.kDutyCycle, 0.0)
 
-            setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, config.STATUS_FRAME_0_RATE_MS)
-            setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, config.STATUS_FRAME_1_RATE_MS)
-            setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, config.STATUS_FRAME_2_RATE_MS)
+            setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, config.statusFrame0RateMs)
+            setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, config.statusFrame1RateMs)
+            setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, config.statusFrame2RateMs)
 
             clearFaults()
 
-            setIdleMode(config.ENABLE_BRAKE)
-            setInverted(config.INVERTED)
-            setOpenLoopRampRate(config.OPEN_LOOP_RAMP_RATE) //assumes same ramp rate for closed and open loop
-            setClosedLoopRampRate(config.CLOSED_LOOP_RAMP_RATE)
+            idleMode = config.idleMode
+            inverted = config.inverted
+            openLoopRampRate = config.openLoopRampRate //assumes same ramp rate for closed and open loop
+            closedLoopRampRate = config.closedLoopRampRate
 
-            if (config.ENABLE_VOLTAGE_COMPENSATION) {
-                enableVoltageCompensation(config.NOMINAL_VOLTAGE)
+            if (config.enableVoltageCompensation) {
+                enableVoltageCompensation(config.nominalVoltage)
             } else {
                 disableVoltageCompensation()
             }
         }
-
-        return sparkMax
     }
 }

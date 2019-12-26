@@ -4,8 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.DemandType
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.NeutralMode
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
+import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.kauailabs.navx.frc.AHRS
 import com.team2363.logger.HelixEvents
 import com.team2363.logger.HelixLogger
@@ -21,25 +21,21 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
-import org.usfirst.frc.team4099.lib.loop.Loop
 import org.usfirst.frc.team4099.lib.subsystem.Subsystem
-import org.usfirst.frc.team4099.lib.util.CANMotorControllerFactory
+import org.usfirst.frc.team4099.lib.util.CTREMotorControllerFactory
 import org.usfirst.frc.team4099.lib.util.around
 import org.usfirst.frc.team4099.robot2020.config.Constants
-import kotlin.math.abs
-import kotlin.math.ln
-import kotlin.math.max
-import kotlin.math.sin
+import kotlin.math.*
 
 object Drive : Subsystem() {
-    private val rightMasterTalon = CANMotorControllerFactory.createDefaultTalon(Constants.Drive.RIGHT_MASTER_ID)
-    private val rightSlaveTalon = CANMotorControllerFactory.createPermanentSlaveTalon(
+    private val rightMasterTalon: TalonSRX
+    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
             Constants.Drive.RIGHT_SLAVE_1_ID,
             Constants.Drive.RIGHT_MASTER_ID
     )
 
-    private val leftMasterTalon = CANMotorControllerFactory.createDefaultTalon(Constants.Drive.LEFT_MASTER_ID)
-    private val leftSlaveTalon = CANMotorControllerFactory.createPermanentSlaveTalon(
+    private val leftMasterTalon: TalonSRX
+    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
             Constants.Drive.LEFT_SLAVE_1_ID,
             Constants.Drive.LEFT_MASTER_ID
     )
@@ -119,50 +115,37 @@ object Drive : Subsystem() {
             field = type
         }
 
-    enum class DriveControlState {
-        OPEN_LOOP,
-        VELOCITY_SETPOINT,
-        PATH_FOLLOWING,
-        TURN_TO_HEADING, // turn in place
-        MOTION_MAGIC
+    enum class DriveControlState(val usesVelocityControl: Boolean, val usesPositionControl: Boolean) {
+        OPEN_LOOP(false, false),
+        VELOCITY_SETPOINT(true, false),
+        PATH_FOLLOWING(true, false),
+        MOTION_MAGIC(false, true)
     }
 
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
-        rightMasterTalon.configFactoryDefault()
-        rightSlaveTalon.configFactoryDefault()
+        val masterConfig = CTREMotorControllerFactory.Configuration()
+        masterConfig.feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS
+        masterConfig.sensorPhase = true
+        masterConfig.enableVoltageCompensation = true
+        masterConfig.neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND
+        masterConfig.velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms
+        masterConfig.voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP
+        masterConfig.enableCurrentLimit = true
+        masterConfig.currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT
 
-        leftMasterTalon.configFactoryDefault()
-        leftSlaveTalon.configFactoryDefault()
-
-        rightMasterTalon.setStatusFramePeriod(
-                StatusFrameEnhanced.Status_2_Feedback0,
-                Constants.Drive.STATUS_FRAME_PERIOD_MS, Constants.Universal.TIMEOUT
-        )
-        leftMasterTalon.setStatusFramePeriod(
-                StatusFrameEnhanced.Status_2_Feedback0,
-                Constants.Drive.STATUS_FRAME_PERIOD_MS, Constants.Universal.TIMEOUT
-        )
+        rightMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
+        leftMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
 
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
         leftMasterTalon.inverted = false
 
-        rightMasterTalon.setSensorPhase(true)
-        rightSlaveTalon.setSensorPhase(true)
-        leftMasterTalon.setSensorPhase(true)
-        leftSlaveTalon.setSensorPhase(true)
-
         rightMasterTalon.configSelectedFeedbackSensor(
                 FeedbackDevice.CTRE_MagEncoder_Relative,
                 0,
-                Constants.Universal.TIMEOUT
-        )
-        rightMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                1,
                 Constants.Universal.TIMEOUT
         )
 
@@ -171,27 +154,6 @@ object Drive : Subsystem() {
                 0,
                 Constants.Universal.TIMEOUT
         )
-        leftMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                1,
-                Constants.Universal.TIMEOUT
-        )
-
-        rightMasterTalon.enableVoltageCompensation(true)
-        rightMasterTalon.configVoltageCompSaturation(Constants.Drive.VOLTAGE_COMP_LEVEL, Constants.Universal.TIMEOUT)
-        leftMasterTalon.enableVoltageCompensation(true)
-        leftMasterTalon.configVoltageCompSaturation(Constants.Drive.VOLTAGE_COMP_LEVEL, Constants.Universal.TIMEOUT)
-
-        rightMasterTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.Universal.TIMEOUT)
-        leftMasterTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.Universal.TIMEOUT)
-
-        rightMasterTalon.configClosedloopRamp(Constants.Drive.CLOSED_LOOP_RAMP, Constants.Universal.TIMEOUT)
-        leftMasterTalon.configClosedloopRamp(Constants.Drive.CLOSED_LOOP_RAMP, Constants.Universal.TIMEOUT)
-        rightMasterTalon.configNeutralDeadband(
-                Constants.Drive.PERCENT_DEADBAND,
-                Constants.Universal.TIMEOUT
-        ) // 254 used 0 for timeout
-        leftMasterTalon.configNeutralDeadband(Constants.Drive.PERCENT_DEADBAND, Constants.Universal.TIMEOUT)
 
         // TODO: SET CONVERSION FACTORS
 
@@ -205,58 +167,38 @@ object Drive : Subsystem() {
         rightMasterTalon.config_kD(0, Constants.Drive.Gains.RIGHT_KD, Constants.Universal.TIMEOUT)
         rightMasterTalon.config_kF(0, Constants.Drive.Gains.RIGHT_KF, Constants.Universal.TIMEOUT)
 
-        rightMasterTalon.configContinuousCurrentLimit(
-                Constants.Drive.CONTINUOUS_CURRENT_LIMIT,
-                Constants.Universal.TIMEOUT
-        )
-        leftMasterTalon.configContinuousCurrentLimit(
-                Constants.Drive.CONTINUOUS_CURRENT_LIMIT,
-                Constants.Universal.TIMEOUT
-        )
-
         setOpenLoop(DriveSignal.NEUTRAL)
-
-        this.zeroSensors()
-    }
-
-    override fun stop() {
-        synchronized(this) {
-            setOpenLoop(DriveSignal.NEUTRAL)
-        }
+        zeroSensors()
     }
 
     override fun checkSystem() {}
 
-    override val loop = object : Loop {
-        override fun onStart(timestamp: Double) {
-            setOpenLoop(DriveSignal.NEUTRAL)
-        }
+    override fun onStart(timestamp: Double) {
+        setOpenLoop(DriveSignal.NEUTRAL)
+    }
 
-        override fun onLoop(timestamp: Double, dT: Double) {
-            synchronized(this@Drive) {
-                when (currentState) {
-                    DriveControlState.OPEN_LOOP -> {
-                        leftTargetVel = 0.0
-                        rightTargetVel = 0.0
-                    }
-                    DriveControlState.VELOCITY_SETPOINT -> {
-                    }
-                    DriveControlState.PATH_FOLLOWING -> {
-                        updatePathFollowing(timestamp, dT)
-                    }
-                    DriveControlState.TURN_TO_HEADING -> {
-                        leftTargetVel = 0.0
-                        rightTargetVel = 0.0
-                        // updateTurnToHeading(timestamp)
-                    }
-                    else -> {
-                        HelixEvents.addEvent("DRIVETRAIN", "Unexpected drive control state: $currentState")
-                    }
+    override fun onLoop(timestamp: Double, dT: Double) {
+        synchronized(this@Drive) {
+            when (currentState) {
+                DriveControlState.OPEN_LOOP -> {
+                    leftTargetVel = 0.0
+                    rightTargetVel = 0.0
+                }
+                DriveControlState.VELOCITY_SETPOINT -> {}
+                DriveControlState.PATH_FOLLOWING -> {
+                    updatePathFollowing(timestamp, dT)
+                }
+                else -> {
+                    HelixEvents.addEvent("DRIVETRAIN", "Unexpected drive control state: $currentState")
                 }
             }
         }
+    }
 
-        override fun onStop(timestamp: Double) = stop()
+    override fun onStop(timestamp: Double) {
+        synchronized(this) {
+            setOpenLoop(DriveSignal.NEUTRAL)
+        }
     }
 
     override fun registerLogging() {
@@ -297,42 +239,45 @@ object Drive : Subsystem() {
         } else {
             HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
         }
-        resetEncoders()
+
+        rightMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.TIMEOUT)
+        leftMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.TIMEOUT)
     }
 
+    /**
+     * Controls the drivetrain using open loop.
+     *
+     * @param signal A [DriveSignal] containing left and right side powers,
+     * as well as a desired brake mode.
+     */
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterTalon.configNominalOutputForward(0.0, Constants.Universal.TIMEOUT)
             rightMasterTalon.configNominalOutputForward(0.0, Constants.Universal.TIMEOUT)
             currentState = DriveControlState.OPEN_LOOP
-            brakeMode = NeutralMode.Coast
             HelixEvents.addEvent("DRIVETRAIN", "Entered open loop control")
         }
+        brakeMode = if (signal.brakeMode) NeutralMode.Brake else NeutralMode.Coast
         setLeftRightPower(
                 signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
                 signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
         )
     }
 
-    /**
-     * Powers the left and right talons during OPEN_LOOP
-     * @param left
-     * @param right
-     */
     @Synchronized
-    fun setLeftRightPower(left: Double, right: Double) {
+    private fun setLeftRightPower(left: Double, right: Double) {
         leftMasterTalon.set(ControlMode.PercentOutput, left)
         rightMasterTalon.set(ControlMode.PercentOutput, right)
     }
 
-    @Synchronized
-    fun resetEncoders() {
-        rightMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.TIMEOUT)
-        leftMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.TIMEOUT)
-    }
-
-    // Copied from WPIlib arcade drive with no functional modification
+    /**
+     * Drive the robot using a simple arcade drive.
+     * Copied from WPILib arcade drive with no functional modification.
+     *
+     * @param outputMagnitude The magnitude of the output. Typically controlled by the forward/back axis.
+     * @param curve The curvature of the path. Typically controlled by the left/right axis.
+     */
     @Suppress("MagicNumber")
     @Synchronized
     fun arcadeDrive(outputMagnitude: Double, curve: Double) {
@@ -366,6 +311,14 @@ object Drive : Subsystem() {
         setOpenLoop(DriveSignal(leftOutput, rightOutput))
     }
 
+    /**
+     * Drive the robot using "Cheesyish Drive".
+     * Uses a sinusoidal scaling function for curvature.
+     *
+     * @param throttle The magnitude of the output. Controlled by the triggers on the driver controller.
+     * @param wheel The curvature of the path. Controlled by the left/right axis of a joystick.
+     * @param quickTurn True if the curvature should not be scaled. Typically used when turning in place.
+     */
     // thank you team 254 but i like 148 better...
     @Synchronized
     fun setCheesyishDrive(throttle: Double, wheel: Double, quickTurn: Boolean) {
@@ -399,22 +352,15 @@ object Drive : Subsystem() {
         setOpenLoop(DriveSignal(driveSignal.leftMotor / scalingFactor, driveSignal.rightMotor / scalingFactor))
     }
 
-    @Synchronized
-    fun usesTalonVelocityControl(state: DriveControlState): Boolean {
-        if (state == DriveControlState.VELOCITY_SETPOINT || state == DriveControlState.PATH_FOLLOWING) {
-            return true
-        }
-        return false
-    }
-
-    @Synchronized
-    fun usesTalonPositionControl(state: DriveControlState): Boolean {
-        if (state == DriveControlState.TURN_TO_HEADING || state == DriveControlState.MOTION_MAGIC) {
-            return true
-        }
-        return false
-    }
-
+    /**
+     * Sets velocity targets for both sides of the drivetrain. Uses arbitrary feed forward with
+     * values from drivetrain characterization to target a specific velocity and acceleration combination.
+     *
+     * @param leftMetersPerSec The velocity of the left side.
+     * @param rightMetersPerSec The velocity of the right side.
+     * @param leftMetersPerSecSq The acceleration of the left side.
+     * @param rightMetersPerSecSq The acceleration of the right side.
+     */
     @Synchronized
     fun setVelocitySetpoint(
         leftMetersPerSec: Double,
@@ -422,10 +368,13 @@ object Drive : Subsystem() {
         leftMetersPerSecSq: Double,
         rightMetersPerSecSq: Double
     ) {
-        if (usesTalonVelocityControl(currentState)) {
+        if (currentState.usesVelocityControl) {
             leftTargetVel = metersPerSecondToNative(leftMetersPerSec)
             rightTargetVel = metersPerSecondToNative(rightMetersPerSec)
 
+            // Calculate feed forward values based on the desired state
+            // kV and kA values come from characterizing the drivetrain using
+            // the WPILib characterization suite.
             val leftFeedForward: Double = if (leftMetersPerSec > 0) {
                 Constants.Drive.LEFT_KV_FORWARD * leftMetersPerSec +
                         Constants.Drive.LEFT_KA_FORWARD * leftMetersPerSecSq +
@@ -445,7 +394,12 @@ object Drive : Subsystem() {
                         Constants.Drive.RIGHT_V_INTERCEPT_REVERSE
             }
 
-            leftMasterTalon.set(ControlMode.Velocity, leftTargetVel, DemandType.ArbitraryFeedForward, leftFeedForward)
+            leftMasterTalon.set(
+                    ControlMode.Velocity,
+                    leftTargetVel,
+                    DemandType.ArbitraryFeedForward,
+                    leftFeedForward
+            )
             rightMasterTalon.set(
                     ControlMode.Velocity,
                     rightTargetVel,
@@ -459,9 +413,19 @@ object Drive : Subsystem() {
         }
     }
 
+    /**
+     * Target a position for the drivetrain using motion magic.
+     * Caveat: There are many possible positions for a given distance traveled on both sides.
+     * This function should not be used to travel to a far away position, as no correction
+     * is applied to ensure the desired curvature and it is not guaranteed that the motion
+     * profile for each side will match up.
+     *
+     * @param leftMeters The position for the left side.
+     * @param rightMeters The position for the right side.
+     */
     @Synchronized
     fun setPositionSetpoint(leftMeters: Double, rightMeters: Double) {
-        if (usesTalonPositionControl(currentState)) {
+        if (currentState.usesPositionControl) {
             leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters))
             rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters))
         } else {
@@ -473,9 +437,8 @@ object Drive : Subsystem() {
 
     @Synchronized
     private fun configureTalonsForVelocityControl() { // should further review cause im bad
-        if (!usesTalonVelocityControl(currentState)) {
-            // We entered a velocity control state.
-
+        if (!currentState.usesVelocityControl) {
+            // Not previously in velocity control.
             leftMasterTalon.set(ControlMode.Velocity, 0.0) // velocity  output value is in position change / 100ms
             leftMasterTalon.configNominalOutputForward(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
             leftMasterTalon.configNominalOutputReverse(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
@@ -508,8 +471,8 @@ object Drive : Subsystem() {
 
     @Synchronized
     private fun configureTalonsForPositionControl() {
-        if (!usesTalonPositionControl(currentState)) {
-            // We entered a position control state.
+        if (!currentState.usesPositionControl) {
+            // Not previously in position control.
             leftMasterTalon.configNominalOutputForward(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
             leftMasterTalon.configNominalOutputReverse(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
             leftMasterTalon.selectProfileSlot(0, Constants.Universal.TIMEOUT)
@@ -539,7 +502,13 @@ object Drive : Subsystem() {
         HelixEvents.addEvent("DRIVETRAIN", "Configured Talons for position control")
     }
 
-    fun updatePathFollowing(timestamp: Double, dT: Double) {
+    /**
+     * Updates the velocities of the robot based on those from the trajectory being followed
+     *
+     * @param timestamp The current time. Value originates from Timer.getFPGATimestamp.
+     * @param dT The interval since the last time that this function was called.
+     */
+    private fun updatePathFollowing(timestamp: Double, dT: Double) {
         trajCurTime = timestamp - trajStartTime
         autoOdometry.update(Rotation2d.fromDegrees(-angle), leftDistanceMeters, rightDistanceMeters)
 
@@ -554,6 +523,12 @@ object Drive : Subsystem() {
         lastWheelSpeeds = wheelSpeeds
     }
 
+    /**
+     * Checks if path following has reached the end of the path.
+     *
+     * @param timestamp The current time. Value originates from Timer.getFPGATimestamp.
+     * @return If path following is finished.
+     */
     fun isPathFinished(timestamp: Double): Boolean {
         trajCurTime = timestamp - trajStartTime
         return trajCurTime > trajDuration

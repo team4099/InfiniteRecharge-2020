@@ -9,22 +9,37 @@ import java.util.Date
 import java.util.UUID
 
 /**
- * Tracks startup and caught crash events, logging them to a file
- * while doesn't roll over
+ * Tracks startup and caught crash events, logging them to a file.
  */
-
 object CrashTracker {
     private val RUN_INSTANCE_UUID = UUID.randomUUID()
 
+    /**
+     * Log a crash.
+     *
+     * @param function A human readable name for the location where the crash occurred.
+     * @param throwable The caught throwable.
+     */
     fun logThrowableCrash(function: String, throwable: Throwable) {
         logMarker("Exception @ $function, ${throwable.message}", throwable)
     }
 
+    /**
+     * Log an event with no associated throwable.
+     *
+     * @param mark The text to log.
+     */
     fun logMarker(mark: String) {
         logMarker(mark, null)
     }
 
-    private fun logMarker(mark: String, exception: Throwable?) {
+    /**
+     * Write an event and associated throwable to a file.
+     *
+     * @param mark The text to log.
+     * @param throwable The caught throwable.
+     */
+    private fun logMarker(mark: String, throwable: Throwable?) {
         HelixEvents.addEvent("CRASH", mark)
         try {
             FileWriter(
@@ -39,9 +54,9 @@ object CrashTracker {
                         out.print(", ")
                         out.print(Date().toString())
 
-                        if (exception != null) {
+                        if (throwable != null) {
                             out.print(", ")
-                            exception.printStackTrace(out)
+                            throwable.printStackTrace(out)
                         }
 
                         out.println()

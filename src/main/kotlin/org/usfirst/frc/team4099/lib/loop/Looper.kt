@@ -1,20 +1,25 @@
 package org.usfirst.frc.team4099.lib.loop
 
+import com.team2363.logger.HelixEvents
 import edu.wpi.first.wpilibj.Notifier
 import edu.wpi.first.wpilibj.Timer
 import org.usfirst.frc.team4099.lib.util.CrashTrackingRunnable
 
+/**
+ * Calls multiple [Loop] objects at a target interval.
+ *
+ * @param name A human readable name for this looper.
+ * @param targetDt The target time (in seconds) between iterations of the [Loop]s.
+ */
 open class Looper(private val name: String, val targetDt: Double) {
     // define the thread (runnable) that will be repeated continuously
-    private val runnable = object : CrashTrackingRunnable() {
+    private val runnable = object : CrashTrackingRunnable("Looper $name") {
         override fun runCrashTracked() {
             synchronized(taskRunningLock) {
                 if (running) {
                     val now = Timer.getFPGATimestamp()
-                    for (loop in loops) {
-                        loop.onLoop(now, dt)
-                    }
                     dt = now - timestamp
+                    loops.forEach { it.onLoop(timestamp, dt) }
                     timestamp = now
                 }
             }
@@ -32,6 +37,11 @@ open class Looper(private val name: String, val targetDt: Double) {
     var dt = 0.0
         private set
 
+    /**
+     * Add a loop to the collection of [Loop]s
+     *
+     * @param loop The loop to add.
+     */
     @Synchronized
     fun register(loop: Loop) {
         synchronized(taskRunningLock) {
@@ -39,15 +49,16 @@ open class Looper(private val name: String, val targetDt: Double) {
         }
     }
 
+    /**
+     * Start the looper.
+     */
     @Synchronized
     fun start() {
         if (!running) {
-            println("Starting looper: $name")
+            HelixEvents.addEvent("LOOPER $name", "Starting looper")
             synchronized(taskRunningLock) {
                 timestamp = Timer.getFPGATimestamp()
-                for (loop in loops) {
-                    loop.onStart(timestamp)
-                }
+                loops.forEach { it.onStart(timestamp) }
 
                 running = true
             }
@@ -55,20 +66,20 @@ open class Looper(private val name: String, val targetDt: Double) {
         }
     }
 
+    /**
+     * Stop the looper.
+     */
     @Synchronized
     open fun stop() {
         if (running) {
-            println("Stopping looper: $name")
+            HelixEvents.addEvent("LOOPER $name", "Stopping looper")
             notifier.stop()
 
             synchronized(taskRunningLock) {
                 running = false
                 timestamp = Timer.getFPGATimestamp()
 
-                for (loop in loops) {
-                    println("Stopping $loop") // give the loops a name
-                    loop.onStop(timestamp)
-                }
+                loops.forEach { it.onStop(timestamp) }
             }
         }
     }

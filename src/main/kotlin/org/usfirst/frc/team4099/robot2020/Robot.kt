@@ -21,8 +21,8 @@ import org.usfirst.frc.team4099.robot2020.subsystems.Drive
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
 
-    val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
-    val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
+    private val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
+    private val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
 
     init {
         PathStore // Invoke path store to initialize it and generate the contained trajectories
@@ -78,8 +78,7 @@ object Robot : TimedRobot() {
             enabledLooper.start() // start EnabledLooper
             Drive.zeroSensors()
 
-            autoModeExecuter = AutoModeExecuter()
-            autoModeExecuter.autoMode = DashboardConfigurator.getSelectedAutoMode()
+            autoModeExecuter = AutoModeExecuter(DashboardConfigurator.getSelectedAutoMode())
             autoModeExecuter.start()
             HelixEvents.addEvent("ROBOT", "Autonomous Enabled")
         } catch (t: Throwable) {

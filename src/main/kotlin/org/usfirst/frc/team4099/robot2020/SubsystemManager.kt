@@ -8,16 +8,16 @@ object SubsystemManager {
     val subsystems = mutableListOf<Subsystem>()
     val enabledLoop = object : Loop {
         override fun onStart(timestamp: Double) {
-            subsystems.forEach { it.loop.onStart(timestamp) }
+            subsystems.forEach { it.onStart(timestamp) }
         }
 
         override fun onLoop(timestamp: Double, dT: Double) {
-            subsystems.forEach { it.loop.onLoop(timestamp, dT) }
+            subsystems.forEach { it.onLoop(timestamp, dT) }
             outputTelemetry()
         }
 
         override fun onStop(timestamp: Double) {
-            subsystems.forEach { it.loop.onStop(timestamp) }
+            subsystems.forEach { it.onStop(timestamp) }
         }
     }
 
@@ -44,9 +44,5 @@ object SubsystemManager {
     fun outputTelemetry() {
         subsystems.forEach { it.outputTelemetry() }
         HelixLogger.saveLogs()
-    }
-
-    fun stop() {
-        subsystems.forEach { it.stop() }
     }
 }
