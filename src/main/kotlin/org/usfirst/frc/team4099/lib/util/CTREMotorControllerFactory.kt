@@ -8,6 +8,9 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX
  * Creates CTRE motor controllers with consistent default configurations.
  */
 object CTREMotorControllerFactory {
+    /**
+     * Represents the configuration of a Talon SRX or Victor SPX
+     */
     @Suppress("MagicNumber")
     class Configuration {
         var enableLimitSwitch = false
@@ -65,26 +68,54 @@ object CTREMotorControllerFactory {
         slaveConfiguration.pulseWidthStatusFrameMs = 1000
     }
 
+    /**
+     * Create a Talon SRX with the default [Configuration].
+     *
+     * @param id The CAN ID of the Talon SRX to create.
+     */
     fun createDefaultTalon(id: Int): TalonSRX {
         return createTalon(id, defaultConfiguration)
     }
 
+    /**
+     * Create a Victor SPX with the default [Configuration].
+     *
+     * @param id The CAN ID of the Victor SPX to create.
+     */
     fun createDefaultVictor(id: Int): VictorSPX {
         return createVictor(id, defaultConfiguration)
     }
 
+    /**
+     * Create a Talon SRX that follows another motor controller.
+     *
+     * @param id The CAN ID of the Talon SRX to create.
+     * @param masterId The CAN ID of the motor controller to follow.
+     */
     fun createPermanentSlaveTalon(id: Int, masterId: Int): TalonSRX {
         val talon = createTalon(id, slaveConfiguration)
         talon.set(ControlMode.Follower, masterId.toDouble())
         return talon
     }
 
+    /**
+     * Create a Victor SPX that follows another motor controller.
+     *
+     * @param id The CAN ID of the Victor SPX to create.
+     * @param masterId The CAN ID of the motor controller to follow.
+     */
     fun createPermanentSlaveVictor(id: Int, masterId: Int): VictorSPX {
         val victor = createVictor(id, slaveConfiguration)
         victor.set(ControlMode.Follower, masterId.toDouble())
         return victor
     }
 
+    /**
+     * Create a Talon SRX.
+     *
+     * @param id The CAN ID of the Talon SRX to create.
+     * @param config The [Configuration] to use for this motor controller.
+     */
     @Suppress("LongMethod")
     fun createTalon(id: Int, config: Configuration): TalonSRX {
         return LazyTalonSRX(id).apply {
@@ -170,6 +201,12 @@ object CTREMotorControllerFactory {
         }
     }
 
+    /**
+     * Create a Victor SPX.
+     *
+     * @param id The CAN ID of the Victor SPX to create.
+     * @param config The [Configuration] to use for this motor controller.
+     */
     fun createVictor(id: Int, config: Configuration): VictorSPX {
         return LazyVictorSPX(id).apply {
             configFactoryDefault(config.timeout)

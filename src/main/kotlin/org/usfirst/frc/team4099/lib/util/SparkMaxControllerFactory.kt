@@ -4,8 +4,15 @@ import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.ControlType
 import edu.wpi.first.wpilibj.Timer
+import org.usfirst.frc.team4099.lib.util.CTREMotorControllerFactory.Configuration
 
+/**
+ * Create Spark Max objects with consistent default configurations.
+ */
 object SparkMaxControllerFactory {
+    /**
+     * Represents the configuration of a Spark Max
+     */
     @Suppress("MagicNumber")
     class Configuration {
         var idleMode = CANSparkMax.IdleMode.kCoast
@@ -31,16 +38,33 @@ object SparkMaxControllerFactory {
         slaveConfiguration.statusFrame2RateMs = 1000
     }
 
+    /**
+     * Create a Spark Max with the default [Configuration]
+     *
+     * @param id The CAN ID of the Spark Max to create.
+     */
     fun createDefaultSparkMax(id: Int): LazySparkMax {
         return createSparkMax(id, defaultConfiguration)
     }
 
+    /**
+     * Create a Spark Max following another Spark Max.
+     *
+     * @param id The CAN ID of the Spark Max to create.
+     * @param master The CAN ID of the Spark Max to follow.
+     */
     fun createPermanentSlaveSparkMax(id: Int, master: CANSparkMax): LazySparkMax {
         val sparkMax: LazySparkMax = createSparkMax(id, slaveConfiguration)
         sparkMax.follow(master)
         return sparkMax
     }
 
+    /**
+     * Create a Spark Max.
+     *
+     * @param id The CAN ID of the Spark Max to create.
+     * @param config The [Configuration] to use for this motor controller.
+     */
     fun createSparkMax(id: Int, config: Configuration): LazySparkMax {
         // Apparently to wait for CAN bus bandwidth to clear up
         Timer.delay(0.25)
