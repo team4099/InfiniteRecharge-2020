@@ -76,10 +76,10 @@ interface GenericSmartMotorController {
 
     var idleMode: IdleMode
 
-    var sensorPhase: Boolean
+    var sensorAgreesWithInversion: Boolean
     var inverted: InvertType
 
-    val timeout: Double
+    val timeout: Int
 
     var openLoopRampSecs: Double
     var closedLoopRampSecs: Double
@@ -96,16 +96,16 @@ interface GenericSmartMotorController {
 
     // TODO: voltage measurement filter
 
-    val busVoltage: Double
-    val motorOutputPercent: Double
-    val motorOutputVoltage: Double
+    val inputVoltage: Double
+    val motorOutput: Double
+    val motorOutputVolts: Double
 
     // TODO: Determine if we ever want to use different encoders for different PID slots
     var selectedEncoder: EncoderType
 
     // TODO: figure out absolute versions of these
-    val encoderPPR: Double
-    val encoderToUnits: Double
+    var encoderPPR: Double
+    var encoderToUnits: Double
 
     var encoderPosition: Double
     val encoderVelocity: Double
@@ -122,15 +122,29 @@ interface GenericSmartMotorController {
     var useForwardSoftLimit: Boolean
     var useReverseSoftLimit: Boolean
 
-    var allowableClosedLoopError: Double
-    var rawAllowableClosedLoopError: Int
+    var allowableVelocityError: Double
+    var rawAllowableVelocityError: Int
 
-    var maxIntegralAccumulator: Double
-    var currIntegralAccumulator: Double
+    var allowablePositionError: Double
+    var rawAllowablePositionError: Int
 
-    var closedLoopPeakOutput: Double
+    var maxVelocityIntegralAccumulator: Double
+    var rawMaxVelocityIntegralAccumulator: Int
 
-    var closedLoopTarget: Double
+    var positionIntegralAccumulator: Double
+    var rawMaxPositionIntegralAccumulator: Int
+
+    val currIntegralAccumulator: Double
+    val rawCurrIntegralAccumulator: Int
+
+    var velocityPeakOutput: Double
+    var positionPeakOutput: Double
+
+    val velocityTarget: Double
+    val rawVelocityTarget: Int
+
+    val positionTarget: Double
+    val rawPositionTarget: Int
 
     var motionCruiseVelocity: Double
     var rawMotionCruiseVelocity: Int
@@ -149,22 +163,42 @@ interface GenericSmartMotorController {
     var peakCurrentDurationMs: Int
 
     fun set(mode: ControlMode, outputValue: Double)
-    fun set(mode: ControlMode, outputValue: Double, feedForward: Double)
+    fun setRaw(mode: ControlMode, outputValue: Double)
 
-    fun configFactoryDefault()
+    fun setVelocityArbFeedforward(velocity: Double, feedForward: Double)
+    fun setRawVelocityArbFeedforward(velocity: Double, feedForward: Double)
+
+    fun resetToFactoryDefault()
     fun burnFlash()
 
     fun setControlFramePeriod(frame: ControlFrame, periodMs: Int)
     fun setStatusFramePeriod(frame: StatusFrame, periodMs: Int)
 
-    fun getControlFramePeriod(frame: ControlFrame): Int
-    fun getStatusFramePeriod(frame: StatusFrame): Int
-
     fun setForwardLimitSwitch(source: LimitSwitchSource, normal: LimitSwitchNormal)
     fun setReverseLimitSwitch(source: LimitSwitchSource, normal: LimitSwitchNormal)
 
     @SuppressWarnings("LongParameterList")
-    fun setPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
+    fun setVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
+    @SuppressWarnings("LongParameterList")
+    fun setRawVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
+
+    @SuppressWarnings("LongParameterList")
+    fun setPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
+    @SuppressWarnings("LongParameterList")
+    fun setRawPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
+
     @SuppressWarnings("LongParameterList")
     fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
+
+    fun rawToPosition(raw: Int): Double {
+        return raw / encoderPPR / encoderToUnits
+    }
+
+    fun positionToRaw(units: Double): Int {
+        return (units * encoderPPR * encoderToUnits).toInt()
+    }
+
+    fun rawToVelocity(raw: Int): Double
+
+    fun velocityToRaw(units: Double): Int
 }
