@@ -1,6 +1,13 @@
 package org.usfirst.frc.team4099.lib.util
 
-import com.ctre.phoenix.motorcontrol.*
+import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource
+import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource
+import com.ctre.phoenix.motorcontrol.StatusFrame
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
 

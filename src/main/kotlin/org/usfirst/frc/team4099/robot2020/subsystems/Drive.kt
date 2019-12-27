@@ -25,7 +25,10 @@ import org.usfirst.frc.team4099.lib.subsystem.Subsystem
 import org.usfirst.frc.team4099.lib.util.CTREMotorControllerFactory
 import org.usfirst.frc.team4099.lib.util.around
 import org.usfirst.frc.team4099.robot2020.config.Constants
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.ln
+import kotlin.math.max
+import kotlin.math.sin
 
 object Drive : Subsystem() {
     private val rightMasterTalon: TalonSRX
@@ -44,8 +47,6 @@ object Drive : Subsystem() {
     private var trajDuration = 0.0
     private var trajCurTime = 0.0
     private var trajStartTime = 0.0
-    private var lastLeftError = 0.0
-    private var lastRightError = 0.0
 
     private var leftTargetVel = 0.0
     private var rightTargetVel = 0.0
@@ -129,6 +130,7 @@ object Drive : Subsystem() {
         masterConfig.feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS
         masterConfig.sensorPhase = true
         masterConfig.enableVoltageCompensation = true
+        masterConfig.voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL
         masterConfig.neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND
         masterConfig.velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms
         masterConfig.voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP
@@ -372,7 +374,7 @@ object Drive : Subsystem() {
             leftTargetVel = metersPerSecondToNative(leftMetersPerSec)
             rightTargetVel = metersPerSecondToNative(rightMetersPerSec)
 
-            // Calculate feed forward values based on the desired state
+            // Calculate feed forward values based on the desired state.
             // kV and kA values come from characterizing the drivetrain using
             // the WPILib characterization suite.
             val leftFeedForward: Double = if (leftMetersPerSec > 0) {

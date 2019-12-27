@@ -27,6 +27,8 @@ object SparkMaxControllerFactory {
 
         var enableVoltageCompensation = false
         var nominalVoltage = 12.0
+
+        var delayBeforeCreation = 0.25
     }
 
     private val defaultConfiguration = Configuration()
@@ -67,7 +69,7 @@ object SparkMaxControllerFactory {
      */
     fun createSparkMax(id: Int, config: Configuration): LazySparkMax {
         // Apparently to wait for CAN bus bandwidth to clear up
-        Timer.delay(0.25)
+        Timer.delay(config.delayBeforeCreation)
 
         return LazySparkMax(id).apply {
             set(ControlType.kDutyCycle, 0.0)
@@ -80,7 +82,8 @@ object SparkMaxControllerFactory {
 
             idleMode = config.idleMode
             inverted = config.inverted
-            openLoopRampRate = config.openLoopRampRate //assumes same ramp rate for closed and open loop
+
+            openLoopRampRate = config.openLoopRampRate
             closedLoopRampRate = config.closedLoopRampRate
 
             if (config.enableVoltageCompensation) {

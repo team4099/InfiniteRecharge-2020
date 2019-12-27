@@ -47,6 +47,7 @@ interface GenericSmartMotorController {
         SECONDARY_PID
     }
 
+    @SuppressWarnings("MagicNumber")
     enum class VelocityMeasPeriod(periodMs: Int) {
         MS_1(1),
         MS_2(2),
@@ -162,7 +163,8 @@ interface GenericSmartMotorController {
     fun setForwardLimitSwitch(source: LimitSwitchSource, normal: LimitSwitchNormal)
     fun setReverseLimitSwitch(source: LimitSwitchSource, normal: LimitSwitchNormal)
 
+    @SuppressWarnings("LongParameterList")
     fun setPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
+    @SuppressWarnings("LongParameterList")
     fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
-
 }
