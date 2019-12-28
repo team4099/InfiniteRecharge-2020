@@ -220,6 +220,7 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Victor SPX to create.
      * @param config The [Configuration] to use for this motor controller.
      */
+    @Suppress("LongMethod")
     fun createVictor(id: Int, config: Configuration): VictorSPX {
         return LazyVictorSPX(id).apply {
             configFactoryDefault(config.timeout)

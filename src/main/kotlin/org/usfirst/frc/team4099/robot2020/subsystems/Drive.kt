@@ -146,7 +146,6 @@ object Drive : Subsystem() {
         masterConfig.motionMagicAcceleration =
             metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
 
-
         rightMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
         leftMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
 

@@ -34,7 +34,7 @@ object Robot : TimedRobot() {
 
     init {
         val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
-            (i, pin) ->if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
+            (i, pin) -> if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
         }.sum()
         robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(robotId, Constants.Tuning.RobotName.COMPETITION)
 
