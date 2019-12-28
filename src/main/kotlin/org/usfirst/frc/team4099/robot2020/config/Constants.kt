@@ -5,8 +5,25 @@ package org.usfirst.frc.team4099.robot2020.config
  */
 object Constants {
     object Universal {
-        const val TIMEOUT = 0
+        const val CTRE_CONFIG_TIMEOUT = 0
         const val EPSILON = 1E-9
+    }
+
+    object Tuning {
+        const val TUNING_TOGGLE_PIN = 0
+        val ROBOT_ID_PINS = 1..2
+
+        enum class RobotName {
+            COMPETITION,
+            PRACTICE,
+            MULE
+        }
+
+        val ROBOT_ID_MAP = mapOf<Int, RobotName>(
+            0 to RobotName.COMPETITION,
+            1 to RobotName.PRACTICE,
+            2 to RobotName.MULE
+        )
     }
 
     object Drive {
@@ -29,7 +46,8 @@ object Constants {
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
-        const val NATIVE_TO_REVS = 23632.67879
+        const val ENCODER_RESOLUTION = 2048
+        const val NATIVE_UNITS_PER_REV = ENCODER_RESOLUTION / 0.08665966387
 
         const val WHEEL_DIAMETER_METERS = 0.1524
         const val WHEEL_TRACK_WIDTH_INCHES = 27.0

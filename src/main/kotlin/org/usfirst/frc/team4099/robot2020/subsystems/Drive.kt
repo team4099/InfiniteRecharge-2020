@@ -158,26 +158,26 @@ object Drive : Subsystem() {
         rightMasterTalon.configSelectedFeedbackSensor(
                 FeedbackDevice.CTRE_MagEncoder_Relative,
                 0,
-                Constants.Universal.TIMEOUT
+                Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         leftMasterTalon.configSelectedFeedbackSensor(
                 FeedbackDevice.CTRE_MagEncoder_Relative,
                 0,
-                Constants.Universal.TIMEOUT
+                Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         // TODO: SET CONVERSION FACTORS
 
-        leftMasterTalon.config_kP(0, Constants.Drive.Gains.LEFT_KP, Constants.Universal.TIMEOUT)
-        leftMasterTalon.config_kI(0, Constants.Drive.Gains.LEFT_KI, Constants.Universal.TIMEOUT)
-        leftMasterTalon.config_kD(0, Constants.Drive.Gains.LEFT_KD, Constants.Universal.TIMEOUT)
-        leftMasterTalon.config_kF(0, Constants.Drive.Gains.LEFT_KF, Constants.Universal.TIMEOUT)
+        leftMasterTalon.config_kP(0, Constants.Drive.Gains.LEFT_KP, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.config_kI(0, Constants.Drive.Gains.LEFT_KI, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.config_kD(0, Constants.Drive.Gains.LEFT_KD, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.config_kF(0, Constants.Drive.Gains.LEFT_KF, Constants.Universal.CTRE_CONFIG_TIMEOUT)
 
-        rightMasterTalon.config_kP(0, Constants.Drive.Gains.RIGHT_KP, Constants.Universal.TIMEOUT)
-        rightMasterTalon.config_kI(0, Constants.Drive.Gains.RIGHT_KI, Constants.Universal.TIMEOUT)
-        rightMasterTalon.config_kD(0, Constants.Drive.Gains.RIGHT_KD, Constants.Universal.TIMEOUT)
-        rightMasterTalon.config_kF(0, Constants.Drive.Gains.RIGHT_KF, Constants.Universal.TIMEOUT)
+        rightMasterTalon.config_kP(0, Constants.Drive.Gains.RIGHT_KP, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.config_kI(0, Constants.Drive.Gains.RIGHT_KI, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.config_kD(0, Constants.Drive.Gains.RIGHT_KD, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.config_kF(0, Constants.Drive.Gains.RIGHT_KF, Constants.Universal.CTRE_CONFIG_TIMEOUT)
 
         setOpenLoop(DriveSignal.NEUTRAL)
         zeroSensors()
@@ -252,8 +252,8 @@ object Drive : Subsystem() {
             HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
         }
 
-        rightMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.TIMEOUT)
-        leftMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.TIMEOUT)
+        rightMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
     }
 
     /**
@@ -265,8 +265,8 @@ object Drive : Subsystem() {
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
         if (currentState !== DriveControlState.OPEN_LOOP) {
-            leftMasterTalon.configNominalOutputForward(0.0, Constants.Universal.TIMEOUT)
-            rightMasterTalon.configNominalOutputForward(0.0, Constants.Universal.TIMEOUT)
+            leftMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+            rightMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
             currentState = DriveControlState.OPEN_LOOP
             HelixEvents.addEvent("DRIVETRAIN", "Entered open loop control")
         }
@@ -491,11 +491,11 @@ object Drive : Subsystem() {
     }
 
     private fun nativeToMeters(nativeUnits: Int): Double {
-        return nativeUnits * Constants.Drive.NATIVE_TO_REVS * Constants.Drive.WHEEL_DIAMETER_METERS * Math.PI
+        return (nativeUnits / Constants.Drive.NATIVE_UNITS_PER_REV) * Constants.Drive.WHEEL_DIAMETER_METERS * Math.PI
     }
 
     private fun metersToNative(meters: Double): Double {
-        return meters / (Constants.Drive.NATIVE_TO_REVS * Constants.Drive.WHEEL_DIAMETER_METERS * Math.PI)
+        return (meters * Constants.Drive.NATIVE_UNITS_PER_REV) / (Constants.Drive.WHEEL_DIAMETER_METERS * Math.PI)
     }
 
     private fun rpmToMetersPerSecond(rpm: Double): Double {

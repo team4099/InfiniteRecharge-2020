@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
+import org.usfirst.frc.team4099.robot2020.config.Constants
 
 /**
  * Creates CTRE motor controllers with consistent default configurations.
@@ -61,7 +62,7 @@ object CTREMotorControllerFactory {
         var motionMagicCruiseVelocity = 0
         var motionMagicAcceleration = 0
 
-        var timeout = 0
+        var timeout = Constants.Universal.CTRE_CONFIG_TIMEOUT
     }
 
     private val defaultConfiguration = Configuration()

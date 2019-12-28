@@ -3,6 +3,7 @@ package org.usfirst.frc.team4099.robot2020
 import com.team2363.logger.HelixEvents
 import com.team2363.logger.HelixLogger
 import edu.wpi.first.cameraserver.CameraServer
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.TimedRobot
 import org.usfirst.frc.team4099.lib.auto.AutoModeExecuter
@@ -17,6 +18,7 @@ import org.usfirst.frc.team4099.robot2020.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot2020.loops.FaultDetector
 import org.usfirst.frc.team4099.robot2020.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot2020.subsystems.Drive
+import kotlin.math.pow
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -24,7 +26,20 @@ object Robot : TimedRobot() {
     private val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
     private val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
 
+    private val tuningTogglePin = DigitalInput(Constants.Tuning.TUNING_TOGGLE_PIN)
+    val tuningEnabled: Boolean
+        get() = tuningTogglePin.get()
+
+    val robotName: Constants.Tuning.RobotName
+
     init {
+        var robotId = 0
+        for ((i, pin) in Constants.Tuning.ROBOT_ID_PINS.withIndex()) {
+            robotId += if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
+        }
+
+        robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(robotId, Constants.Tuning.RobotName.COMPETITION)
+
         PathStore // Invoke path store to initialize it and generate the contained trajectories
 
         HelixEvents.addEvent("ROBOT", "Robot Construction")
