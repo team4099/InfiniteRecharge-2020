@@ -15,10 +15,24 @@ fun Double.around(around: Double, tolerance: Double): Boolean {
     return abs(this - around) < tolerance
 }
 
+/**
+ * Constrains this Double between the given bounds.
+ *
+ * @param lowerBound The lower bound of this Double's range.
+ * @param upperBound The upper bound of this Double's range.
+ * @return Return this Double if it is in the range otherwise return [lowerBound] or [upperBound].
+ */
 fun Double.limit(lowerBound: Double, upperBound: Double): Double {
     return min(upperBound, max(lowerBound, this))
 }
 
+/**
+ * Constrains this Int between the given bounds.
+ *
+ * @param lowerBound The lower bound of this Int's range.
+ * @param upperBound The upper bound of this Int's range.
+ * @return Return this Int if it is in the range otherwise return [lowerBound] or [upperBound].
+ */
 fun Int.limit(lowerBound: Int, upperBound: Int): Int {
     return min(upperBound, max(lowerBound, this))
 }
