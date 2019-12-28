@@ -31,7 +31,6 @@ object CTREMotorControllerFactory {
 
         var maxOutputVoltage = 12.0
         var nominalVoltage = 0.0
-        var nominalClosedLoopVoltage = 12.0
 
         var neutralMode = NeutralMode.Coast
         var neutralDeadband = 0.04
@@ -58,6 +57,9 @@ object CTREMotorControllerFactory {
 
         var voltageCompensationRampRate = 0.0
         var voltageRampRate = 0.0
+
+        var motionMagicCruiseVelocity = 0
+        var motionMagicAcceleration = 0
 
         var timeout = 0
     }
@@ -180,6 +182,9 @@ object CTREMotorControllerFactory {
 
             configNeutralDeadband(config.neutralDeadband, config.timeout)
 
+            configMotionCruiseVelocity(config.motionMagicCruiseVelocity, config.timeout)
+            configMotionAcceleration(config.motionMagicAcceleration, config.timeout)
+
             setStatusFramePeriod(
                     StatusFrameEnhanced.Status_1_General,
                     config.generalStatusFrameRateMs,
@@ -262,6 +267,9 @@ object CTREMotorControllerFactory {
             configVoltageCompSaturation(config.voltageCompensationLevel, config.timeout)
 
             configNeutralDeadband(config.neutralDeadband, config.timeout)
+
+            configMotionCruiseVelocity(config.motionMagicCruiseVelocity, config.timeout)
+            configMotionAcceleration(config.motionMagicAcceleration, config.timeout)
 
             setStatusFramePeriod(
                     StatusFrame.Status_1_General,

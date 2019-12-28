@@ -71,7 +71,7 @@ object Drive : Subsystem() {
             trajDuration = value.totalTimeSeconds
             trajStartTime = Timer.getFPGATimestamp()
 
-            configureTalonsForVelocityControl()
+            enterVelocityClosedLoop()
             zeroSensors()
             val initialSample = value.sample(0.0)
             autoOdometry.resetPosition(initialSample.poseMeters, Rotation2d.fromDegrees(-angle))
@@ -84,7 +84,7 @@ object Drive : Subsystem() {
             )
 
             currentState = DriveControlState.PATH_FOLLOWING
-            HelixEvents.addEvent("DRIVETRAIN", "Path following")
+            HelixEvents.addEvent("DRIVETRAIN", "Begin path following")
 
             field = value
         }
@@ -128,14 +128,24 @@ object Drive : Subsystem() {
     init {
         val masterConfig = CTREMotorControllerFactory.Configuration()
         masterConfig.feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS
+
         masterConfig.sensorPhase = true
         masterConfig.enableVoltageCompensation = true
+
         masterConfig.voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL
+
         masterConfig.neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND
+
         masterConfig.velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms
         masterConfig.voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP
+
         masterConfig.enableCurrentLimit = true
         masterConfig.currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT
+
+        masterConfig.motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt()
+        masterConfig.motionMagicAcceleration =
+            metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
+
 
         rightMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
         leftMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
@@ -370,49 +380,48 @@ object Drive : Subsystem() {
         leftMetersPerSecSq: Double,
         rightMetersPerSecSq: Double
     ) {
-        if (currentState.usesVelocityControl) {
-            leftTargetVel = metersPerSecondToNative(leftMetersPerSec)
-            rightTargetVel = metersPerSecondToNative(rightMetersPerSec)
-
-            // Calculate feed forward values based on the desired state.
-            // kV and kA values come from characterizing the drivetrain using
-            // the WPILib characterization suite.
-            val leftFeedForward: Double = if (leftMetersPerSec > 0) {
-                Constants.Drive.LEFT_KV_FORWARD * leftMetersPerSec +
-                        Constants.Drive.LEFT_KA_FORWARD * leftMetersPerSecSq +
-                        Constants.Drive.LEFT_V_INTERCEPT_FORWARD
-            } else {
-                Constants.Drive.LEFT_KV_REVERSE * leftMetersPerSec +
-                        Constants.Drive.LEFT_KA_REVERSE * leftMetersPerSecSq +
-                        Constants.Drive.LEFT_V_INTERCEPT_REVERSE
-            }
-            val rightFeedForward: Double = if (rightMetersPerSec > 0) {
-                Constants.Drive.RIGHT_KV_FORWARD * rightMetersPerSec +
-                        Constants.Drive.RIGHT_KA_FORWARD * rightMetersPerSecSq +
-                        Constants.Drive.RIGHT_V_INTERCEPT_FORWARD
-            } else {
-                Constants.Drive.RIGHT_KV_REVERSE * rightMetersPerSec +
-                        Constants.Drive.RIGHT_KA_REVERSE * rightMetersPerSecSq +
-                        Constants.Drive.RIGHT_V_INTERCEPT_REVERSE
-            }
-
-            leftMasterTalon.set(
-                    ControlMode.Velocity,
-                    leftTargetVel,
-                    DemandType.ArbitraryFeedForward,
-                    leftFeedForward
-            )
-            rightMasterTalon.set(
-                    ControlMode.Velocity,
-                    rightTargetVel,
-                    DemandType.ArbitraryFeedForward,
-                    rightFeedForward
-            )
-        } else {
-            configureTalonsForVelocityControl()
+        if (!currentState.usesVelocityControl) {
+            // Not previously in velocity control.
+            enterVelocityClosedLoop()
             currentState = DriveControlState.VELOCITY_SETPOINT
-            setVelocitySetpoint(leftMetersPerSec, rightMetersPerSec, leftMetersPerSecSq, rightMetersPerSecSq)
         }
+        leftTargetVel = metersPerSecondToNative(leftMetersPerSec)
+        rightTargetVel = metersPerSecondToNative(rightMetersPerSec)
+
+        // Calculate feed forward values based on the desired state.
+        // kV and kA values come from characterizing the drivetrain using
+        // the WPILib characterization suite.
+        val leftFeedForward: Double = if (leftMetersPerSec > 0) {
+            Constants.Drive.LEFT_KV_FORWARD * leftMetersPerSec +
+                Constants.Drive.LEFT_KA_FORWARD * leftMetersPerSecSq +
+                Constants.Drive.LEFT_V_INTERCEPT_FORWARD
+        } else {
+            Constants.Drive.LEFT_KV_REVERSE * leftMetersPerSec +
+                Constants.Drive.LEFT_KA_REVERSE * leftMetersPerSecSq +
+                Constants.Drive.LEFT_V_INTERCEPT_REVERSE
+        }
+        val rightFeedForward: Double = if (rightMetersPerSec > 0) {
+            Constants.Drive.RIGHT_KV_FORWARD * rightMetersPerSec +
+                Constants.Drive.RIGHT_KA_FORWARD * rightMetersPerSecSq +
+                Constants.Drive.RIGHT_V_INTERCEPT_FORWARD
+        } else {
+            Constants.Drive.RIGHT_KV_REVERSE * rightMetersPerSec +
+                Constants.Drive.RIGHT_KA_REVERSE * rightMetersPerSecSq +
+                Constants.Drive.RIGHT_V_INTERCEPT_REVERSE
+        }
+
+        leftMasterTalon.set(
+            ControlMode.Velocity,
+            leftTargetVel,
+            DemandType.ArbitraryFeedForward,
+            leftFeedForward
+        )
+        rightMasterTalon.set(
+            ControlMode.Velocity,
+            rightTargetVel,
+            DemandType.ArbitraryFeedForward,
+            rightFeedForward
+        )
     }
 
     /**
@@ -427,81 +436,26 @@ object Drive : Subsystem() {
      */
     @Synchronized
     fun setPositionSetpoint(leftMeters: Double, rightMeters: Double) {
-        if (currentState.usesPositionControl) {
-            leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters))
-            rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters))
-        } else {
-            configureTalonsForPositionControl()
-            currentState = DriveControlState.MOTION_MAGIC
-            setPositionSetpoint(leftMeters, rightMeters)
-        }
-    }
-
-    @Synchronized
-    private fun configureTalonsForVelocityControl() { // should further review cause im bad
-        if (!currentState.usesVelocityControl) {
-            // Not previously in velocity control.
-            leftMasterTalon.set(ControlMode.Velocity, 0.0) // velocity  output value is in position change / 100ms
-            leftMasterTalon.configNominalOutputForward(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
-            leftMasterTalon.configNominalOutputReverse(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
-            leftMasterTalon.selectProfileSlot(0, Constants.Universal.TIMEOUT)
-            leftMasterTalon.configPeakOutputForward(Constants.Drive.AUTO_PEAK_OUTPUT, Constants.Universal.TIMEOUT)
-            leftMasterTalon.configPeakOutputReverse(
-                    Constants.Drive.AUTO_PEAK_OUTPUT * -1.0,
-                    Constants.Universal.TIMEOUT
-            )
-
-            rightMasterTalon.set(ControlMode.Velocity, 0.0) // velocity  output value is in position change / 100ms
-            rightMasterTalon.configNominalOutputForward(
-                    Constants.Drive.AUTO_NOMINAL_OUTPUT,
-                    Constants.Universal.TIMEOUT
-            )
-            rightMasterTalon.configNominalOutputReverse(
-                    Constants.Drive.AUTO_NOMINAL_OUTPUT,
-                    Constants.Universal.TIMEOUT
-            )
-            rightMasterTalon.selectProfileSlot(0, 0)
-            rightMasterTalon.configPeakOutputForward(Constants.Drive.AUTO_PEAK_OUTPUT, Constants.Universal.TIMEOUT)
-            rightMasterTalon.configPeakOutputReverse(
-                    Constants.Drive.AUTO_PEAK_OUTPUT * -1.0,
-                    Constants.Universal.TIMEOUT
-            )
-            brakeMode = NeutralMode.Brake
-        }
-        HelixEvents.addEvent("DRIVETRAIN", "Configured Talons for velocity control")
-    }
-
-    @Synchronized
-    private fun configureTalonsForPositionControl() {
         if (!currentState.usesPositionControl) {
             // Not previously in position control.
-            leftMasterTalon.configNominalOutputForward(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
-            leftMasterTalon.configNominalOutputReverse(Constants.Drive.AUTO_NOMINAL_OUTPUT, Constants.Universal.TIMEOUT)
-            leftMasterTalon.selectProfileSlot(0, Constants.Universal.TIMEOUT)
-            leftMasterTalon.configPeakOutputForward(Constants.Drive.AUTO_PEAK_OUTPUT, Constants.Universal.TIMEOUT)
-            leftMasterTalon.configPeakOutputReverse(
-                    Constants.Drive.AUTO_PEAK_OUTPUT * -1.0,
-                    Constants.Universal.TIMEOUT
-            )
-
-            rightMasterTalon.configNominalOutputForward(
-                    Constants.Drive.AUTO_NOMINAL_OUTPUT,
-                    Constants.Universal.TIMEOUT
-            )
-            rightMasterTalon.configNominalOutputReverse(
-                    Constants.Drive.AUTO_NOMINAL_OUTPUT,
-                    Constants.Universal.TIMEOUT
-            )
-            rightMasterTalon.selectProfileSlot(0, 0)
-            rightMasterTalon.configPeakOutputForward(Constants.Drive.AUTO_PEAK_OUTPUT, Constants.Universal.TIMEOUT)
-            rightMasterTalon.configPeakOutputReverse(
-                    Constants.Drive.AUTO_PEAK_OUTPUT * -1.0,
-                    Constants.Universal.TIMEOUT
-            )
-
-            brakeMode = NeutralMode.Brake
+            enterVelocityClosedLoop()
+            currentState = DriveControlState.MOTION_MAGIC
         }
-        HelixEvents.addEvent("DRIVETRAIN", "Configured Talons for position control")
+        leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters))
+        rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters))
+    }
+
+    /**
+     * Sets Talon PID slot for velocity control modes (velocity setpoint,
+     * motion magic, path following).
+     */
+    @Synchronized
+    private fun enterVelocityClosedLoop() {
+        leftMasterTalon.selectProfileSlot(0, 0)
+        rightMasterTalon.selectProfileSlot(0, 0)
+
+        brakeMode = NeutralMode.Brake
+        HelixEvents.addEvent("DRIVETRAIN", "Entered a closed loop state.")
     }
 
     /**
