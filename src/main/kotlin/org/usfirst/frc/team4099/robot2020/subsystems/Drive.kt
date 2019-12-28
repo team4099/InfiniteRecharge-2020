@@ -392,22 +392,22 @@ object Drive : Subsystem() {
         // kV and kA values come from characterizing the drivetrain using
         // the WPILib characterization suite.
         val leftFeedForward: Double = if (leftMetersPerSec > 0) {
-            Constants.Drive.LEFT_KV_FORWARD * leftMetersPerSec +
-                Constants.Drive.LEFT_KA_FORWARD * leftMetersPerSecSq +
-                Constants.Drive.LEFT_V_INTERCEPT_FORWARD
+            Constants.Drive.Characterization.LEFT_KV_FORWARD * leftMetersPerSec +
+                Constants.Drive.Characterization.LEFT_KA_FORWARD * leftMetersPerSecSq +
+                Constants.Drive.Characterization.LEFT_V_INTERCEPT_FORWARD
         } else {
-            Constants.Drive.LEFT_KV_REVERSE * leftMetersPerSec +
-                Constants.Drive.LEFT_KA_REVERSE * leftMetersPerSecSq +
-                Constants.Drive.LEFT_V_INTERCEPT_REVERSE
+            Constants.Drive.Characterization.LEFT_KV_REVERSE * leftMetersPerSec +
+                Constants.Drive.Characterization.LEFT_KA_REVERSE * leftMetersPerSecSq +
+                Constants.Drive.Characterization.LEFT_V_INTERCEPT_REVERSE
         }
         val rightFeedForward: Double = if (rightMetersPerSec > 0) {
-            Constants.Drive.RIGHT_KV_FORWARD * rightMetersPerSec +
-                Constants.Drive.RIGHT_KA_FORWARD * rightMetersPerSecSq +
-                Constants.Drive.RIGHT_V_INTERCEPT_FORWARD
+            Constants.Drive.Characterization.RIGHT_KV_FORWARD * rightMetersPerSec +
+                Constants.Drive.Characterization.RIGHT_KA_FORWARD * rightMetersPerSecSq +
+                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_FORWARD
         } else {
-            Constants.Drive.RIGHT_KV_REVERSE * rightMetersPerSec +
-                Constants.Drive.RIGHT_KA_REVERSE * rightMetersPerSecSq +
-                Constants.Drive.RIGHT_V_INTERCEPT_REVERSE
+            Constants.Drive.Characterization.RIGHT_KV_REVERSE * rightMetersPerSec +
+                Constants.Drive.Characterization.RIGHT_KA_REVERSE * rightMetersPerSecSq +
+                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_REVERSE
         }
 
         leftMasterTalon.set(
