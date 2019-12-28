@@ -33,11 +33,9 @@ object Robot : TimedRobot() {
     val robotName: Constants.Tuning.RobotName
 
     init {
-        var robotId = 0
-        for ((i, pin) in Constants.Tuning.ROBOT_ID_PINS.withIndex()) {
-            robotId += if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
-        }
-
+        val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
+            (i, pin) ->if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
+        }.sum()
         robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(robotId, Constants.Tuning.RobotName.COMPETITION)
 
         PathStore // Invoke path store to initialize it and generate the contained trajectories
