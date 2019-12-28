@@ -1,6 +1,8 @@
 package org.usfirst.frc.team4099.lib.util
 
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Determines if another value is near this Double.
@@ -11,4 +13,8 @@ import kotlin.math.abs
  */
 fun Double.around(around: Double, tolerance: Double): Boolean {
     return abs(this - around) < tolerance
+}
+
+fun Double.limit(lowerBound: Double, upperBound: Double): Double {
+    return min(upperBound, max(lowerBound, this))
 }
