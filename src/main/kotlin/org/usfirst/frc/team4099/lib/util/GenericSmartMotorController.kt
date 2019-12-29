@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4099.lib.util
 
+import kotlin.math.PI
+
 interface GenericSmartMotorController {
     enum class ControlMode {
         PERCENT_VBUS,
@@ -23,11 +25,12 @@ interface GenericSmartMotorController {
     enum class EncoderType {
         NONE,
         QUADRATURE,
+        EXTERNAL_QUADRATURE,
         ABSOLUTE_PWM,
         ABSOLUTE_ANALOG,
-        EXTERNAL_QUADRATURE,
-        EXTERNAL_ABSOLUTE_PWM,
-        EXTERNAL_ABSOLUTE_ANALOG
+        CAN_QUADRATURE,
+        CAN_ABSOLUTE_PWM,
+        CAN_ABSOLUTE_ANALOG
     }
 
     // TODO: Figure out what these actually are :/
@@ -104,7 +107,7 @@ interface GenericSmartMotorController {
     var selectedEncoder: EncoderType
 
     // TODO: figure out absolute versions of these
-    var encoderPPR: Double
+    var encoderPPR: Int
     var encoderToUnits: Double
 
     var encoderPosition: Double
@@ -122,35 +125,41 @@ interface GenericSmartMotorController {
     var useForwardSoftLimit: Boolean
     var useReverseSoftLimit: Boolean
 
+    var forwardSoftLimitValue: Double
+    var rawForwardSoftLimitValue: Double
+
+    var reverseSoftLimitValue: Double
+    var rawReverseSoftLimitValue: Double
+
     var allowableVelocityError: Double
-    var rawAllowableVelocityError: Int
+    var rawAllowableVelocityError: Double
 
     var allowablePositionError: Double
-    var rawAllowablePositionError: Int
+    var rawAllowablePositionError: Double
 
     var maxVelocityIntegralAccumulator: Double
-    var rawMaxVelocityIntegralAccumulator: Int
+    var rawMaxVelocityIntegralAccumulator: Double
 
     var positionIntegralAccumulator: Double
-    var rawMaxPositionIntegralAccumulator: Int
+    var rawMaxPositionIntegralAccumulator: Double
 
     val currIntegralAccumulator: Double
-    val rawCurrIntegralAccumulator: Int
+    val rawCurrIntegralAccumulator: Double
 
     var velocityPeakOutput: Double
     var positionPeakOutput: Double
 
     val velocityTarget: Double
-    val rawVelocityTarget: Int
+    val rawVelocityTarget: Double
 
     val positionTarget: Double
-    val rawPositionTarget: Int
+    val rawPositionTarget: Double
 
     var motionCruiseVelocity: Double
-    var rawMotionCruiseVelocity: Int
+    var rawMotionCruiseVelocity: Double
 
     var motionAcceleration: Double
-    var rawMotionAcceleration: Int
+    var rawMotionAcceleration: Double
 
     var motionSCurveStrength: Int
 
@@ -169,7 +178,7 @@ interface GenericSmartMotorController {
     fun setRawVelocityArbFeedforward(velocity: Double, feedForward: Double)
 
     fun resetToFactoryDefault()
-    fun burnFlash()
+    fun saveToFlash()
 
     fun setControlFramePeriod(frame: ControlFrame, periodMs: Int)
     fun setStatusFramePeriod(frame: StatusFrame, periodMs: Int)
@@ -190,15 +199,15 @@ interface GenericSmartMotorController {
     @SuppressWarnings("LongParameterList")
     fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
 
-    fun rawToPosition(raw: Int): Double {
-        return raw / encoderPPR / encoderToUnits
+    fun rawToPosition(raw: Double): Double {
+        return raw / encoderPPR / encoderToUnits * (2 * PI)
     }
 
-    fun positionToRaw(units: Double): Int {
-        return (units * encoderPPR * encoderToUnits).toInt()
+    fun positionToRaw(units: Double): Double {
+        return units * encoderPPR * encoderToUnits / (2 * PI)
     }
 
-    fun rawToVelocity(raw: Int): Double
+    fun rawToVelocity(raw: Double): Double
 
-    fun velocityToRaw(units: Double): Int
+    fun velocityToRaw(units: Double): Double
 }

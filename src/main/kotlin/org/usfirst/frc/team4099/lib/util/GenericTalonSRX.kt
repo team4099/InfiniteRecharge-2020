@@ -122,14 +122,14 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
                     super.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition)
                 GenericSmartMotorController.EncoderType.QUADRATURE ->
                     super.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder)
-                GenericSmartMotorController.EncoderType.EXTERNAL_ABSOLUTE_ANALOG -> {
+                GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_ANALOG -> {
                     // TODO: make this actually pick the right absolute sensor
                     super.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0)
                 }
-                GenericSmartMotorController.EncoderType.EXTERNAL_QUADRATURE -> {
+                GenericSmartMotorController.EncoderType.CAN_QUADRATURE -> {
                     super.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0)
                 }
-                GenericSmartMotorController.EncoderType.EXTERNAL_ABSOLUTE_PWM -> {
+                GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_PWM -> {
                     super.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0)
                 }
                 GenericSmartMotorController.EncoderType.NONE -> {
@@ -138,19 +138,19 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             field = value
         }
 
-    override var encoderPPR: Double = 1.0
+    override var encoderPPR: Int = 1
 
     override var encoderToUnits: Double = 1.0
 
     override var encoderPosition: Double = 0.0
-        get() = rawToPosition(selectedSensorPosition)
+        get() = rawToPosition(selectedSensorPosition.toDouble())
         set(value) {
-            selectedSensorPosition = positionToRaw(value)
+            selectedSensorPosition = positionToRaw(value).toInt()
             field = positionToRaw(value).toDouble()
         }
 
     override val encoderVelocity: Double
-        get() = rawToVelocity(selectedSensorVelocity)
+        get() = rawToVelocity(selectedSensorVelocity.toDouble())
 
     override var rawEncoderPosition: Double = 0.0
         get() = selectedSensorPosition.toDouble()
@@ -217,62 +217,83 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             field = value
         }
 
-    override var allowableVelocityError: Double = 0.0
+    override var forwardSoftLimitValue: Double
+        get() = rawToPosition(rawForwardSoftLimitValue)
+        set(value) {
+            rawForwardSoftLimitValue = positionToRaw(value)
+        }
+
+    override var rawForwardSoftLimitValue: Double = 0.0
+        set(value) {
+            configForwardSoftLimitThreshold(value.toInt(), timeout)
+            field = value
+        }
+
+    override var reverseSoftLimitValue: Double
+        get() = rawToPosition(rawReverseSoftLimitValue)
+        set(value) {
+            rawReverseSoftLimitValue = positionToRaw(value)
+        }
+
+    override var rawReverseSoftLimitValue: Double = 0.0
+        set(value) {
+            configReverseSoftLimitThreshold(value.toInt(), timeout)
+            field = value
+        }
+
+    override var allowableVelocityError: Double
         get() = rawToVelocity(rawAllowableVelocityError)
         set(value) {
             rawAllowableVelocityError = velocityToRaw(value)
-            field = value
         }
 
-    override var rawAllowableVelocityError: Int = 0
+    override var rawAllowableVelocityError: Double = 0.0
         set(value) {
-            configAllowableClosedloopError(0, value, timeout)
+            configAllowableClosedloopError(0, value.toInt(), timeout)
             field = value
         }
 
-    override var allowablePositionError: Double = 0.0
+    override var allowablePositionError: Double
         get() = rawToPosition(rawAllowablePositionError)
         set(value) {
             rawAllowablePositionError = positionToRaw(value)
-            field = value
         }
 
-    override var rawAllowablePositionError: Int = 0
+    override var rawAllowablePositionError: Double = 0.0
         set(value) {
-            configAllowableClosedloopError(1, value, timeout)
+            configAllowableClosedloopError(1, value.toInt(), timeout)
             field = value
         }
 
-    override var maxVelocityIntegralAccumulator: Double = 0.0
+    override var maxVelocityIntegralAccumulator: Double
         get() = rawToVelocity(rawMaxVelocityIntegralAccumulator)
         set(value) {
             rawMaxVelocityIntegralAccumulator = velocityToRaw(value)
+        }
+
+    override var rawMaxVelocityIntegralAccumulator: Double = 0.0
+        set(value) {
+            configMaxIntegralAccumulator(0, value, timeout)
             field = value
         }
 
-    override var rawMaxVelocityIntegralAccumulator: Int = 0
-        set(value) {
-            configMaxIntegralAccumulator(0, value.toDouble(), timeout)
-            field = value
-        }
-    override var positionIntegralAccumulator: Double = 0.0
+    override var positionIntegralAccumulator: Double
         get() = rawToPosition(rawMaxPositionIntegralAccumulator)
         set(value) {
             rawMaxPositionIntegralAccumulator = positionToRaw(value)
-            field = value
         }
 
-    override var rawMaxPositionIntegralAccumulator: Int = 0
+    override var rawMaxPositionIntegralAccumulator: Double = 0.0
         set(value) {
-            configMaxIntegralAccumulator(1, value.toDouble(), timeout)
+            configMaxIntegralAccumulator(1, value, timeout)
             field = value
         }
 
     override val currIntegralAccumulator: Double
-        get() = rawToPosition(getIntegralAccumulator(0).toInt())
+        get() = rawToVelocity(getIntegralAccumulator(0))
 
-    override val rawCurrIntegralAccumulator: Int
-        get() = getIntegralAccumulator(0).toInt()
+    override val rawCurrIntegralAccumulator: Double
+        get() = getIntegralAccumulator(0)
 
     override var velocityPeakOutput: Double = 1.0
         set(value) {
@@ -287,16 +308,16 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
         }
 
     override val velocityTarget: Double
-        get() = rawToVelocity(getClosedLoopTarget(0).toInt())
+        get() = rawToVelocity(getClosedLoopTarget(0))
 
-    override val rawVelocityTarget: Int
-        get() = getClosedLoopTarget(0).toInt()
+    override val rawVelocityTarget: Double
+        get() = getClosedLoopTarget(0)
 
     override val positionTarget: Double
-        get() = rawToPosition(getClosedLoopTarget(1).toInt())
+        get() = rawToPosition(getClosedLoopTarget(1))
 
-    override val rawPositionTarget: Int
-        get() = getClosedLoopTarget(1).toInt()
+    override val rawPositionTarget: Double
+        get() = getClosedLoopTarget(1)
 
     override var motionCruiseVelocity: Double = 0.0
         get() = rawToVelocity(rawMotionCruiseVelocity)
@@ -305,9 +326,9 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             field = value
         }
 
-    override var rawMotionCruiseVelocity: Int = 0
+    override var rawMotionCruiseVelocity: Double = 0.0
         set(value) {
-            configMotionCruiseVelocity(value, timeout)
+            configMotionCruiseVelocity(value.toInt(), timeout)
             field = value
         }
 
@@ -318,9 +339,9 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             field = value
         }
 
-    override var rawMotionAcceleration: Int = 0
+    override var rawMotionAcceleration: Double = 0.0
         set(value) {
-            configMotionAcceleration(value, timeout)
+            configMotionAcceleration(value.toInt(), timeout)
             field = value
         }
 
@@ -365,11 +386,11 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             GenericSmartMotorController.ControlMode.PERCENT_VBUS ->
                 set(ControlMode.PercentOutput, outputValue)
             GenericSmartMotorController.ControlMode.VELOCITY ->
-                set(ControlMode.Velocity, velocityToRaw(outputValue).toDouble())
+                set(ControlMode.Velocity, velocityToRaw(outputValue))
             GenericSmartMotorController.ControlMode.POSITION ->
-                set(ControlMode.Position, positionToRaw(outputValue).toDouble())
+                set(ControlMode.Position, positionToRaw(outputValue))
             GenericSmartMotorController.ControlMode.PROFILED ->
-                set(ControlMode.MotionMagic, positionToRaw(outputValue).toDouble())
+                set(ControlMode.MotionMagic, positionToRaw(outputValue))
         }
     }
 
@@ -383,7 +404,7 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
     }
 
     override fun setVelocityArbFeedforward(velocity: Double, feedForward: Double) {
-        set(ControlMode.Velocity, velocityToRaw(velocity).toDouble(), DemandType.ArbitraryFeedForward, feedForward)
+        set(ControlMode.Velocity, velocityToRaw(velocity), DemandType.ArbitraryFeedForward, feedForward)
     }
 
     override fun setRawVelocityArbFeedforward(velocity: Double, feedForward: Double) {
@@ -394,7 +415,7 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
         configFactoryDefault(timeout)
     }
 
-    override fun burnFlash() {}
+    override fun saveToFlash() {}
 
     override fun setControlFramePeriod(frame: GenericSmartMotorController.ControlFrame, periodMs: Int) {
         when (frame) {
@@ -463,27 +484,21 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
     }
 
     override fun setVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        TODO("not implemented")
+        // TODO: Figure out real PID units and do conversion here
+        setRawVelocityPID(kP, kI, kD, kF, iZone)
     }
 
     override fun setRawVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        config_kP(0, kP, timeout)
-        config_kI(0, kI, timeout)
-        config_kD(0, kD, timeout)
-        config_kF(0, kF, timeout)
-        config_IntegralZone(0, iZone.toInt(), timeout)
+        setRawPID(0, kP, kI, kD, kF, iZone)
     }
 
     override fun setPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        TODO("not implemented")
+        // TODO: Figure out real PID units and do conversion here
+        setRawPositionPID(kP, kI, kD, kF, iZone)
     }
 
     override fun setRawPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        config_kP(1, kP, timeout)
-        config_kI(1, kI, timeout)
-        config_kD(1, kD, timeout)
-        config_kF(1, kF, timeout)
-        config_IntegralZone(1, iZone.toInt(), timeout)
+        setRawPID(1, kP, kI, kD, kF, iZone)
     }
 
     override fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
@@ -494,11 +509,11 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
         config_IntegralZone(slotId, iZone.toInt(), timeout)
     }
 
-    override fun rawToVelocity(raw: Int): Double {
+    override fun rawToVelocity(raw: Double): Double {
         return rawToPosition(raw) * 10
     }
 
-    override fun velocityToRaw(units: Double): Int {
+    override fun velocityToRaw(units: Double): Double {
         return positionToRaw(units) / 10
     }
 }
