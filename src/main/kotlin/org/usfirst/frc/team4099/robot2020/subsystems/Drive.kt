@@ -30,7 +30,7 @@ import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
 
-object Drive : Subsystem() {
+object Drive : Subsystem {
     private val rightMasterTalon: TalonSRX
     private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
             Constants.Drive.RIGHT_SLAVE_1_ID,
@@ -184,10 +184,12 @@ object Drive : Subsystem() {
 
     override fun checkSystem() {}
 
+    @Synchronized
     override fun onStart(timestamp: Double) {
         setOpenLoop(DriveSignal.NEUTRAL)
     }
 
+    @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
         synchronized(this@Drive) {
             when (currentState) {
@@ -199,17 +201,14 @@ object Drive : Subsystem() {
                 DriveControlState.PATH_FOLLOWING -> {
                     updatePathFollowing(timestamp, dT)
                 }
-                else -> {
-                    HelixEvents.addEvent("DRIVETRAIN", "Unexpected drive control state: $currentState")
-                }
+                DriveControlState.MOTION_MAGIC -> {}
             }
         }
     }
 
+    @Synchronized
     override fun onStop(timestamp: Double) {
-        synchronized(this) {
-            setOpenLoop(DriveSignal.NEUTRAL)
-        }
+        setOpenLoop(DriveSignal.NEUTRAL)
     }
 
     override fun registerLogging() {

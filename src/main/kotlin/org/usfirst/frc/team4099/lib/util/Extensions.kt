@@ -18,3 +18,7 @@ fun Double.around(around: Double, tolerance: Double): Boolean {
 fun Double.limit(lowerBound: Double, upperBound: Double): Double {
     return min(upperBound, max(lowerBound, this))
 }
+
+fun Int.limit(lowerBound: Int, upperBound: Int): Int {
+    return min(upperBound, max(lowerBound, this))
+}
