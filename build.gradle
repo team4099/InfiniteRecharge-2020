@@ -24,7 +24,7 @@ targetCompatibility = JavaVersion.VERSION_11
 
 def TEAM = 4099
 // do not change main class (does not run without it being Main
-def ROBOT_MAIN_CLASS = "org.usfirst.frc.team4099.robot.Main"
+def ROBOT_MAIN_CLASS = "com.team4099.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -79,8 +79,6 @@ dependencies {
     // We need to add the Kotlin stdlib in order to use most Kotlin language features.
     compile "org.jetbrains.kotlin:kotlin-stdlib"
 
-    // HelixLogger and HelixEvents
-    compile 'com.github.team4099:HelixUtilities:2020-SNAPSHOT'
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
 }
 
