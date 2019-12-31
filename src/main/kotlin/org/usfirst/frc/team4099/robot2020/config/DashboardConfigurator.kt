@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
  * Keeps the network tables keys in one spot and enforces autonomous mode
  * invariants.
  */
-object DashboardConfigurator: Loop {
+object DashboardConfigurator : Loop {
     /**
      * Enumerates possible starting positions for the robot.
      *
