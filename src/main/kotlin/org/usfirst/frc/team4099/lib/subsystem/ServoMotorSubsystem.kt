@@ -10,7 +10,7 @@ import org.usfirst.frc.team4099.lib.config.ServoMotorSubsystemConfig
 import org.usfirst.frc.team4099.lib.util.limit
 import kotlin.math.roundToInt
 
-abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig) : Subsystem {
+abstract class ServoMotorSubsystem(val config: ServoMotorSubsystemConfig) : Subsystem {
     init {
         updateMotionConstraints()
         updatePIDGains()
@@ -109,8 +109,8 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
     }
 
     override fun registerLogging() {
-        HelixLogger.addSource("${configuration.name} Position (${configuration.unitsName})") { position }
-        HelixLogger.addSource("${configuration.name} Velocity (${configuration.unitsName}/s)") { velocity }
+        HelixLogger.addSource("${config.name} Position (${config.unitsName})") { position }
+        HelixLogger.addSource("${config.name} Velocity (${config.unitsName}/s)") { velocity }
     }
 
     override fun onStart(timestamp: Double) {
@@ -130,7 +130,7 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
     }
 
     private fun applyPIDGains(gains: PIDGains) {
-        val timeout = configuration.masterMotorControllerConfiguration.timeout
+        val timeout = config.masterMotorControllerConfiguration.timeout
 
         masterMotorController.config_kP(gains.slotNumber, gains.kP, timeout)
         masterMotorController.config_kI(gains.slotNumber, gains.kI, timeout)
@@ -139,44 +139,44 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
     }
 
     fun updatePIDGains() {
-        applyPIDGains(configuration.velocityPIDGains)
-        applyPIDGains(configuration.positionPIDGains)
+        applyPIDGains(config.velocityPIDGains)
+        applyPIDGains(config.positionPIDGains)
 
-        HelixEvents.addEvent(configuration.name, "Updated PID gains")
+        HelixEvents.addEvent(config.name, "Updated PID gains")
     }
 
     fun updateMotionConstraints() {
         masterMotorController.configReverseSoftLimitEnable(
-            !configuration.motionConstraints.reverseSoftLimit.isNaN(),
-            configuration.masterMotorControllerConfiguration.timeout
+            !config.motionConstraints.reverseSoftLimit.isNaN(),
+            config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configReverseSoftLimitThreshold(
-            unitsToTicks(configuration.motionConstraints.reverseSoftLimit),
-            configuration.masterMotorControllerConfiguration.timeout
+            unitsToTicks(config.motionConstraints.reverseSoftLimit),
+            config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configForwardSoftLimitEnable(
-            !configuration.motionConstraints.forwardSoftLimit.isNaN(),
-            configuration.masterMotorControllerConfiguration.timeout
+            !config.motionConstraints.forwardSoftLimit.isNaN(),
+            config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configForwardSoftLimitThreshold(
-            unitsToTicks(configuration.motionConstraints.forwardSoftLimit),
-            configuration.masterMotorControllerConfiguration.timeout
+            unitsToTicks(config.motionConstraints.forwardSoftLimit),
+            config.masterMotorControllerConfiguration.timeout
         )
 
         masterMotorController.configMotionCruiseVelocity(
-            unitsPerSecondToTicksPer100ms(configuration.motionConstraints.cruiseVelocity),
-            configuration.masterMotorControllerConfiguration.timeout
+            unitsPerSecondToTicksPer100ms(config.motionConstraints.cruiseVelocity),
+            config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configMotionAcceleration(
-            unitsPerSecondToTicksPer100ms(configuration.motionConstraints.maximumAcceleration),
-            configuration.masterMotorControllerConfiguration.timeout
+            unitsPerSecondToTicksPer100ms(config.motionConstraints.maxAccel),
+            config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configMotionSCurveStrength(
-            configuration.motionConstraints.motionProfileCurveStrength,
-            configuration.masterMotorControllerConfiguration.timeout
+            config.motionConstraints.motionProfileCurveStrength,
+            config.masterMotorControllerConfiguration.timeout
         )
 
-        HelixEvents.addEvent(configuration.name, "Updated motion constraints")
+        HelixEvents.addEvent(config.name, "Updated motion constraints")
     }
 
     /**
@@ -185,9 +185,9 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
      */
     @Synchronized
     private fun enterVelocityClosedLoop() {
-        masterMotorController.selectProfileSlot(configuration.velocityPIDGains.slotNumber, 0)
+        masterMotorController.selectProfileSlot(config.velocityPIDGains.slotNumber, 0)
 
-        HelixEvents.addEvent(configuration.name, "Entered velocity closed loop")
+        HelixEvents.addEvent(config.name, "Entered velocity closed loop")
     }
 
     /**
@@ -195,31 +195,31 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
      */
     @Synchronized
     private fun enterPositionClosedLoop() {
-        masterMotorController.selectProfileSlot(configuration.positionPIDGains.slotNumber, 0)
+        masterMotorController.selectProfileSlot(config.positionPIDGains.slotNumber, 0)
 
-        HelixEvents.addEvent(configuration.name, "Entered position closed loop")
+        HelixEvents.addEvent(config.name, "Entered position closed loop")
     }
 
     protected fun ticksToUnits(ticks: Int): Double {
-        return ticks / configuration.ticksPerUnitDistance
+        return ticks / config.ticksPerUnitDistance
     }
 
     protected fun ticksToHomedUnits(ticks: Int): Double {
-        return ticksToUnits(ticks) + configuration.homePosition
+        return ticksToUnits(ticks) + config.homePosition
     }
 
     protected fun unitsToTicks(units: Double): Int {
-        return (units * configuration.ticksPerUnitDistance).roundToInt()
+        return (units * config.ticksPerUnitDistance).roundToInt()
     }
 
     protected fun homeAwareUnitsToTicks(units: Double): Int {
-        return unitsToTicks(units - configuration.homePosition)
+        return unitsToTicks(units - config.homePosition)
     }
 
     protected fun constrainPositionUnits(units: Double): Double {
         return units.limit(
-            configuration.motionConstraints.reverseSoftLimit,
-            configuration.motionConstraints.forwardSoftLimit
+            config.motionConstraints.reverseSoftLimit,
+            config.motionConstraints.forwardSoftLimit
         )
     }
 
@@ -233,8 +233,8 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
 
     protected fun constrainVelocityUnitsPerSecond(units: Double): Double {
         return units.limit(
-            -configuration.motionConstraints.cruiseVelocity,
-            configuration.motionConstraints.cruiseVelocity
+            -config.motionConstraints.cruiseVelocity,
+            config.motionConstraints.cruiseVelocity
         )
     }
 }
