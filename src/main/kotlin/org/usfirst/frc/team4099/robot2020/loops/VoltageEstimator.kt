@@ -8,11 +8,11 @@ import org.usfirst.frc.team4099.lib.loop.Loop
  * Constantly measures battery voltage before the match begins.
  */
 
-class VoltageEstimator : Loop {
+object VoltageEstimator : Loop {
     @get:Synchronized
     var averageVoltage = 12.0
         private set
-    private val weight = 15.0
+    private const val weight = 15.0
 
     init {
         HelixLogger.addSource("VoltageEstimator Avg. Disabled Voltage") { averageVoltage }
@@ -30,9 +30,5 @@ class VoltageEstimator : Loop {
 
     override fun onStop(timestamp: Double) {
         println("Robot enabled: last avg voltage: $averageVoltage")
-    }
-
-    companion object {
-        val instance = VoltageEstimator()
     }
 }

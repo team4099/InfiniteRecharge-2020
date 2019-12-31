@@ -2,7 +2,9 @@ package org.usfirst.frc.team4099.robot2020
 
 import com.team2363.logger.HelixLogger
 import org.usfirst.frc.team4099.lib.loop.Loop
+import org.usfirst.frc.team4099.lib.subsystem.ServoMotorSubsystem
 import org.usfirst.frc.team4099.lib.subsystem.Subsystem
+import org.usfirst.frc.team4099.robot2020.config.DashboardConfigurator
 
 object SubsystemManager {
     private val subsystems = mutableListOf<Subsystem>()
@@ -39,6 +41,8 @@ object SubsystemManager {
      */
     fun register(subsystem: Subsystem) {
         subsystem.registerLogging()
+        if (subsystem is ServoMotorSubsystem && Robot.tuningEnabled) DashboardConfigurator.registerSubsystem(subsystem)
+
         subsystems.add(subsystem)
     }
 
@@ -46,10 +50,10 @@ object SubsystemManager {
      * Registers multiple subsystems with the subsystem manager, including
      * them in the [enabledLoop].
      *
-     * @param subsystem The subsystem object to register
+     * @param subsystemColl The subsystems to register
      */
     fun register(subsystemColl: Collection<Subsystem>) {
-        subsystems.forEach { register(it) }
+        subsystemColl.forEach { register(it) }
     }
 
     /**

@@ -33,6 +33,7 @@ object Robot : TimedRobot() {
     val robotName: Constants.Tuning.RobotName
 
     init {
+        // Determine what robot we're running on.
         val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
             (i, pin) -> if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
         }.sum()
@@ -52,18 +53,20 @@ object Robot : TimedRobot() {
             HelixEvents.startLogging()
             CameraServer.getInstance().startAutomaticCapture()
 
-            DashboardConfigurator.initDashboard()
-
+            // Register all subsystems
             SubsystemManager.register(Drive)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
-            enabledLooper.register(BrownoutDefender.instance)
+            enabledLooper.register(BrownoutDefender)
             enabledLooper.register(FaultDetector)
 
             disabledLooper.register(SubsystemManager.disabledLoop)
-            disabledLooper.register(VoltageEstimator.instance)
-            enabledLooper.register(FaultDetector)
+            disabledLooper.register(VoltageEstimator)
+            disabledLooper.register(FaultDetector)
+            if (tuningEnabled) disabledLooper.register(DashboardConfigurator)
 
+            // Must come after subsystem registration
+            DashboardConfigurator.initDashboard()
             HelixEvents.addEvent("ROBOT", "Robot Initialized")
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("robotInit", t)
@@ -86,10 +89,10 @@ object Robot : TimedRobot() {
     override fun autonomousInit() {
         try {
             if (::autoModeExecuter.isInitialized) autoModeExecuter.stop()
+            Drive.zeroSensors()
 
             disabledLooper.stop() // end DisabledLooper
             enabledLooper.start() // start EnabledLooper
-            Drive.zeroSensors()
 
             autoModeExecuter = AutoModeExecuter(DashboardConfigurator.getSelectedAutoMode())
             autoModeExecuter.start()
