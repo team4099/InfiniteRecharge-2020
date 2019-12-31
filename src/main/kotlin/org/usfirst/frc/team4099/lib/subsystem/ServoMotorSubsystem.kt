@@ -10,7 +10,7 @@ import org.usfirst.frc.team4099.lib.config.ServoMotorSubsystemConfig
 import org.usfirst.frc.team4099.lib.util.limit
 import kotlin.math.roundToInt
 
-abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig): Subsystem {
+abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig) : Subsystem {
     init {
         updateMotionConstraints()
         updatePIDGains()
@@ -105,7 +105,7 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
         }
 
     override fun checkSystem() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
     override fun registerLogging() {
@@ -124,6 +124,10 @@ abstract class ServoMotorSubsystem(val configuration: ServoMotorSubsystemConfig)
     }
 
     override fun outputTelemetry() {}
+
+    override fun zeroSensors() {
+        masterMotorController.selectedSensorPosition = 0
+    }
 
     private fun applyPIDGains(gains: PIDGains) {
         val timeout = configuration.masterMotorControllerConfiguration.timeout

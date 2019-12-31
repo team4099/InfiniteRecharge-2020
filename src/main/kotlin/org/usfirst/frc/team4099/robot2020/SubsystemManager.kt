@@ -46,10 +46,10 @@ object SubsystemManager {
      * Registers multiple subsystems with the subsystem manager, including
      * them in the [enabledLoop].
      *
-     * @param subsystem The subsystem object to register
+     * @param subsystemColl The subsystems to register
      */
     fun register(subsystemColl: Collection<Subsystem>) {
-        subsystems.forEach { register(it) }
+        subsystemColl.forEach { register(it) }
     }
 
     /**
