@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.logging
 
 /**
  * A runnable which catches exceptions and reports them to [CrashTracker].

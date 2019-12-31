@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.motorcontroller
 
 import kotlin.math.PI
 
@@ -24,7 +24,7 @@ interface GenericSmartMotorController {
 
     enum class EncoderType {
         NONE,
-        QUADRATURE,
+        INTERNAL_QUADRATURE,
         EXTERNAL_QUADRATURE,
         ABSOLUTE_PWM,
         ABSOLUTE_ANALOG,

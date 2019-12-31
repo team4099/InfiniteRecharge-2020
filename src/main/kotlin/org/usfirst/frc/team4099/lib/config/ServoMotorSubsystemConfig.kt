@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4099.lib.config
 
-import org.usfirst.frc.team4099.lib.util.CTREMotorControllerFactory
+import org.usfirst.frc.team4099.lib.motorcontroller.CTREMotorControllerFactory
 
 /**
  * The configuration of a [org.usfirst.frc.team4099.lib.subsystem.ServoMotorSubsystem]

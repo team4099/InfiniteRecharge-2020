@@ -20,15 +20,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
-import org.usfirst.frc.team4099.lib.drive.DriveSignal
-import org.usfirst.frc.team4099.lib.subsystem.Subsystem
-import org.usfirst.frc.team4099.lib.util.CTREMotorControllerFactory
-import org.usfirst.frc.team4099.lib.util.around
-import org.usfirst.frc.team4099.robot2020.config.Constants
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
+import org.usfirst.frc.team4099.lib.around
+import org.usfirst.frc.team4099.lib.drive.DriveSignal
+import org.usfirst.frc.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import org.usfirst.frc.team4099.lib.subsystem.Subsystem
+import org.usfirst.frc.team4099.robot2020.config.Constants
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonSRX

@@ -1,9 +1,9 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.motorcontroller
 
 import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.can.VictorSPX
+import com.ctre.phoenix.motorcontrol.can.TalonSRX
 
-class LazyVictorSPX(deviceNumber: Int) : VictorSPX(deviceNumber) {
+class LazyTalonSRX(deviceNumber: Int) : TalonSRX(deviceNumber) {
     private var lastSet = Double.NaN
     private var lastControlMode: ControlMode = ControlMode.Disabled
 

@@ -1,11 +1,21 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.motorcontroller
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
-import com.revrobotics.*
+import com.revrobotics.AlternateEncoderType
+import com.revrobotics.CANAnalog
+import com.revrobotics.CANDigitalInput
+import com.revrobotics.CANPIDController
+import com.revrobotics.CANSparkMax
+import com.revrobotics.ControlType
+import com.revrobotics.EncoderType
 import kotlin.math.PI
 
-class GenericSparkMax(override val id: Int, override val timeout: Int, private val brush: MotorType) : GenericSmartMotorController, CANSparkMax(id, brush) {
+class GenericSparkMax(
+    override val id: Int,
+    override val timeout: Int,
+    private val brush: MotorType
+) : GenericSmartMotorController, CANSparkMax(id, brush) {
     private var enc = encoder
     private var analog = getAnalog(CANAnalog.AnalogMode.kAbsolute)
     private var pid = pidController
@@ -90,14 +100,15 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
     override val motorOutputVolts: Double
         get() = inputVoltage * motorOutput
 
-    override var selectedEncoder: GenericSmartMotorController.EncoderType = GenericSmartMotorController.EncoderType.QUADRATURE
+    override var selectedEncoder: GenericSmartMotorController.EncoderType =
+        GenericSmartMotorController.EncoderType.INTERNAL_QUADRATURE
         set(value) {
             when (value) {
                 GenericSmartMotorController.EncoderType.NONE -> {
                     enc = getEncoder(EncoderType.kNoSensor, 0)
                     pid.setFeedbackDevice(enc)
                 }
-                GenericSmartMotorController.EncoderType.QUADRATURE -> {
+                GenericSmartMotorController.EncoderType.INTERNAL_QUADRATURE -> {
                     enc = getEncoder(EncoderType.kHallSensor, 0)
                     pid.setFeedbackDevice(enc)
                 }
@@ -105,14 +116,18 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
                     enc = getAlternateEncoder(AlternateEncoderType.kQuadrature, encoderPPR)
                     pid.setFeedbackDevice(enc)
                 }
-                GenericSmartMotorController.EncoderType.ABSOLUTE_PWM -> throw IncorrectControllerException("Spark MAX doesn't support absolute PWM encoder")
+                GenericSmartMotorController.EncoderType.ABSOLUTE_PWM ->
+                    throw IncorrectControllerException("Spark MAX doesn't support absolute PWM encoder")
                 GenericSmartMotorController.EncoderType.ABSOLUTE_ANALOG -> {
                     analog = getAnalog(CANAnalog.AnalogMode.kAbsolute)
                     pid.setFeedbackDevice(analog)
                 }
-                GenericSmartMotorController.EncoderType.CAN_QUADRATURE -> throw IncorrectControllerException("Spark MAX doesn't support CAN encoders")
-                GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_PWM -> throw IncorrectControllerException("Spark MAX doesn't support CAN encoders")
-                GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_ANALOG -> throw IncorrectControllerException("Spark MAX doesn't support CAN encoders")
+                GenericSmartMotorController.EncoderType.CAN_QUADRATURE ->
+                    throw IncorrectControllerException("Spark MAX doesn't support CAN encoders")
+                GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_PWM ->
+                    throw IncorrectControllerException("Spark MAX doesn't support CAN encoders")
+                GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_ANALOG ->
+                    throw IncorrectControllerException("Spark MAX doesn't support CAN encoders")
             }
             field = value
         }
@@ -146,7 +161,8 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
     override val rawEncoderVelocity: Double
         get() = enc.velocity
 
-    override var velocityMeasPeriod: GenericSmartMotorController.VelocityMeasPeriod = GenericSmartMotorController.VelocityMeasPeriod.MS_100
+    override var velocityMeasPeriod: GenericSmartMotorController.VelocityMeasPeriod =
+        GenericSmartMotorController.VelocityMeasPeriod.MS_100
         set(value) {
             when (value) {
                 GenericSmartMotorController.VelocityMeasPeriod.MS_1 -> enc.measurementPeriod = 1
@@ -273,13 +289,13 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
         get() = rawToVelocity(rawVelocityTarget)
 
     override val rawVelocityTarget: Double
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = TODO("not implemented")
 
     override val positionTarget: Double
         get() = rawToPosition(rawPositionTarget)
 
     override val rawPositionTarget: Double
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = TODO("not implemented")
 
     override var motionCruiseVelocity: Double
         get() = rawToVelocity(rawMotionCruiseVelocity)
@@ -318,7 +334,7 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
         }
 
     override var continuousInputCurrentLimit: Int
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = TODO("not implemented")
         set(value) {}
 
     override var continuousStatorCurrentLimit: Int = 80
@@ -328,7 +344,7 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
         }
 
     override var peakInputCurrentLimit: Int
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = TODO("not implemented")
         set(value) {}
 
     override var peakStatorCurrentLimit: Int = 120
@@ -338,7 +354,7 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
         }
 
     override var peakCurrentDurationMs: Int
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = TODO("not implemented")
         set(value) {}
 
     override fun set(mode: GenericSmartMotorController.ControlMode, outputValue: Double) {
@@ -347,10 +363,10 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
                 // TODO: check if this is the same thing as just calling set()
                 pid.setReference(outputValue, ControlType.kDutyCycle)
             }
-            GenericSmartMotorController.ControlMode.VELOCITY ->  {
+            GenericSmartMotorController.ControlMode.VELOCITY -> {
                 pid.setReference(velocityToRaw(outputValue), ControlType.kVelocity, 0)
             }
-            GenericSmartMotorController.ControlMode.POSITION ->  {
+            GenericSmartMotorController.ControlMode.POSITION -> {
                 pid.setReference(positionToRaw(outputValue), ControlType.kPosition, 1)
             }
             GenericSmartMotorController.ControlMode.PROFILED -> {
@@ -365,10 +381,10 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
                 // TODO: check if this is the same thing as just calling set()
                 pid.setReference(outputValue, ControlType.kDutyCycle)
             }
-            GenericSmartMotorController.ControlMode.VELOCITY ->  {
+            GenericSmartMotorController.ControlMode.VELOCITY -> {
                 pid.setReference(outputValue, ControlType.kVelocity, 0)
             }
-            GenericSmartMotorController.ControlMode.POSITION ->  {
+            GenericSmartMotorController.ControlMode.POSITION -> {
                 pid.setReference(outputValue, ControlType.kPosition, 1)
             }
             GenericSmartMotorController.ControlMode.PROFILED -> {
@@ -408,31 +424,45 @@ class GenericSparkMax(override val id: Int, override val timeout: Int, private v
         }
     }
 
-    override fun setForwardLimitSwitch(source: GenericSmartMotorController.LimitSwitchSource, normal: GenericSmartMotorController.LimitSwitchNormal) {
+    override fun setForwardLimitSwitch(
+        source: GenericSmartMotorController.LimitSwitchSource,
+        normal: GenericSmartMotorController.LimitSwitchNormal
+    ) {
         when (source) {
             GenericSmartMotorController.LimitSwitchSource.CONNECTED -> {
                 forwardLimit = when (normal) {
-                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_OPEN -> getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
-                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_CLOSED -> getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed)
+                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_OPEN ->
+                        getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_CLOSED ->
+                        getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed)
                 }
                 forwardLimit.enableLimitSwitch(true)
             }
-            GenericSmartMotorController.LimitSwitchSource.REMOTE_CANIFIER -> throw IncorrectControllerException("Spark MAX doesn't support remote limits")
-            GenericSmartMotorController.LimitSwitchSource.REMOTE_SRX -> throw IncorrectControllerException("Spark MAX doesn't support remote limits")
+            GenericSmartMotorController.LimitSwitchSource.REMOTE_CANIFIER ->
+                throw IncorrectControllerException("Spark MAX doesn't support remote limits")
+            GenericSmartMotorController.LimitSwitchSource.REMOTE_SRX ->
+                throw IncorrectControllerException("Spark MAX doesn't support remote limits")
         }
     }
 
-    override fun setReverseLimitSwitch(source: GenericSmartMotorController.LimitSwitchSource, normal: GenericSmartMotorController.LimitSwitchNormal) {
+    override fun setReverseLimitSwitch(
+        source: GenericSmartMotorController.LimitSwitchSource,
+        normal: GenericSmartMotorController.LimitSwitchNormal
+    ) {
         when (source) {
             GenericSmartMotorController.LimitSwitchSource.CONNECTED -> {
                 reverseLimit = when (normal) {
-                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_OPEN -> getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
-                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_CLOSED -> getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed)
+                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_OPEN ->
+                        getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+                    GenericSmartMotorController.LimitSwitchNormal.NORMALLY_CLOSED ->
+                        getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed)
                 }
                 reverseLimit.enableLimitSwitch(true)
             }
-            GenericSmartMotorController.LimitSwitchSource.REMOTE_CANIFIER -> throw IncorrectControllerException("Spark MAX doesn't support remote limits")
-            GenericSmartMotorController.LimitSwitchSource.REMOTE_SRX -> throw IncorrectControllerException("Spark MAX doesn't support remote limits")
+            GenericSmartMotorController.LimitSwitchSource.REMOTE_CANIFIER ->
+                throw IncorrectControllerException("Spark MAX doesn't support remote limits")
+            GenericSmartMotorController.LimitSwitchSource.REMOTE_SRX ->
+                throw IncorrectControllerException("Spark MAX doesn't support remote limits")
         }
     }
 

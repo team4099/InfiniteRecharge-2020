@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.logging
 
 import com.team2363.logger.HelixEvents
 import java.io.BufferedWriter

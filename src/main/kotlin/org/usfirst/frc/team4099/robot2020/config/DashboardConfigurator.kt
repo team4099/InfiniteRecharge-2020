@@ -3,12 +3,12 @@ package org.usfirst.frc.team4099.robot2020.config
 import com.team2363.logger.HelixEvents
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import kotlin.math.roundToInt
 import org.usfirst.frc.team4099.lib.auto.AutoMode
 import org.usfirst.frc.team4099.lib.auto.AutoModeProvider
 import org.usfirst.frc.team4099.lib.loop.Loop
 import org.usfirst.frc.team4099.lib.subsystem.ServoMotorSubsystem
 import org.usfirst.frc.team4099.robot2020.auto.modes.StandStillMode
-import kotlin.math.roundToInt
 
 /**
  * Controls the interactive elements of SmartDashboard.

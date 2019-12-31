@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4099.lib.auto
 
-import org.usfirst.frc.team4099.lib.util.CrashTrackingRunnable
+import org.usfirst.frc.team4099.lib.logging.CrashTrackingRunnable
 
 /**
  * Executes an autonomous mode within a [CrashTrackingRunnable].

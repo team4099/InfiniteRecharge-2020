@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.motorcontroller
 
 import com.ctre.phoenix.motorcontrol.ControlFrame
 import com.ctre.phoenix.motorcontrol.ControlMode
@@ -120,7 +120,9 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
                     super.configSelectedFeedbackSensor(FeedbackDevice.Analog)
                 GenericSmartMotorController.EncoderType.ABSOLUTE_PWM ->
                     super.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition)
-                GenericSmartMotorController.EncoderType.QUADRATURE ->
+                GenericSmartMotorController.EncoderType.INTERNAL_QUADRATURE ->
+                    throw IncorrectControllerException("Talon SRX has no internal encoder support.")
+                GenericSmartMotorController.EncoderType.EXTERNAL_QUADRATURE ->
                     super.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder)
                 GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_ANALOG -> {
                     // TODO: make this actually pick the right absolute sensor
@@ -132,8 +134,7 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
                 GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_PWM -> {
                     super.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0)
                 }
-                GenericSmartMotorController.EncoderType.NONE -> {
-                }
+                GenericSmartMotorController.EncoderType.NONE -> {}
             }
             field = value
         }

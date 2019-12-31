@@ -1,10 +1,9 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.motorcontroller
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.ControlType
 import edu.wpi.first.wpilibj.Timer
-import org.usfirst.frc.team4099.lib.util.CTREMotorControllerFactory.Configuration
 
 /**
  * Create Spark Max objects with consistent default configurations.

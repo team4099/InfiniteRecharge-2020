@@ -2,12 +2,12 @@ package org.usfirst.frc.team4099.robot2020.auto.actions
 
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import kotlin.math.abs
+import kotlin.math.sign
 import org.usfirst.frc.team4099.lib.auto.Action
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot2020.config.Constants
 import org.usfirst.frc.team4099.robot2020.subsystems.Drive
-import kotlin.math.abs
-import kotlin.math.sign
 
 class DistanceAction(metersToMove: Double, slowMode: Boolean) : Action {
     private val direction = sign(metersToMove)

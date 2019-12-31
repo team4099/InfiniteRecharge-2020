@@ -5,10 +5,10 @@ import com.ctre.phoenix.motorcontrol.can.BaseMotorController
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.team2363.logger.HelixEvents
 import com.team2363.logger.HelixLogger
+import kotlin.math.roundToInt
 import org.usfirst.frc.team4099.lib.config.PIDGains
 import org.usfirst.frc.team4099.lib.config.ServoMotorSubsystemConfig
-import org.usfirst.frc.team4099.lib.util.limit
-import kotlin.math.roundToInt
+import org.usfirst.frc.team4099.lib.limit
 
 abstract class ServoMotorSubsystem(val config: ServoMotorSubsystemConfig) : Subsystem {
     init {

@@ -6,10 +6,11 @@ import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.TimedRobot
+import kotlin.math.pow
+import org.usfirst.frc.team4099.lib.around
 import org.usfirst.frc.team4099.lib.auto.AutoModeExecuter
+import org.usfirst.frc.team4099.lib.logging.CrashTracker
 import org.usfirst.frc.team4099.lib.loop.Looper
-import org.usfirst.frc.team4099.lib.util.CrashTracker
-import org.usfirst.frc.team4099.lib.util.around
 import org.usfirst.frc.team4099.robot2020.auto.PathStore
 import org.usfirst.frc.team4099.robot2020.config.Constants
 import org.usfirst.frc.team4099.robot2020.config.ControlBoard
@@ -18,7 +19,6 @@ import org.usfirst.frc.team4099.robot2020.loops.BrownoutDefender
 import org.usfirst.frc.team4099.robot2020.loops.FaultDetector
 import org.usfirst.frc.team4099.robot2020.loops.VoltageEstimator
 import org.usfirst.frc.team4099.robot2020.subsystems.Drive
-import kotlin.math.pow
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter

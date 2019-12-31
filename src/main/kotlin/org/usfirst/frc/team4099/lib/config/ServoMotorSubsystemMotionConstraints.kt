@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4099.lib.config
 
-import org.usfirst.frc.team4099.lib.util.limit
+import org.usfirst.frc.team4099.lib.limit
 
 /**
  * Represents the constraints on the motion of a servo

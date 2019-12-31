@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4099.lib.util
+package org.usfirst.frc.team4099.lib.motorcontroller
 
 import com.revrobotics.CANPIDController
 import com.revrobotics.CANSparkMax

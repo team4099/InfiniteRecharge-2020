@@ -1,8 +1,8 @@
 package org.usfirst.frc.team4099.robot2020.auto.actions
 
-import org.usfirst.frc.team4099.lib.auto.Action
 import kotlin.math.abs
 import kotlin.math.sign
+import org.usfirst.frc.team4099.lib.auto.Action
 import org.usfirst.frc.team4099.lib.drive.DriveSignal
 import org.usfirst.frc.team4099.robot2020.config.Constants
 import org.usfirst.frc.team4099.robot2020.subsystems.Drive

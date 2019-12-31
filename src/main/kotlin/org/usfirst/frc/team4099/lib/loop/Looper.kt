@@ -3,7 +3,7 @@ package org.usfirst.frc.team4099.lib.loop
 import com.team2363.logger.HelixEvents
 import edu.wpi.first.wpilibj.Notifier
 import edu.wpi.first.wpilibj.Timer
-import org.usfirst.frc.team4099.lib.util.CrashTrackingRunnable
+import org.usfirst.frc.team4099.lib.logging.CrashTrackingRunnable
 
 /**
  * Calls multiple [Loop] objects at a target interval.
