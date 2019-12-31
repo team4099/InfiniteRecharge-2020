@@ -24,7 +24,5 @@ interface Subsystem : Loop {
     /**
      * Reset the subsystem's sensors to a zero state.
      */
-    fun zeroSensors() {}
-    fun readPeriodicInputs() {}
-    fun writePeriodicOutputs() {}
+    fun zeroSensors()
 }
