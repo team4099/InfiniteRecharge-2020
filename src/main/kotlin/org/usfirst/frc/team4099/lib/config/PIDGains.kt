@@ -6,7 +6,6 @@ package org.usfirst.frc.team4099.lib.config
  *
  * @param name A human readable name for adjustment via SmartDashboard.
  * @param slotNumber The slot these gains will use on a smart motor controller.
- * @param updateHook A function that will be called when these gains change.
  * @param kP The proportional gain for the controller.
  * @param kI The integral gain for the controller.
  * @param kD The derivative gain for the controller.
@@ -15,12 +14,16 @@ package org.usfirst.frc.team4099.lib.config
 class PIDGains(
     private val name: Double,
     val slotNumber: Int,
-    private val updateHook: () -> Any,
     kP: Double,
     kI: Double,
     kD: Double,
     iZone: Int
 ) {
+    /**
+     * A function that will be called when these gains change.
+     */
+    var updateHook = {}
+
     /**
      * The proportional gain for the controller.
      */

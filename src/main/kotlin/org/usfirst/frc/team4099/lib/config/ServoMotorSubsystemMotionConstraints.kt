@@ -7,22 +7,25 @@ import org.usfirst.frc.team4099.lib.util.limit
  * motor subsystem during closed loop control. Values are in
  * units of subsystem motion, not native encoder units.
  *
- * @param updateHook A function that will be called when these constraints change.
  * @param reverseSoftLimit The maximum distance the subsystem can move in the reverse direction. NaN to disable.
  * @param forwardSoftLimit The maximum distance the subsystem can move in the forward direction. NaN to disable.
- * @param cruiseVelocity The maximum velocity the subsystem will travel at during motion profile based control.
- * @param maximumAcceleration The maximum acceleration of the subsystem during motion profile based control.
+ * @param cruiseVel The maximum velocity the subsystem will travel at during motion profile based control.
+ * @param maxAccel The maximum acceleration of the subsystem during motion profile based control.
  * @param motionProfileCurveStrength The curvature of the generated motion profile. A value of zero disables
  * S-curve smoothing. Higher values reduce the jerk of the motion.
  */
 class ServoMotorSubsystemMotionConstraints(
-    private val updateHook: () -> Unit,
     reverseSoftLimit: Double,
     forwardSoftLimit: Double,
-    cruiseVelocity: Double,
-    maximumAcceleration: Double,
+    cruiseVel: Double,
+    maxAccel: Double,
     motionProfileCurveStrength: Int
 ) {
+    /**
+     * A function that will be called when these constraints change.
+     */
+    var updateHook = {}
+
     /**
      * The maximum distance the subsystem can move in the reverse direction.
      */
@@ -48,7 +51,7 @@ class ServoMotorSubsystemMotionConstraints(
     /**
      * The maximum velocity the subsystem will travel at during motion profile based control. NaN to disable.
      */
-    var cruiseVelocity = cruiseVelocity
+    var cruiseVelocity = cruiseVel
         set(value) {
             if (field != value) {
                 field = value
@@ -59,7 +62,7 @@ class ServoMotorSubsystemMotionConstraints(
     /**
      * The maximum acceleration of the subsystem during motion profile based control.
      */
-    var maximumAcceleration = maximumAcceleration
+    var maxAccel = maxAccel
         set(value) {
             if (field != value) {
                 field = value

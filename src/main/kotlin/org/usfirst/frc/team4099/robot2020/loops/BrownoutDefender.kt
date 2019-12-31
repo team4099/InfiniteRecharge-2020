@@ -13,9 +13,8 @@ import org.usfirst.frc.team4099.robot2020.config.Constants
  * 2.
  * 3.
  */
-class BrownoutDefender private constructor() : Loop {
+object BrownoutDefender : Loop {
     private val pdp = PowerDistributionPanel()
-    // private val elevator = Elevator.instance
     private val compressor = Compressor()
 
     override fun onStart(timestamp: Double) {
@@ -35,9 +34,5 @@ class BrownoutDefender private constructor() : Loop {
 
     fun getCurrent(channel: Int): Double {
         return pdp.getCurrent(channel)
-    }
-
-    companion object {
-        val instance = BrownoutDefender()
     }
 }
