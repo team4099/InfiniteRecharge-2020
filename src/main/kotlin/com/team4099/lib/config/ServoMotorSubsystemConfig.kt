@@ -5,7 +5,7 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 /**
  * The configuration of a [com.team4099.lib.subsystem.ServoMotorSubsystem]
  */
-class ServoMotorSubsystemConfig(
+open class ServoMotorSubsystemConfig(
     val masterMotorControllerConfiguration: CTREMotorControllerFactory.Configuration,
     val name: String,
     val unitsName: String,

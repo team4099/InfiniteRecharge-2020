@@ -151,7 +151,7 @@ abstract class ServoMotorSubsystem(val config: ServoMotorSubsystemConfig) : Subs
             config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configReverseSoftLimitThreshold(
-            unitsToTicks(config.motionConstraints.reverseSoftLimit),
+            homeAwareUnitsToTicks(config.motionConstraints.reverseSoftLimit),
             config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configForwardSoftLimitEnable(
@@ -159,7 +159,7 @@ abstract class ServoMotorSubsystem(val config: ServoMotorSubsystemConfig) : Subs
             config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configForwardSoftLimitThreshold(
-            unitsToTicks(config.motionConstraints.forwardSoftLimit),
+            homeAwareUnitsToTicks(config.motionConstraints.forwardSoftLimit),
             config.masterMotorControllerConfiguration.timeout
         )
 

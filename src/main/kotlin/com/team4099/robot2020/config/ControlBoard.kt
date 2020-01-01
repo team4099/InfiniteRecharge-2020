@@ -16,4 +16,13 @@ object ControlBoard {
 
     val turn: Double
         get() = -driver.leftXAxis
+
+    val sampleWristVelocity: Double
+        get() = operator.leftYAxis
+
+    val wristVertical: Boolean
+        get() = operator.leftShoulderButton
+
+    val wristHorizontal: Boolean
+        get() = operator.rightShoulderButton
 }

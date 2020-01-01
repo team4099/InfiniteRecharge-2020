@@ -65,7 +65,7 @@ object CTREMotorControllerFactory {
         var timeout = Constants.Universal.CTRE_CONFIG_TIMEOUT
     }
 
-    private val defaultConfiguration = Configuration()
+    val defaultConfiguration = Configuration()
     private val slaveConfiguration = Configuration()
 
     init {

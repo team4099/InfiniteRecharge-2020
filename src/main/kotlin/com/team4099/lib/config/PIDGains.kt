@@ -12,7 +12,6 @@ package com.team4099.lib.config
  * @param iZone The integral zone for the controller.
  */
 class PIDGains(
-    private val name: Double,
     val slotNumber: Int,
     kP: Double,
     kI: Double,

@@ -46,7 +46,6 @@ object CrashTracker {
                     true).use { fw ->
                 BufferedWriter(fw).use { bw ->
                     PrintWriter(bw).use { out ->
-
                         out.print(RUN_INSTANCE_UUID.toString())
                         out.print(", ")
                         out.print(mark)

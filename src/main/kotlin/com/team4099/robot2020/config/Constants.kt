@@ -1,8 +1,14 @@
 package com.team4099.robot2020.config
 
+import com.team4099.lib.config.PIDGains
+import com.team4099.lib.config.ServoMotorSubsystemConfig
+import com.team4099.lib.config.ServoMotorSubsystemMotionConstraints
+import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+
 /**
  * Stores constants used by the robot.
  */
+@SuppressWarnings("MagicNumber")
 object Constants {
     object Universal {
         const val CTRE_CONFIG_TIMEOUT = 0
@@ -142,5 +148,27 @@ object Constants {
     object BrownoutDefender {
         const val COMPRESSOR_STOP_VOLTAGE = 10
         const val COMPRESSOR_STOP_CURRENT = 70
+    }
+
+    object SampleWrist : ServoMotorSubsystemConfig(
+        CTREMotorControllerFactory.defaultConfiguration,
+        "WRIST",
+        "degrees",
+        PIDGains(0, 1.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        -90.0,
+        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        0.0,
+        1024
+    ) {
+        const val MASTER_ID = 4
+        const val SLAVE1_ID = 5
+
+        const val OPERATOR_CONTROL_VEL = 90.0
+
+        enum class WristPosition(val position: Double) {
+            HORIZONTAL(0.0),
+            VERTICAL(90.0)
+        }
     }
 }
