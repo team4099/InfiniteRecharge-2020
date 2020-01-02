@@ -84,6 +84,7 @@ dist/FRCUserProgram.jar
 # VSCode
 .classpath
 .project
+.vscode/
 .settings/
 .wpilib/
 bin/
