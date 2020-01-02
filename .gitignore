@@ -80,3 +80,10 @@ InfiniteRecharge-2020.ipr
 .idea/misc.xml
 dist
 dist/FRCUserProgram.jar
+
+# VSCode
+.classpath
+.project
+.settings/
+.wpilib/
+bin/
