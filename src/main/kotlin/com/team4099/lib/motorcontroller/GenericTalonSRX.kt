@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrame
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.team4099.lib.config.PIDGains
 
 class GenericTalonSRX(override val id: Int, override val timeout: Int) : GenericSmartMotorController, TalonSRX(id) {
     override var master: GenericSmartMotorController = this
@@ -141,7 +142,7 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
 
     override var encoderPPR: Int = 1
 
-    override var encoderToUnits: Double = 1.0
+    override var encoderRevsPerUnit: Double = 1.0
 
     override var encoderPosition: Double = 0.0
         get() = rawToPosition(selectedSensorPosition.toDouble())
@@ -278,7 +279,7 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             field = value
         }
 
-    override var positionIntegralAccumulator: Double
+    override var maxPositionIntegralAccumulator: Double
         get() = rawToPosition(rawMaxPositionIntegralAccumulator)
         set(value) {
             rawMaxPositionIntegralAccumulator = positionToRaw(value)
@@ -354,6 +355,7 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
 
     override var continuousInputCurrentLimit: Int = 60
         set(value) {
+            enableCurrentLimit(true)
             configContinuousCurrentLimit(value, timeout)
             field = value
         }
@@ -366,6 +368,7 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
 
     override var peakInputCurrentLimit: Int = 100
         set(value) {
+            enableCurrentLimit(true)
             configPeakCurrentLimit(value, timeout)
             field = value
         }
@@ -381,6 +384,19 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             configPeakCurrentDuration(value, timeout)
             field = value
         }
+
+
+    override val positionPID: PIDGains = PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0.0)
+    override val velocityPID: PIDGains = PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
+    init {
+        positionPID.updateHook = {
+            setRawPositionPID(positionPID.kP, positionPID.kI, positionPID.kD, positionPID.kF, positionPID.iZone)
+        }
+        velocityPID.updateHook = {
+            setRawVelocityPID(velocityPID.kP, velocityPID.kI, velocityPID.kD, velocityPID.kF, velocityPID.iZone)
+        }
+    }
 
     override fun set(mode: GenericSmartMotorController.ControlMode, outputValue: Double) {
         when (mode) {
@@ -457,6 +473,8 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             GenericSmartMotorController.LimitSwitchNormal.NORMALLY_CLOSED -> LimitSwitchNormal.NormallyClosed
         }
         when (source) {
+            GenericSmartMotorController.LimitSwitchSource.NONE ->
+                configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, limitSwitchNormal, timeout)
             GenericSmartMotorController.LimitSwitchSource.CONNECTED ->
                 configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, limitSwitchNormal, timeout)
             GenericSmartMotorController.LimitSwitchSource.REMOTE_CANIFIER ->
@@ -475,6 +493,8 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             GenericSmartMotorController.LimitSwitchNormal.NORMALLY_CLOSED -> LimitSwitchNormal.NormallyClosed
         }
         when (source) {
+            GenericSmartMotorController.LimitSwitchSource.NONE ->
+                configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, limitSwitchNormal, timeout)
             GenericSmartMotorController.LimitSwitchSource.CONNECTED ->
                 configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, limitSwitchNormal, timeout)
             GenericSmartMotorController.LimitSwitchSource.REMOTE_CANIFIER ->
@@ -484,25 +504,18 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
         }
     }
 
-    override fun setVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        // TODO: Figure out real PID units and do conversion here
-        setRawVelocityPID(kP, kI, kD, kF, iZone)
-    }
-
-    override fun setRawVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
+    @SuppressWarnings("LongParameterList")
+    private fun setRawVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
         setRawPID(0, kP, kI, kD, kF, iZone)
     }
 
-    override fun setPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        // TODO: Figure out real PID units and do conversion here
-        setRawPositionPID(kP, kI, kD, kF, iZone)
-    }
-
-    override fun setRawPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
+    @SuppressWarnings("LongParameterList")
+    private fun setRawPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
         setRawPID(1, kP, kI, kD, kF, iZone)
     }
 
-    override fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
+    @SuppressWarnings("LongParameterList")
+    private fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
         config_kP(slotId, kP, timeout)
         config_kI(slotId, kI, timeout)
         config_kD(slotId, kD, timeout)

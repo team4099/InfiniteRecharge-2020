@@ -9,6 +9,7 @@ import com.revrobotics.CANPIDController
 import com.revrobotics.CANSparkMax
 import com.revrobotics.ControlType
 import com.revrobotics.EncoderType
+import com.team4099.lib.config.PIDGains
 import kotlin.math.PI
 
 class GenericSparkMax(
@@ -141,7 +142,7 @@ class GenericSparkMax(
             field = value
         }
 
-    override var encoderToUnits: Double = 1.0
+    override var encoderRevsPerUnit: Double = 1.0
 
     override var encoderPosition: Double
         get() = rawToPosition(enc.position)
@@ -255,7 +256,7 @@ class GenericSparkMax(
             pid.setIMaxAccum(value, 0)
         }
 
-    override var positionIntegralAccumulator: Double
+    override var maxPositionIntegralAccumulator: Double
         get() = rawToPosition(rawMaxPositionIntegralAccumulator)
         set(value) {
             rawMaxPositionIntegralAccumulator = positionToRaw(value)
@@ -333,9 +334,10 @@ class GenericSparkMax(
             }
         }
 
-    override var continuousInputCurrentLimit: Int
-        get() = TODO("not implemented")
-        set(value) {}
+    override var continuousInputCurrentLimit: Int = 0
+        set(value) {
+            throw IncorrectControllerException("Spark MAX doesn't support input current limit")
+        }
 
     override var continuousStatorCurrentLimit: Int = 80
         set(value) {
@@ -343,9 +345,10 @@ class GenericSparkMax(
             field = value
         }
 
-    override var peakInputCurrentLimit: Int
-        get() = TODO("not implemented")
-        set(value) {}
+    override var peakInputCurrentLimit: Int = 0
+        set(value) {
+            throw IncorrectControllerException("Spark MAX doesn't support input current limit.")
+        }
 
     override var peakStatorCurrentLimit: Int = 120
         set(value) {
@@ -353,9 +356,22 @@ class GenericSparkMax(
             field = value
         }
 
-    override var peakCurrentDurationMs: Int
-        get() = TODO("not implemented")
-        set(value) {}
+    override var peakCurrentDurationMs: Int = 0
+        set(value) {
+            throw IncorrectControllerException("Spark MAX doesn't allow configuring secondary current limit duration")
+        }
+
+    override val positionPID: PIDGains = PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0.0)
+    override val velocityPID: PIDGains = PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
+    init {
+        positionPID.updateHook = {
+            setRawPositionPID(positionPID.kP, positionPID.kI, positionPID.kD, positionPID.kF, positionPID.iZone)
+        }
+        velocityPID.updateHook = {
+            setRawVelocityPID(velocityPID.kP, velocityPID.kI, velocityPID.kD, velocityPID.kF, velocityPID.iZone)
+        }
+    }
 
     override fun set(mode: GenericSmartMotorController.ControlMode, outputValue: Double) {
         when (mode) {
@@ -442,6 +458,7 @@ class GenericSparkMax(
                 throw IncorrectControllerException("Spark MAX doesn't support remote limits")
             GenericSmartMotorController.LimitSwitchSource.REMOTE_SRX ->
                 throw IncorrectControllerException("Spark MAX doesn't support remote limits")
+            GenericSmartMotorController.LimitSwitchSource.NONE -> forwardLimit.enableLimitSwitch(false)
         }
     }
 
@@ -463,28 +480,22 @@ class GenericSparkMax(
                 throw IncorrectControllerException("Spark MAX doesn't support remote limits")
             GenericSmartMotorController.LimitSwitchSource.REMOTE_SRX ->
                 throw IncorrectControllerException("Spark MAX doesn't support remote limits")
+            GenericSmartMotorController.LimitSwitchSource.NONE -> reverseLimit.enableLimitSwitch(false)
         }
     }
 
-    override fun setVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        // TODO: Figure out real PID units and do conversion here
-        setRawVelocityPID(kP, kI, kD, kF, iZone)
-    }
-
-    override fun setRawVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
+    @SuppressWarnings("LongParameterList")
+    private fun setRawVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
         setRawPID(0, kP, kI, kD, kF, iZone)
     }
 
-    override fun setPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
-        // TODO: Figure out real PID units and do conversion here
-        setRawPositionPID(kP, kI, kD, kF, iZone)
-    }
-
-    override fun setRawPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
+    @SuppressWarnings("LongParameterList")
+    private fun setRawPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
         setRawPID(1, kP, kI, kD, kF, iZone)
     }
 
-    override fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
+    @SuppressWarnings("LongParameterList")
+    private fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double) {
         pid.setP(kP, slotId)
         pid.setI(kI, slotId)
         pid.setD(kD, slotId)
@@ -501,15 +512,17 @@ class GenericSparkMax(
     }
 
     override fun rawToPosition(raw: Double): Double {
-        return raw / encoderToUnits * (2 * PI)
+        return raw / encoderRevsPerUnit * (2 * PI)
     }
 
     override fun positionToRaw(units: Double): Double {
-        return (units * encoderToUnits / (2 * PI))
+        return (units * encoderRevsPerUnit / (2 * PI))
     }
 
     private fun handleFollow(master: GenericSmartMotorController, inverted: Boolean) {
-        if (master is CANSparkMax) {
+        if (master == this) {
+            return
+        } else if (master is CANSparkMax) {
             follow(master, inverted)
         } else if (master is TalonSRX || master is VictorSPX) {
             follow(ExternalFollower.kFollowerPhoenix, master.id, inverted)

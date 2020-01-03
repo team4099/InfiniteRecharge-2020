@@ -1,5 +1,6 @@
 package com.team4099.lib.motorcontroller
 
+import com.team4099.lib.config.PIDGains
 import kotlin.math.PI
 
 interface GenericSmartMotorController {
@@ -68,6 +69,7 @@ interface GenericSmartMotorController {
     }
 
     enum class LimitSwitchSource {
+        NONE,
         CONNECTED,
         REMOTE_CANIFIER,
         REMOTE_SRX
@@ -108,7 +110,7 @@ interface GenericSmartMotorController {
 
     // TODO: figure out absolute versions of these
     var encoderPPR: Int
-    var encoderToUnits: Double
+    var encoderRevsPerUnit: Double
 
     var encoderPosition: Double
     val encoderVelocity: Double
@@ -140,7 +142,7 @@ interface GenericSmartMotorController {
     var maxVelocityIntegralAccumulator: Double
     var rawMaxVelocityIntegralAccumulator: Double
 
-    var positionIntegralAccumulator: Double
+    var maxPositionIntegralAccumulator: Double
     var rawMaxPositionIntegralAccumulator: Double
 
     val currIntegralAccumulator: Double
@@ -171,6 +173,9 @@ interface GenericSmartMotorController {
 
     var peakCurrentDurationMs: Int
 
+    val positionPID: PIDGains
+    val velocityPID: PIDGains
+
     fun set(mode: ControlMode, outputValue: Double)
     fun setRaw(mode: ControlMode, outputValue: Double)
 
@@ -186,25 +191,12 @@ interface GenericSmartMotorController {
     fun setForwardLimitSwitch(source: LimitSwitchSource, normal: LimitSwitchNormal)
     fun setReverseLimitSwitch(source: LimitSwitchSource, normal: LimitSwitchNormal)
 
-    @SuppressWarnings("LongParameterList")
-    fun setVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
-    @SuppressWarnings("LongParameterList")
-    fun setRawVelocityPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
-
-    @SuppressWarnings("LongParameterList")
-    fun setPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
-    @SuppressWarnings("LongParameterList")
-    fun setRawPositionPID(kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
-
-    @SuppressWarnings("LongParameterList")
-    fun setRawPID(slotId: Int, kP: Double, kI: Double, kD: Double, kF: Double, iZone: Double)
-
     fun rawToPosition(raw: Double): Double {
-        return raw / encoderPPR / encoderToUnits * (2 * PI)
+        return raw / encoderPPR / encoderRevsPerUnit * (2 * PI)
     }
 
     fun positionToRaw(units: Double): Double {
-        return units * encoderPPR * encoderToUnits / (2 * PI)
+        return units * encoderPPR * encoderRevsPerUnit / (2 * PI)
     }
 
     fun rawToVelocity(raw: Double): Double

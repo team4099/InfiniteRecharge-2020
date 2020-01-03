@@ -16,7 +16,8 @@ class PIDGains(
     kP: Double,
     kI: Double,
     kD: Double,
-    iZone: Int
+    kF: Double,
+    iZone: Double
 ) {
     /**
      * A function that will be called when these gains change.
@@ -49,6 +50,17 @@ class PIDGains(
      * The derivative gain for the controller.
      */
     var kD = kD
+        set(value) {
+            if (field != value) {
+                field = value
+                updateHook()
+            }
+        }
+
+    /**
+     * The feedforward value for the controller
+     */
+    var kF = kF
         set(value) {
             if (field != value) {
                 field = value
