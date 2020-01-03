@@ -10,12 +10,11 @@ import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.limit
 
-abstract class ServoMotorSubsystem(val config: ServoMotorSubsystemConfig) : Subsystem {
-    init {
-        updateMotionConstraints()
-        updatePIDGains()
-    }
-
+abstract class ServoMotorSubsystem(
+    val config: ServoMotorSubsystemConfig,
+    val masterMotorController: TalonSRX,
+    val slaveMotorControllers: List<BaseMotorController>
+) : Subsystem {
     enum class ControlState(val usesPositionControl: Boolean, val usesVelocityControl: Boolean) {
         OPEN_LOOP(false, false),
         MOTION_MAGIC(false, true),
@@ -25,11 +24,13 @@ abstract class ServoMotorSubsystem(val config: ServoMotorSubsystemConfig) : Subs
 
     private var state: ControlState = ControlState.OPEN_LOOP
 
-    abstract val masterMotorController: TalonSRX
-    abstract val slaveMotorControllers: List<BaseMotorController>
-
     private val positionTicks: Int
         get() = masterMotorController.selectedSensorPosition
+
+    init {
+        updateMotionConstraints()
+        updatePIDGains()
+    }
 
     /**
      * The current position of the mechanism in units.

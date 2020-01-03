@@ -68,6 +68,7 @@ object Robot : TimedRobot() {
             if (tuningEnabled) disabledLooper.register(DashboardConfigurator)
 
             // Must come after subsystem registration
+            HelixLogger.createFile()
             DashboardConfigurator.initDashboard()
             HelixEvents.addEvent("ROBOT", "Robot Initialized")
         } catch (t: Throwable) {
@@ -107,7 +108,8 @@ object Robot : TimedRobot() {
 
     override fun teleopInit() {
         try {
-            autoModeExecuter.stop()
+            if (::autoModeExecuter.isInitialized) autoModeExecuter.stop()
+            disabledLooper.stop()
             enabledLooper.start()
             HelixEvents.addEvent("ROBOT", "Teleop Enabled")
         } catch (t: Throwable) {
@@ -158,6 +160,7 @@ object Robot : TimedRobot() {
 
     override fun testInit() {
         try {
+            disabledLooper.stop()
             enabledLooper.start()
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("testInit", t)

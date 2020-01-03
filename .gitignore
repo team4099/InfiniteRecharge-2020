@@ -88,3 +88,7 @@ dist/FRCUserProgram.jar
 .settings/
 .wpilib/
 bin/
+
+# Simulation
+imgui.ini
+lvuser/*

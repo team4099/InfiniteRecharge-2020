@@ -29,6 +29,7 @@ import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.geometry.Pose2d
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonSRX
@@ -66,7 +67,7 @@ object Drive : Subsystem {
     private val autoOdometry = DifferentialDriveOdometry(Rotation2d())
     private var pathFollowController = RamseteController()
     private var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
-    var path: Trajectory = TrajectoryGenerator.generateTrajectory(listOf(), TrajectoryConfig(0.0, 0.0))
+    var path: Trajectory = Trajectory(listOf(Trajectory.State()))
         set(value) {
             trajDuration = value.totalTimeSeconds
             trajStartTime = Timer.getFPGATimestamp()

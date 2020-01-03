@@ -22,10 +22,6 @@ object HelixLogger {
         }
         private set
 
-    init {
-        createFile()
-    }
-
     @Throws(IOException::class)
     private fun createLogDirectory() {
         val logDirectory = File(loggingLocation)
@@ -34,7 +30,7 @@ object HelixLogger {
         }
     }
 
-    private fun createFile() {
+    fun createFile() {
         try {
             createLogDirectory()
 
@@ -69,7 +65,7 @@ object HelixLogger {
 
     @Throws(IOException::class)
     private fun saveTitles() {
-        val titles = "Timestamp,match_time,${dataSources.joinToString(",") { it.name }},"
+        val titles = "Timestamp,match_time,${dataSources.joinToString(",") { it.name }}"
         Files.write(file, listOf(titles), StandardOpenOption.APPEND)
     }
 }

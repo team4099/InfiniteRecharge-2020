@@ -157,8 +157,8 @@ object DashboardConfigurator : Loop {
 
             it.config.positionPIDGains.kP =
                 SmartDashboard.getNumber("${it.config.name}/positionPID/kP", it.config.positionPIDGains.kP)
-            it.config.positionPIDGains.kP =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kP)
+            it.config.positionPIDGains.kI =
+                SmartDashboard.getNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kI)
             it.config.positionPIDGains.kD =
                 SmartDashboard.getNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kD)
             it.config.positionPIDGains.iZone = SmartDashboard.getNumber(
