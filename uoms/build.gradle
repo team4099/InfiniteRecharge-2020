@@ -1,0 +1,40 @@
+plugins {
+    id 'info.kunalsheth.units' version '6.0.2'
+    id 'org.jetbrains.kotlin.multiplatform'
+}
+
+repositories.jcenter()
+
+kotlin {
+    // select the platform(s) you want to use
+    jvm()
+//    js()
+//    linuxX64()
+//    macosX64()
+
+    sourceSets {
+        // I've never needed to run tests in the :uoms module
+        // but just in case you do, this config will support it
+        commonMain {
+            dependencies {
+                kotlin.srcDir(generateUnitsOfMeasure.generatedSrcDir)
+                implementation kotlin('stdlib-common')
+            }
+        }
+//        commonTest {
+//            dependencies {
+//                implementation kotlin('test-common')
+//                implementation kotlin('test-annotations-common')
+//            }
+//        }
+        jvmMain { dependencies { implementation kotlin('stdlib-jdk8') } }
+//        jvmTest { dependencies { implementation kotlin('test-junit') } }
+//        jsMain { dependencies { implementation kotlin('stdlib-js') } }
+//        jsTest { dependencies { implementation kotlin('test-js') } }
+        all { languageSettings.enableLanguageFeature('InlineClasses') }
+    }
+    targets.all {
+        compilations.all { compileKotlinTask.dependsOn(generateUnitsOfMeasure) }
+    }
+}
+apply from: 'units-of-measure.gradle'

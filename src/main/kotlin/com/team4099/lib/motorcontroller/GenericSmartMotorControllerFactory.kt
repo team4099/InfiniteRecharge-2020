@@ -2,7 +2,7 @@ package com.team4099.lib.motorcontroller
 
 import com.revrobotics.CANSparkMaxLowLevel
 
-object GenericMotorControllerFactory {
+object GenericSmartMotorControllerFactory {
     @Suppress("MagicNumber")
     class Configuration {
         var idleMode = GenericSmartMotorController.IdleMode.COAST

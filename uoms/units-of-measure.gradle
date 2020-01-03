@@ -1,0 +1,39 @@
+import static java.lang.Math.PI
+
+generateUnitsOfMeasure {
+    relationships += [/* the default values are enough */]
+
+    quantities += [
+            q("Absement", d(L: 1, T: 1)),
+            q("AngularAbsement", d(A: 1, T: 1)),
+
+            q("V", d(M: 1, L: 2, T: -3, I: -1)), // volts
+            q("R", d(M: 1, L: 2, T: -3, I: -2)), // ohms
+            q("DutyCycle", d()),
+    ].toSet()
+
+    unitsOfMeasure += [
+            u("Inch", 0.0254, d(L: 1)),
+            u("FootSecond", 0.3048, d(L: 1, T: 1)),
+            u("Foot", 0.3048, d(L: 1)),
+            u("FootPerSecond", 0.3048, d(L: 1, T: -1)),
+            u("FootPerSecondSquared", 0.3048, d(L: 1, T: -2)),
+            u("EarthGravity", 9.80665, d(L: 1, T: -2)),
+
+            u("Turn", 2 * PI, d(A: 1)),
+            u("Rpm", 2 * PI / 60, d(A: 1, T: -1)),
+            u("DegreeSecond", PI / 180, d(A: 1, T: 1)),
+            u("Degree", PI / 180, d(A: 1)),
+            u("DegreePerSecond", PI / 180, d(A: 1, T: -1)),
+            u("DegreePerSecondSquared", PI / 180, d(A: 1, T: -2)),
+
+            u("Minute", 60, d(T: 1)),
+            u("Millisecond", 0.001, d(T: 1)),
+
+            u("Percent", 0.01, d()),
+            u("PercentPerSecond", 0.01, d(T: -1)),
+            u("Each", 1.0, d()),
+
+            u("VoltPerSecond", 1.0, d(L: 2, M: 1, T: -4, I: -1)),
+    ].toSet()
+}
