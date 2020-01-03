@@ -385,7 +385,6 @@ class GenericTalonSRX(override val id: Int, override val timeout: Int) : Generic
             field = value
         }
 
-
     override val positionPID: PIDGains = PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0.0)
     override val velocityPID: PIDGains = PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0.0)
 

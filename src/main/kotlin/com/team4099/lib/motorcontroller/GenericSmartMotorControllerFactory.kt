@@ -1,6 +1,5 @@
 package com.team4099.lib.motorcontroller
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.revrobotics.CANSparkMaxLowLevel
 
 object GenericSmartMotorControllerFactory {
@@ -72,7 +71,6 @@ object GenericSmartMotorControllerFactory {
 
         var continuousStatorCurrentLimit = 80
         var peakStatorCurrentLimit = 120
-
     }
 
     private val defaultConfiguration = Configuration()
@@ -99,7 +97,9 @@ object GenericSmartMotorControllerFactory {
         return createTalon(id, defaultConfiguration)
     }
 
-    fun createDefaultSpark(id: Int, motorType: CANSparkMaxLowLevel.MotorType = CANSparkMaxLowLevel.MotorType.kBrushless): GenericSparkMax {
+    fun createDefaultSpark(
+        id: Int,
+        motorType: CANSparkMaxLowLevel.MotorType = CANSparkMaxLowLevel.MotorType.kBrushless): GenericSparkMax {
         return if (motorType == CANSparkMaxLowLevel.MotorType.kBrushless) {
             createSpark(id, defaultSparkMaxConfiguration, motorType = motorType)
         } else {
@@ -121,7 +121,10 @@ object GenericSmartMotorControllerFactory {
         return victor
     }
 
-    fun createPermanentSlaveSpark(id: Int, master: GenericSmartMotorController, slaveMotorType: CANSparkMaxLowLevel.MotorType = CANSparkMaxLowLevel.MotorType.kBrushless): GenericSparkMax {
+    fun createPermanentSlaveSpark(
+        id: Int,
+        master: GenericSmartMotorController,
+        slaveMotorType: CANSparkMaxLowLevel.MotorType = CANSparkMaxLowLevel.MotorType.kBrushless): GenericSparkMax {
         var config = slaveConfiguration
         if (slaveMotorType == CANSparkMaxLowLevel.MotorType.kBrushless) {
             config = slaveSparkMaxConfiguration
@@ -138,7 +141,10 @@ object GenericSmartMotorControllerFactory {
         return talon
     }
 
-    fun createSpark(id: Int, config: Configuration, motorType: CANSparkMaxLowLevel.MotorType = CANSparkMaxLowLevel.MotorType.kBrushless): GenericSparkMax {
+    fun createSpark(
+        id: Int,
+        config: Configuration,
+        motorType: CANSparkMaxLowLevel.MotorType = CANSparkMaxLowLevel.MotorType.kBrushless): GenericSparkMax {
         val spark = GenericSparkMax(id, config.timeout, motorType)
         configureSpark(spark, config)
         return spark
@@ -208,7 +214,8 @@ object GenericSmartMotorControllerFactory {
 
             setControlFramePeriod(GenericSmartMotorController.ControlFrame.GENERAL, config.controlFramePeriodMs)
             if (gmc !is GenericVictorSPX) {
-                setStatusFramePeriod(GenericSmartMotorController.StatusFrame.PRIMARY_FEEDBACK, config.feedbackStatusFrameRateMs)
+                setStatusFramePeriod(GenericSmartMotorController.StatusFrame.PRIMARY_FEEDBACK,
+                    config.feedbackStatusFrameRateMs)
             }
             setStatusFramePeriod(GenericSmartMotorController.StatusFrame.GENERAL, config.generalStatusFrameRateMs)
             setStatusFramePeriod(GenericSmartMotorController.StatusFrame.MISC, config.analogTempVbatStatusFrameMs)
@@ -223,7 +230,6 @@ object GenericSmartMotorControllerFactory {
                 continuousStatorCurrentLimit = config.continuousStatorCurrentLimit
                 peakStatorCurrentLimit = config.peakStatorCurrentLimit
             }
-
         }
     }
 }

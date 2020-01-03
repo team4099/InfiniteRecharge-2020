@@ -7,8 +7,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.kauailabs.navx.frc.AHRS
+import com.team4099.lib.around
+import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
+import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import com.team4099.lib.subsystem.Subsystem
+import com.team4099.robot2020.config.Constants
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.controller.RamseteController
@@ -18,30 +23,22 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
-import com.team4099.lib.around
-import com.team4099.lib.drive.DriveSignal
-import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
-import com.team4099.lib.subsystem.Subsystem
-import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.geometry.Pose2d
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonSRX
     private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
-            Constants.Drive.RIGHT_SLAVE_1_ID,
-            Constants.Drive.RIGHT_MASTER_ID
+        Constants.Drive.RIGHT_SLAVE_1_ID,
+        Constants.Drive.RIGHT_MASTER_ID
     )
 
     private val leftMasterTalon: TalonSRX
     private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
-            Constants.Drive.LEFT_SLAVE_1_ID,
-            Constants.Drive.LEFT_MASTER_ID
+        Constants.Drive.LEFT_SLAVE_1_ID,
+        Constants.Drive.LEFT_MASTER_ID
     )
 
     private val ahrs = AHRS(SPI.Port.kMXP)
@@ -77,8 +74,8 @@ object Drive : Subsystem {
             val initialSample = value.sample(0.0)
             autoOdometry.resetPosition(initialSample.poseMeters, Rotation2d.fromDegrees(-angle))
             pathFollowController = RamseteController(
-                    Constants.Drive.Gains.RAMSETE_B,
-                    Constants.Drive.Gains.RAMSETE_ZETA
+                Constants.Drive.Gains.RAMSETE_B,
+                Constants.Drive.Gains.RAMSETE_ZETA
             )
             lastWheelSpeeds = kinematics.toWheelSpeeds(
                 pathFollowController.calculate(autoOdometry.poseMeters, initialSample)
@@ -105,7 +102,7 @@ object Drive : Subsystem {
         }
 
     var brakeMode: NeutralMode =
-            NeutralMode.Coast // sets whether the brake mode should be coast (no resistance) or by force
+        NeutralMode.Coast // sets whether the brake mode should be coast (no resistance) or by force
         set(type) {
             if (brakeMode != type) {
                 rightMasterTalon.setNeutralMode(type)
@@ -156,15 +153,15 @@ object Drive : Subsystem {
         leftMasterTalon.inverted = false
 
         rightMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                0,
-                Constants.Universal.CTRE_CONFIG_TIMEOUT
+            FeedbackDevice.CTRE_MagEncoder_Relative,
+            0,
+            Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         leftMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                0,
-                Constants.Universal.CTRE_CONFIG_TIMEOUT
+            FeedbackDevice.CTRE_MagEncoder_Relative,
+            0,
+            Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         // TODO: SET CONVERSION FACTORS
@@ -198,11 +195,13 @@ object Drive : Subsystem {
                     leftTargetVel = 0.0
                     rightTargetVel = 0.0
                 }
-                DriveControlState.VELOCITY_SETPOINT -> {}
+                DriveControlState.VELOCITY_SETPOINT -> {
+                }
                 DriveControlState.PATH_FOLLOWING -> {
                     updatePathFollowing(timestamp, dT)
                 }
-                DriveControlState.MOTION_MAGIC -> {}
+                DriveControlState.MOTION_MAGIC -> {
+                }
             }
         }
     }
@@ -271,8 +270,8 @@ object Drive : Subsystem {
         }
         brakeMode = if (signal.brakeMode) NeutralMode.Brake else NeutralMode.Coast
         setLeftRightPower(
-                signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
-                signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
+            signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
+            signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
         )
     }
 

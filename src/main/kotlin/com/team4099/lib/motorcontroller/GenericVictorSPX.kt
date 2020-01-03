@@ -1,10 +1,21 @@
 package com.team4099.lib.motorcontroller
 
-import com.ctre.phoenix.motorcontrol.*
+import com.ctre.phoenix.motorcontrol.ControlFrame
+import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.DemandType
+import com.ctre.phoenix.motorcontrol.FeedbackDevice
+import com.ctre.phoenix.motorcontrol.IMotorController
+import com.ctre.phoenix.motorcontrol.InvertType
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource
+import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource
+import com.ctre.phoenix.motorcontrol.StatusFrame
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
 import com.team4099.lib.config.PIDGains
 
-class GenericVictorSPX(override val id: Int, override val timeout: Int) : GenericSmartMotorController, VictorSPX(id){
+class GenericVictorSPX(override val id: Int, override val timeout: Int) : GenericSmartMotorController, VictorSPX(id) {
     override var master: GenericSmartMotorController = this
         set(value) {
             if (value is IMotorController) {
@@ -124,7 +135,8 @@ class GenericVictorSPX(override val id: Int, override val timeout: Int) : Generi
                 GenericSmartMotorController.EncoderType.CAN_ABSOLUTE_PWM -> {
                     super.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0)
                 }
-                GenericSmartMotorController.EncoderType.NONE -> {}
+                GenericSmartMotorController.EncoderType.NONE -> {
+                }
             }
             field = value
         }
@@ -371,7 +383,6 @@ class GenericVictorSPX(override val id: Int, override val timeout: Int) : Generi
             field = value
             throw IncorrectControllerException("Can't set input current limit with SPX")
         }
-
 
     override val positionPID: PIDGains = PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0.0)
     override val velocityPID: PIDGains = PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0.0)
