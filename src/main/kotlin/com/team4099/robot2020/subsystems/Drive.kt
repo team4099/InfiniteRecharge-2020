@@ -20,6 +20,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
+import edu.wpi.first.wpilibj.trajectory.*
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
+import edu.wpi.first.wpilibj.trajectory.TrajectoryParameterizer
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.max
