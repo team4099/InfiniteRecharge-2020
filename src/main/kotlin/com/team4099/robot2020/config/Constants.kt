@@ -105,6 +105,10 @@ object Constants {
         }
     }
 
+    object Intake {
+        const val INTAKE_SPARK_MAX_ID = 69
+    }
+
     object Looper {
         const val LOOPER_DT = 0.02 // 50 Hz
     }
