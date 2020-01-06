@@ -1,7 +1,5 @@
 package com.team4099.robot2020.subsystems
 
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.ServoMotorSubsystem
 import com.team4099.robot2020.config.Constants
