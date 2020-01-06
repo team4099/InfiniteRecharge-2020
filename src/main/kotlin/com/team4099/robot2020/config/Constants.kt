@@ -105,6 +105,18 @@ object Constants {
         }
     }
 
+    object Shooter {
+        // change these later
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
+
+        // set later
+        const val P_VALUE = 0.0
+        const val I_VALUE = 0.0
+        const val D_VALUE = 0.0
+        const val F_VALUE = 0.0
+    }
+
     object Looper {
         const val LOOPER_DT = 0.02 // 50 Hz
     }
