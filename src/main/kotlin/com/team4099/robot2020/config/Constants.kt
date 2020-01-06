@@ -105,6 +105,29 @@ object Constants {
         }
     }
 
+    object Climber : ServoMotorSubsystemConfig(
+        CTREMotorControllerFactory.defaultConfiguration,
+        "CLIMBER",
+        "inches",
+        PIDGains(0, 1.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        0.0,
+        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        0.0,
+        1024
+    ) {
+        // subject to change
+        const val MASTER_ID = 9
+        const val SLAVE_ID = 10
+
+        const val OPERATOR_CONTROL_VEL = 90.0
+
+        enum class ClimberPosition(val position: Double) {
+            DOWN(0.0), // values subject to change
+            UP(45.0)
+        }
+    }
+
     object Looper {
         const val LOOPER_DT = 0.02 // 50 Hz
     }
