@@ -171,4 +171,11 @@ object Constants {
             VERTICAL(90.0)
         }
     }
+
+    object Feeder {
+        const val FEEDER_IN_MASTER_TALON_ID = 11;
+        const val FEEDER_IN_SLAVE_VICTOR_ID = 12;
+
+        const val FEEDER_OUT_TALON_ID = 13;
+    }
 }
