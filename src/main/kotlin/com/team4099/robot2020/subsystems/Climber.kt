@@ -25,7 +25,6 @@ object Climber : ServoMotorSubsystem(
 
     override fun onStop(timestamp: Double) {
         super.onStop(timestamp)
-        movementState = MovementState.STILL
     }
 
     override fun outputTelemetry() {
