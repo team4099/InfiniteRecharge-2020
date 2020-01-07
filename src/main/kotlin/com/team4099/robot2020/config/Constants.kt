@@ -105,6 +105,18 @@ object Constants {
         }
     }
 
+    object Vision {
+        const val DRIVER_PIPELINE_ID = 1
+        const val TARGETING_PIPELINE_ID = 0
+        const val TARGET_HEIGHT = 0.0
+        const val CAMERA_HEIGHT = 0.0
+        const val CAMERA_ANGLE = 0
+        const val SHOOTING_DISTANCE = 0
+        const val AIMING_KP = 0
+        const val ALIGNING_KP = 0
+        // const val MIN_COMMAND = 0.0
+    }
+
     object Looper {
         const val LOOPER_DT = 0.02 // 50 Hz
     }
