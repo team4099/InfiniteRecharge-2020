@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
+import com.ctre.phoenix.motorcontrol.can.TalonFx
 import com.team4099.robot2020.config.Constants
 
 /**
@@ -95,6 +96,15 @@ object CTREMotorControllerFactory {
     fun createDefaultVictor(id: Int): VictorSPX {
         return createVictor(id, defaultConfiguration)
     }
+
+    /**
+     * Create a Talon FX with the default [Configuration].
+     *
+     * @param id The CAN ID of the Talon FX to create
+     */
+    // fun createDefaultTalonFx(id: Int): TalonFx {
+    //     return createTalonFx(id, defaultConfiguration)
+    // }
 
     /**
      * Create a Talon SRX that follows another motor controller.
@@ -290,4 +300,16 @@ object CTREMotorControllerFactory {
             )
         }
     }
+
+//    @Suppress("LongMethod")
+//    fun createTalonFx(id: Int, config: Configuration): TalonFx {
+//        return TalonFx(id).apply {
+//            configFactoryDefault(config.timeout)
+//            set(ControlMode.PercentOutput, 0.0)
+//            changeMotionControlFramePeriod(config.motionControlFramePeriodMs)
+//
+//        }
+//    }
 }
+
+
