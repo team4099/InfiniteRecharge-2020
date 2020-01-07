@@ -25,4 +25,10 @@ object ControlBoard {
 
     val wristHorizontal: Boolean
         get() = operator.rightShoulderButton
+
+    val climberUp: Boolean
+        get() = operator.dPadUp
+
+    val climberDown: Boolean
+        get() = operator.dPadDown
 }
