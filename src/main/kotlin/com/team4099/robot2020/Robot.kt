@@ -18,6 +18,7 @@ import com.team4099.robot2020.config.DashboardConfigurator
 import com.team4099.robot2020.loops.BrownoutDefender
 import com.team4099.robot2020.loops.FaultDetector
 import com.team4099.robot2020.loops.VoltageEstimator
+import com.team4099.robot2020.subsystems.Climber
 import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.SampleWrist
 
@@ -56,6 +57,7 @@ object Robot : TimedRobot() {
 
             // Register all subsystems
             SubsystemManager.register(Drive)
+            SubsystemManager.register(Climber)
             SubsystemManager.register(SampleWrist)
 
             enabledLooper.register(SubsystemManager.enabledLoop)

@@ -1,6 +1,7 @@
 package com.team4099.robot2020.subsystems
 
 // import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.ServoMotorSubsystem
 import com.team4099.robot2020.config.Constants
@@ -8,7 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Climber : ServoMotorSubsystem(
     Constants.Climber,
-    CTREMotorControllerFactory.createDefaultTalon(Constants.Climber.MASTER_ID),
+    CTREMotorControllerFactory.createTalon(
+        Constants.Climber.MASTER_ID,
+        CTREMotorControllerFactory.Configuration().apply { neutralMode = NeutralMode.Brake }
+    ),
     listOf(
         CTREMotorControllerFactory.createPermanentSlaveVictor(
             Constants.Climber.SLAVE_ID,
@@ -23,11 +27,11 @@ object Climber : ServoMotorSubsystem(
             field = value
         }
 
-    override fun onStop(timestamp: Double) {
-        super.onStop(timestamp)
+    override fun onStart(timestamp: Double) {
+        velocitySetpoint = 0.0
     }
 
-    override fun outputTelemetry() {
-        super.outputTelemetry()
+    override fun onStop(timestamp: Double) {
+        velocitySetpoint = 0.0
     }
 }
