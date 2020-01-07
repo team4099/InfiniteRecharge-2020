@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
-import com.ctre.phoenix.motorcontrol.can.TalonFx
+import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.team4099.robot2020.config.Constants
 
 /**
