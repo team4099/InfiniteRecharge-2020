@@ -16,19 +16,11 @@ object Climber : ServoMotorSubsystem(
         )
     )
 ) {
-    enum class MovementState {
-        DOWN, UP, STILL
-    }
 
     var positionSetpoint: Constants.Climber.ClimberPosition = Constants.Climber.ClimberPosition.DOWN
         set(value) {
             Climber.positionSetpointMotionProfile = value.position
             field = value
-        }
-
-    var movementState: MovementState = MovementState.STILL
-        set(value) {
-            movementState = value
         }
 
     override fun onStop(timestamp: Double) {
