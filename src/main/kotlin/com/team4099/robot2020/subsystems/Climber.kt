@@ -29,6 +29,5 @@ object Climber : ServoMotorSubsystem(
 
     override fun outputTelemetry() {
         super.outputTelemetry()
-        SmartDashboard.putString("climber state", movementState.toString())
     }
 }
