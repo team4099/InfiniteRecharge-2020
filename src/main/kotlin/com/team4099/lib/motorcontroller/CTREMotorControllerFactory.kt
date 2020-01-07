@@ -102,9 +102,9 @@ object CTREMotorControllerFactory {
      *
      * @param id The CAN ID of the Talon FX to create
      */
-    // fun createDefaultTalonFx(id: Int): TalonFx {
-    //     return createTalonFx(id, defaultConfiguration)
-    // }
+     fun createDefaultTalonFX(id: Int): TalonFX {
+         return createTalonFX(id, defaultConfiguration)
+     }
 
     /**
      * Create a Talon SRX that follows another motor controller.
@@ -128,6 +128,17 @@ object CTREMotorControllerFactory {
         val victor = createVictor(id, slaveConfiguration)
         victor.set(ControlMode.Follower, masterId.toDouble())
         return victor
+    }
+
+    /**
+     * Create a Talon FX that follows another motor controller.
+     *
+     *
+     */
+    fun createPermanentSlaveTalonFX(id: Int, masterId: Int): TalonFX {
+        val talonFX = createTalonFX(id, slaveConfiguration)
+        talonFX.set(ControlMode.Follower, masterId.toDouble())
+        return talonFX
     }
 
     /**
@@ -301,15 +312,76 @@ object CTREMotorControllerFactory {
         }
     }
 
-//    @Suppress("LongMethod")
-//    fun createTalonFx(id: Int, config: Configuration): TalonFx {
-//        return TalonFx(id).apply {
-//            configFactoryDefault(config.timeout)
-//            set(ControlMode.PercentOutput, 0.0)
-//            changeMotionControlFramePeriod(config.motionControlFramePeriodMs)
-//
-//        }
-//    }
+    @Suppress("LongMethod")
+    fun createTalonFX(id: Int, config: Configuration): TalonFX {
+        return TalonFX(id).apply {
+            configFactoryDefault(config.timeout)
+            set(ControlMode.PercentOutput, 0.0)
+            changeMotionControlFramePeriod(config.motionControlFramePeriodMs)
+            for (i in 0..10) {
+                setIntegralAccumulator(0.0, i, config.timeout)
+            }
+            clearMotionProfileHasUnderrun(config.timeout)
+            clearMotionProfileTrajectories()
+            clearStickyFaults(config.timeout)
+            configForwardLimitSwitchSource(
+                    config.limitSwitchSource,
+                    config.limitSwitchNormallyOpen,
+                    config.timeout
+            )
+            configPeakOutputForward(config.maxOutputVoltage, config.timeout)
+            configPeakOutputReverse(-config.maxOutputVoltage, config.timeout)
+            configNominalOutputForward(config.nominalVoltage, config.timeout)
+            configNominalOutputReverse(-config.nominalVoltage, config.timeout)
+
+            configReverseLimitSwitchSource(
+                    config.remoteLimitSwitchSource,
+                    config.limitSwitchNormallyOpen,
+                    config.timeout
+            )
+            setNeutralMode(config.neutralMode)
+            configForwardSoftLimitEnable(config.enableSoftLimit, config.timeout)
+            configReverseSoftLimitEnable(config.enableSoftLimit, config.timeout)
+            overrideSoftLimitsEnable(config.enableSoftLimit)
+            overrideLimitSwitchesEnable(config.enableLimitSwitch)
+
+            inverted = config.inverted
+            setSensorPhase(config.sensorPhase)
+
+            configForwardSoftLimitThreshold(config.forwardSoftLimit, config.timeout)
+
+            selectProfileSlot(0, 0)
+            configReverseSoftLimitThreshold(config.reverseSoftLimit, config.timeout)
+            configVelocityMeasurementPeriod(config.velocityMeasurementPeriod, config.timeout)
+            configVelocityMeasurementWindow(config.velocityMeasurementRollingAverageWindow, config.timeout)
+            configClosedloopRamp(config.voltageCompensationRampRate, config.timeout)
+            configOpenloopRamp(config.voltageRampRate, config.timeout)
+
+            enableVoltageCompensation(config.enableVoltageCompensation)
+            configVoltageCompSaturation(config.voltageCompensationLevel, config.timeout)
+
+            configNeutralDeadband(config.neutralDeadband, config.timeout)
+
+            configMotionCruiseVelocity(config.motionMagicCruiseVelocity, config.timeout)
+            configMotionAcceleration(config.motionMagicAcceleration, config.timeout)
+
+            setStatusFramePeriod(
+                    StatusFrame.Status_1_General,
+                    config.generalStatusFrameRateMs,
+                    config.timeout
+            )
+            setStatusFramePeriod(
+                    StatusFrame.Status_2_Feedback0,
+                    config.feedbackStatusFrameRateMs,
+                    config.timeout
+            )
+            setStatusFramePeriod(
+                    StatusFrame.Status_4_AinTempVbat,
+                    config.analogTempVbatStatusFrameMs,
+                    config.timeout
+            )
+        }
+    }
 }
 
 
