@@ -30,13 +30,13 @@ import com.team4099.robot2020.config.Constants
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonSRX
-    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
+    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonSRX(
             Constants.Drive.RIGHT_SLAVE_1_ID,
             Constants.Drive.RIGHT_MASTER_ID
     )
 
     private val leftMasterTalon: TalonSRX
-    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
+    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonSRX(
             Constants.Drive.LEFT_SLAVE_1_ID,
             Constants.Drive.LEFT_MASTER_ID
     )
@@ -144,8 +144,8 @@ object Drive : Subsystem {
         masterConfig.motionMagicAcceleration =
             metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
 
-        rightMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-        leftMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
+        rightMasterTalon = CTREMotorControllerFactory.createTalonSRX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
+        leftMasterTalon = CTREMotorControllerFactory.createTalonSRX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
 
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
