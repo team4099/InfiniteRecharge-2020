@@ -5,9 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.Talon
 
-object Feeder : Subsystem{
+object Feeder : Subsystem {
     private val inMasterTalon: TalonSRX
     private val inSlaveVictor = CTREMotorControllerFactory.createPermanentSlaveVictor(
             Constants.Feeder.FEEDER_IN_MASTER_TALON_ID,
@@ -35,29 +34,21 @@ object Feeder : Subsystem{
         HOLD, INTAKE, SHOOT
     }
 
-    fun setFeederInPower(power: Double) {
+    private fun setFeederInPower(power: Double) {
         inMasterTalon.set(ControlMode.PercentOutput, power)
     }
 
-    fun setFeederOutPower(power: Double) {
+    private fun setFeederOutPower(power: Double) {
         outTalon.set(ControlMode.PercentOutput, power)
     }
 
-    override fun outputTelemetry() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun outputTelemetry() { }
 
-    override fun checkSystem() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun checkSystem() { }
 
-    override fun registerLogging() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun registerLogging() { }
 
-    override fun zeroSensors() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun zeroSensors() { }
 
     override fun onStart(timestamp: Double) {
         feederState = FeederState.HOLD
@@ -87,5 +78,4 @@ object Feeder : Subsystem{
         setFeederInPower(0.0)
         setFeederOutPower(0.0)
     }
-
 }

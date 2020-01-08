@@ -18,8 +18,6 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.max
@@ -29,7 +27,6 @@ import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.geometry.Pose2d
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonSRX
