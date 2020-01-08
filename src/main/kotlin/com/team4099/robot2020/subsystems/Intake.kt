@@ -2,6 +2,7 @@ package com.team4099.robot2020.subsystems
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
+import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
@@ -11,6 +12,7 @@ object Intake : Subsystem {
 
     private val sparkMax = CANSparkMax(Constants.Intake.INTAKE_SPARK_MAX_ID, MotorType.kBrushless)
 
+    private var intakePower = 0.0
     var intakeState = IntakeState.IDLE
 
     enum class IntakeState {
@@ -27,17 +29,23 @@ object Intake : Subsystem {
 
     @Synchronized
 
-    fun setIntakePower(power: Double) {
+    private fun setIntakePower(power: Double) {
         sparkMax.set(power)
     }
 
-    override fun outputTelemetry() { }
 
-    override fun checkSystem() { }
+    override fun outputTelemetry() {
+        SmartDashboard.putString("intake/intakeState", intakeState.toString())
+        SmartDashboard.putNumber("intake/intakePower", intakePower)
+    }
 
-    override fun registerLogging() { }
+    override fun checkSystem() {}
 
-    override fun zeroSensors() { }
+    override fun registerLogging() {
+        HelixLogger.addSource("Intake motor power") { sparkMax.outputCurrent}
+    }
+
+    override fun zeroSensors() {}
 
     override fun onStart(timestamp: Double) {
         intakeState = IntakeState.IDLE
