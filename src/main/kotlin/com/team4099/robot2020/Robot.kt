@@ -21,7 +21,6 @@ import com.team4099.robot2020.loops.VoltageEstimator
 import com.team4099.robot2020.subsystems.Climber
 import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.SampleWrist
-import javax.naming.ldap.Control
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -115,7 +114,6 @@ object Robot : TimedRobot() {
             disabledLooper.stop()
             enabledLooper.start()
             HelixEvents.addEvent("ROBOT", "Teleop Enabled")
-
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopInit", t)
             throw t
