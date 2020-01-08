@@ -18,7 +18,7 @@ import com.team4099.robot2020.config.Constants
  */
 object CTREMotorControllerFactory {
     /**
-     * Represents the configuration of a Talon SRX or Victor SPX
+     * Represents the configuration of a Talon FX, Talon SRX or, Victor SPX
      */
     @Suppress("MagicNumber")
     class Configuration {
@@ -84,8 +84,8 @@ object CTREMotorControllerFactory {
      *
      * @param id The CAN ID of the Talon SRX to create.
      */
-    fun createDefaultTalon(id: Int): TalonSRX {
-        return createTalon(id, defaultConfiguration)
+    fun createDefaultTalonSRX(id: Int): TalonSRX {
+        return createTalonSRX(id, defaultConfiguration)
     }
 
     /**
@@ -93,8 +93,8 @@ object CTREMotorControllerFactory {
      *
      * @param id The CAN ID of the Victor SPX to create.
      */
-    fun createDefaultVictor(id: Int): VictorSPX {
-        return createVictor(id, defaultConfiguration)
+    fun createDefaultVictorSPX(id: Int): VictorSPX {
+        return createVictorSPX(id, defaultConfiguration)
     }
 
     /**
@@ -112,8 +112,8 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Talon SRX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveTalon(id: Int, masterId: Int): TalonSRX {
-        val talon = createTalon(id, slaveConfiguration)
+    fun createPermanentSlaveTalonSRX(id: Int, masterId: Int): TalonSRX {
+        val talon = createTalonSRX(id, slaveConfiguration)
         talon.set(ControlMode.Follower, masterId.toDouble())
         return talon
     }
@@ -124,8 +124,8 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Victor SPX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveVictor(id: Int, masterId: Int): VictorSPX {
-        val victor = createVictor(id, slaveConfiguration)
+    fun createPermanentSlaveVictorSPX(id: Int, masterId: Int): VictorSPX {
+        val victor = createVictorSPX(id, slaveConfiguration)
         victor.set(ControlMode.Follower, masterId.toDouble())
         return victor
     }
@@ -133,7 +133,8 @@ object CTREMotorControllerFactory {
     /**
      * Create a Talon FX that follows another motor controller.
      *
-     *
+     * @param id The CAN ID of the Talon FX to create.
+     * @param masterId The CAN ID of the motor controller to follow.
      */
     fun createPermanentSlaveTalonFX(id: Int, masterId: Int): TalonFX {
         val talonFX = createTalonFX(id, slaveConfiguration)
@@ -148,7 +149,7 @@ object CTREMotorControllerFactory {
      * @param config The [Configuration] to use for this motor controller.
      */
     @Suppress("LongMethod")
-    fun createTalon(id: Int, config: Configuration): TalonSRX {
+    fun createTalonSRX(id: Int, config: Configuration): TalonSRX {
         return LazyTalonSRX(id).apply {
             configFactoryDefault(config.timeout)
             set(ControlMode.PercentOutput, 0.0)
@@ -242,7 +243,7 @@ object CTREMotorControllerFactory {
      * @param config The [Configuration] to use for this motor controller.
      */
     @Suppress("LongMethod")
-    fun createVictor(id: Int, config: Configuration): VictorSPX {
+    fun createVictorSPX(id: Int, config: Configuration): VictorSPX {
         return LazyVictorSPX(id).apply {
             configFactoryDefault(config.timeout)
             set(ControlMode.PercentOutput, 0.0)
@@ -312,9 +313,15 @@ object CTREMotorControllerFactory {
         }
     }
 
+    /**
+     * Create a Talon FX.
+     *
+     * @param id The CAN ID of the Talon FX to create.
+     * @param config The [Configuration] to use for this motor controller.
+     */
     @Suppress("LongMethod")
     fun createTalonFX(id: Int, config: Configuration): TalonFX {
-        return TalonFX(id).apply {
+        return LazyTalonFX(id).apply {
             configFactoryDefault(config.timeout)
             set(ControlMode.PercentOutput, 0.0)
             changeMotionControlFramePeriod(config.motionControlFramePeriodMs)
