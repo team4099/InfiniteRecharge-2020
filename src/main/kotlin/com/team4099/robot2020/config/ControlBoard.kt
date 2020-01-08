@@ -25,4 +25,7 @@ object ControlBoard {
 
     val wristHorizontal: Boolean
         get() = operator.rightShoulderButton
+
+    val shoot: Boolean
+        get() = operator.aButton
 }

@@ -80,5 +80,4 @@ object Shooter : Subsystem {
     }
     override fun zeroSensors() {
     }
-
 }
