@@ -114,7 +114,7 @@ object Constants {
         const val SHOOTING_DISTANCE = 0
         const val AIMING_KP = 0
         const val ALIGNING_KP = 0
-        // const val MIN_COMMAND = 0.0
+        const val MIN_COMMAND = 0.0
     }
 
     object Looper {
