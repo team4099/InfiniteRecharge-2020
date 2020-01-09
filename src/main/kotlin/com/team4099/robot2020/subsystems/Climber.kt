@@ -1,11 +1,9 @@
 package com.team4099.robot2020.subsystems
 
-// import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.ServoMotorSubsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Climber : ServoMotorSubsystem(
     Constants.Climber,
