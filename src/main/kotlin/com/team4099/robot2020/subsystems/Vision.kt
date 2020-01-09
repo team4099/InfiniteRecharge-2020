@@ -5,15 +5,22 @@ import edu.wpi.first.networktables.NetworkTableInstance
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import kotlin.math.sign
+
 // import kotlin.math.sign
 
 object Vision : Subsystem {
 
     enum class VisionState {
-        INACTIVE, AIMING, ALIGNING
+        IDLE, AIMING, ALIGNING
     }
 
-    private var state = VisionState.INACTIVE
+    private var state = VisionState.IDLE
+        set(value) {
+            if (value != field) {
+                field = value
+            }
+        }
     private var aimingAdjust = 0.0
     private var distanceAdjust = 0.0
     private var distance = 0.0
@@ -27,13 +34,14 @@ object Vision : Subsystem {
     var pipeline = table.getEntry("pipeline")
 
     override fun onStart(timestamp: Double) {
-        state = VisionState.INACTIVE
+        state = VisionState.IDLE
     }
 
+    @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
-        synchronized(this@Vision) {
+        synchronized(this) {
             when (state) {
-                VisionState.INACTIVE -> {
+                VisionState.IDLE -> {
                     pipeline.setNumber(1)
                     aimingAdjust = 0.0
                     distanceAdjust = 0.0
@@ -44,7 +52,7 @@ object Vision : Subsystem {
                     }
                     else {
                         distanceAdjust = (Constants.Vision.SHOOTING_DISTANCE - distance) * Constants.Vision.ALIGNING_KP
-                        // distanceAdjust += sign(distanceAdjust) * Constants.Vision.MIN_COMMAND
+                        distanceAdjust += sign(distanceAdjust) * Constants.Vision.MIN_COMMAND
                     }
                 }
                 VisionState.AIMING -> {
@@ -61,19 +69,15 @@ object Vision : Subsystem {
     }
 
     override fun onStop(timestamp: Double) {
-        state = VisionState.INACTIVE
+        state = VisionState.IDLE
         pipeline.setNumber(Constants.Vision.DRIVER_PIPELINE_ID)
     }
 
-    override fun outputTelemetry() {
-    }
+    override fun outputTelemetry() {}
 
-    override fun checkSystem() {
-    }
+    override fun checkSystem() {}
 
-    override fun registerLogging() {
-    }
+    override fun registerLogging() {}
 
-    override fun zeroSensors() {
-    }
+    override fun zeroSensors() {}
 }

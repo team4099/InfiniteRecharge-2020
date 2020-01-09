@@ -20,6 +20,7 @@ import com.team4099.robot2020.loops.FaultDetector
 import com.team4099.robot2020.loops.VoltageEstimator
 import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.Wrist
+import com.team4099.robot2020.subsystems.Vision
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -57,6 +58,7 @@ object Robot : TimedRobot() {
             // Register all subsystems
             SubsystemManager.register(Drive)
             SubsystemManager.register(Wrist)
+            SubsystemManager.register(Vision)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
             enabledLooper.register(BrownoutDefender)
@@ -144,6 +146,10 @@ object Robot : TimedRobot() {
                     ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
             )
 
+            if (ControlBoard.enableVisionAlignment) {
+                Vision.
+            }
+
             when {
                 ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
                     Constants.Wrist.WristPosition.HORIZONTAL
@@ -152,6 +158,8 @@ object Robot : TimedRobot() {
                 else -> Wrist.velocitySetpoint =
                     ControlBoard.sampleWristVelocity * Constants.Wrist.OPERATOR_CONTROL_VEL
             }
+
+
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
             throw t
