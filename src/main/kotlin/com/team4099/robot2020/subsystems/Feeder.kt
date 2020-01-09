@@ -6,13 +6,13 @@ import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 
 object Feeder : Subsystem {
-    private val inMasterTalon = CTREMotorControllerFactory.createDefaultTalon(Constants.Feeder.FEEDER_IN_MASTER_TALON_ID)
+    private val inMasterTalon = CTREMotorControllerFactory.createDefaultTalon(Constants.Feeder.FEEDER_IN_MASTER_ID)
     private val inSlaveVictor = CTREMotorControllerFactory.createPermanentSlaveVictor(
-            Constants.Feeder.FEEDER_IN_MASTER_TALON_ID,
-            Constants.Feeder.FEEDER_IN_SLAVE_VICTOR_ID
+        Constants.Feeder.FEEDER_IN_MASTER_ID,
+        Constants.Feeder.FEEDER_IN_SLAVE_ID
     )
 
-    private val outTalon = CTREMotorControllerFactory.createDefaultTalon(Constants.Feeder.FEEDER_OUT_TALON_ID)
+    private val outTalon = CTREMotorControllerFactory.createDefaultTalon(Constants.Feeder.FEEDER_OUT_ID)
 
     var feederState = FeederState.HOLD
     private var feederInPower = 0.0
