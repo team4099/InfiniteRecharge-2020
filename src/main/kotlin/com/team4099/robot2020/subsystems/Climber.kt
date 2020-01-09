@@ -7,12 +7,12 @@ import com.team4099.robot2020.config.Constants
 
 object Climber : ServoMotorSubsystem(
     Constants.Climber,
-    CTREMotorControllerFactory.createTalon(
+    CTREMotorControllerFactory.createTalonSRX(
         Constants.Climber.MASTER_ID,
         CTREMotorControllerFactory.Configuration().apply { neutralMode = NeutralMode.Brake }
     ),
     listOf(
-        CTREMotorControllerFactory.createPermanentSlaveVictor(
+        CTREMotorControllerFactory.createPermanentSlaveVictorSPX(
             Constants.Climber.SLAVE_ID,
             Constants.Climber.MASTER_ID
         )
