@@ -17,9 +17,18 @@ object Feeder : Subsystem {
     var feederState = FeederState.HOLD
     private var feederInPower = 0.0
         set(value) {
-            inMasterTalon.set(ControlMode.PercentOutput, value)
+            if (value != field) {
+                inMasterTalon.set(ControlMode.PercentOutput, value)
+            }
+            field = value
         }
     private var feederOutPower = 0.0
+        set(value) {
+            if (value != field) {
+                outTalon.set(ControlMode.PercentOutput, value)
+            }
+            field = value
+        }
 
     init {
 
@@ -31,10 +40,6 @@ object Feeder : Subsystem {
 
     enum class FeederState {
         HOLD, INTAKE, SHOOT
-    }
-
-    private fun setFeederOutPower(power: Double) {
-        outTalon.set(ControlMode.PercentOutput, power)
     }
 
     override fun outputTelemetry() { }
