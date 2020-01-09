@@ -104,6 +104,7 @@ object Constants {
         }
     }
 
+
     object Climber : ServoMotorSubsystemConfig(
             CTREMotorControllerFactory.defaultConfiguration,
             "CLIMBER",
@@ -119,6 +120,19 @@ object Constants {
         const val SLAVE_ID = 10
 
         const val OPERATOR_CONTROL_VEL = 90.0
+
+    object Shooter {
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
+
+        const val P_VALUE = 0.0
+        const val I_VALUE = 0.0
+        const val D_VALUE = 0.0
+        const val F_VALUE = 0.0
+
+        const val targetSpeed = 0.0
+        const val speedThreshold = 0.0
+    }
 
         enum class ClimberPosition(val position: Double) {
             DOWN(0.0),

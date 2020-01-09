@@ -1,26 +1,23 @@
 import com.revrobotics.ControlType
+import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import java.lang.Math.abs
 
 object Shooter : Subsystem {
-
     private val masterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(
             Constants.Shooter.MASTER_SPARKMAX_ID)
     private val slaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax)
 
-    // set these later
-    private var targetSpeed = 0.0
-    private var currentSpeed = 0.0
-    private var speedThreshold = 0.0
-
     enum class State {
         SHOOTING, IDLE, ACCELERATING
     }
 
-    private var currentState = State.IDLE
+    private var currentSpeed = 0.0
+    var shooterState = State.IDLE
 
     init {
         masterSparkMax.pidController.setP(Constants.Shooter.P_VALUE)
@@ -28,56 +25,63 @@ object Shooter : Subsystem {
         masterSparkMax.pidController.setD(Constants.Shooter.D_VALUE)
         masterSparkMax.pidController.setFF(Constants.Shooter.F_VALUE)
 
-        // change later
         masterSparkMax.setSmartCurrentLimit(0)
 
         slaveSparkMax.inverted = false
         // slaveSparkMax.setInverted(false)
     }
 
-    fun setOpenLoop(speed: Double) {
-        masterSparkMax.set(speed)
+    fun setOpenLoop(power: Double) {
+        masterSparkMax.set(power)
     }
-    fun setVelocity(speed: Double) {
-        masterSparkMax.set(ControlType.kSmartVelocity, speed)
+    fun setVelocity(velocity: Double) {
+        masterSparkMax.set(ControlType.kSmartVelocity, velocity)
     }
 
     @Synchronized
     override fun onStart(timestamp: Double) {
+        setOpenLoop(0.0)
     }
 
     @Synchronized
     override fun onStop(timestamp: Double) {
-       // setOpenLoop(DriveSignal.IDLE)
+       setOpenLoop(0.0)
     }
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
         currentSpeed = masterSparkMax.encoder.velocity
-        if (!(currentState == State.IDLE)) {
-            if (abs(currentSpeed - targetSpeed) <= speedThreshold) {
-                currentState = State.SHOOTING
-            }
-            else {
-                currentState = State.ACCELERATING
+        if (!(shooterState == State.IDLE)) {
+            if (abs(currentSpeed - Constants.Shooter.targetSpeed) <= Constants.Shooter.speedThreshold) {
+                shooterState = State.SHOOTING
+            } else {
+                shooterState = State.ACCELERATING
             }
         }
-        when (currentState) {
+        when (shooterState) {
             State.IDLE -> {
                 setOpenLoop(0.0)
             }
             State.SHOOTING, State.ACCELERATING -> {
-                setVelocity(targetSpeed)
+                setVelocity(Constants.Shooter.targetSpeed)
             }
         }
     }
 
     override fun checkSystem() {
     }
+
     override fun registerLogging() {
+        // not sure if this should go here
+        HelixLogger.addSource("Shooter master motor power") { masterSparkMax.outputCurrent }
+        HelixLogger.addSource("Shooter slave motor power") { slaveSparkMax.outputCurrent }
     }
+
     override fun outputTelemetry() {
+        SmartDashboard.putString("shooter/shooterState", shooterState.toString())
+        SmartDashboard.putNumber("shooter/currentSpeed", currentSpeed)
     }
+
     override fun zeroSensors() {
     }
 }
