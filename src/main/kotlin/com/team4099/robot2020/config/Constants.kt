@@ -177,5 +177,8 @@ object Constants {
         const val FEEDER_IN_SLAVE_VICTOR_ID = 12
 
         const val FEEDER_OUT_TALON_ID = 13
+
+        const val FEEDER_MAX_POWER = 1.0
+        const val FEEDER_HOLD_POWER = 0.5
     }
 }
