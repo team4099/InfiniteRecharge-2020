@@ -112,9 +112,14 @@ object Constants {
         const val CAMERA_HEIGHT = 0.0
         const val CAMERA_ANGLE = 0
         const val SHOOTING_DISTANCE = 0
-        const val AIMING_KP = 0
-        const val ALIGNING_KP = 0
+
+        const val MAX_DIST_ERROR = 0.1
+        const val MAX_ANGLE_ERROR = 0.1
+
+        val TURN_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0)
+        val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0)
         const val MIN_COMMAND = 0.0
+        val SEEKING_TURN_POWER = 0.3
     }
 
     object Looper {

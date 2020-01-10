@@ -158,8 +158,6 @@ object Robot : TimedRobot() {
                 else -> Wrist.velocitySetpoint =
                     ControlBoard.sampleWristVelocity * Constants.Wrist.OPERATOR_CONTROL_VEL
             }
-
-
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
             throw t
