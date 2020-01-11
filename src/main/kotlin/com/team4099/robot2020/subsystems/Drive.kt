@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.DemandType
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
+import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.kauailabs.navx.frc.AHRS
 import com.team4099.lib.logging.HelixEvents
@@ -29,13 +30,13 @@ import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 
 object Drive : Subsystem {
-    private val rightMasterTalon: TalonSRX
-    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonSRX(
+    private val rightMasterTalon: TalonFX
+    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
             Constants.Drive.RIGHT_SLAVE_1_ID,
             Constants.Drive.RIGHT_MASTER_ID
     )
 
-    private val leftMasterTalon: TalonSRX
+    private val leftMasterTalon: TalonFX
     private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
             Constants.Drive.LEFT_SLAVE_1_ID,
             Constants.Drive.LEFT_MASTER_ID
@@ -248,8 +249,8 @@ object Drive : Subsystem {
             HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
         }
 
-        rightMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        leftMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.sensorCollection.setIntegratedSensorPosition(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.sensorCollection.setIntegratedSensorPosition(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
     }
 
     /**
