@@ -10,6 +10,10 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
  */
 @SuppressWarnings("MagicNumber")
 object Constants {
+    object LED {
+        const val PWMPORT = 0
+    }
+
     object Universal {
         const val CTRE_CONFIG_TIMEOUT = 0
         const val EPSILON = 1E-9
