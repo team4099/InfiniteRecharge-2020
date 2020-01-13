@@ -32,6 +32,36 @@ object Constants {
         )
     }
 
+    object SuperStructure {
+        enum class RobotState {
+            IDLE,
+
+            IS_ACCELERATING_FLYWHEEL,
+
+            IS_SPINNING_UP_SHOOTER,
+
+            IS_INTAKING,
+
+            IS
+        }
+
+        enum class WantedState {
+            IDLE,
+
+            SPIN_UP_FLYWHEEL, // Just start spinning the flywheel
+            SHOOT,
+            UNJAM_SHOOTER,
+
+            CLIMB,
+
+            INTAKE,
+            UNJAM_INTAKE,
+
+            FEED, // Just feed the stuff into the feeder but don't let it leave
+            UNJAM_FEEDER
+        }
+    }
+
     object Drive {
         const val LEFT_MASTER_ID = 10
         const val LEFT_SLAVE_1_ID = 9
