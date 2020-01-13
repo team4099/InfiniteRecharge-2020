@@ -3,11 +3,11 @@ package com.team4099.robot2020.config
 import com.team4099.lib.logging.HelixEvents
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import kotlin.math.roundToInt
 import com.team4099.lib.auto.AutoMode
 import com.team4099.lib.auto.AutoModeProvider
+import com.team4099.lib.config.Configurable
 import com.team4099.lib.loop.Loop
-import com.team4099.lib.subsystem.ServoMotorSubsystem
+import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.auto.modes.StandStillMode
 
 /**
@@ -38,20 +38,19 @@ object DashboardConfigurator : Loop {
             Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode
     )
 
-    private val configurableSubsystems = mutableListOf<ServoMotorSubsystem>()
+    /**
+     * A list of [Configurable] objects to be manipulated through SmartDashboard
+     */
+    private val configurables = mutableListOf<Configurable<out Number>>()
 
     /**
      * Add a subsystem configuration to be manipulated through SmartDashboard. Also
-     * enforces the contract that when gains change, the subsystem will reconfigure.
+     * enforces the contract that when values change, the subsystem will reconfigure.
      *
-     * @param subsystem A [ServoMotorSubsystem] to be configured remotely.
+     * @param subsystem A [Subsystem] to be configured remotely.
      */
-    fun registerSubsystem(subsystem: ServoMotorSubsystem) {
-        subsystem.config.motionConstraints.updateHook = { subsystem.updateMotionConstraints() }
-        subsystem.config.positionPIDGains.updateHook = { subsystem.updatePIDGains() }
-        subsystem.config.velocityPIDGains.updateHook = { subsystem.updatePIDGains() }
-
-        configurableSubsystems.add(subsystem)
+    fun registerSubsystem(subsystem: Subsystem) {
+        configurables.addAll(subsystem.configurableProperties)
     }
 
     /**
@@ -76,31 +75,10 @@ object DashboardConfigurator : Loop {
         SmartDashboard.putNumber(Constants.Dashboard.SELECTED_AUTO_START_DELAY_KEY, Constants.Autonomous.DEFAULT_DELAY)
 
         // Add keys for subsystem configs
-        configurableSubsystems.forEach {
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/kP", it.config.velocityPIDGains.kP)
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/kI", it.config.velocityPIDGains.kI)
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kD)
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/iZone", it.config.velocityPIDGains.iZone.toDouble())
-
-            SmartDashboard.putNumber("${it.config.name}/positionPID/kP", it.config.positionPIDGains.kP)
-            SmartDashboard.putNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kI)
-            SmartDashboard.putNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kD)
-            SmartDashboard.putNumber("${it.config.name}/positionPID/iZone", it.config.positionPIDGains.iZone.toDouble())
-
-            SmartDashboard.putNumber("${it.config.name}/motion/maxAccel", it.config.motionConstraints.maxAccel)
-            SmartDashboard.putNumber("${it.config.name}/motion/cruiseVel", it.config.motionConstraints.cruiseVelocity)
-            SmartDashboard.putNumber(
-                "${it.config.name}/motion/forwardSoftLimit",
-                it.config.motionConstraints.forwardSoftLimit
-            )
-            SmartDashboard.putNumber(
-                "${it.config.name}/motion/reverseSoftLimit",
-                it.config.motionConstraints.reverseSoftLimit
-            )
-            SmartDashboard.putNumber(
-                "${it.config.name}/motion/motionProfileCurveStrength",
-                it.config.motionConstraints.motionProfileCurveStrength.toDouble()
-            )
+        configurables.forEach {
+            configurable -> configurable.properties.forEach {
+                SmartDashboard.putNumber("${configurable.keyPrefix}/${it.key}", it.value.getter.call().toDouble())
+            }
         }
     }
 
@@ -142,49 +120,14 @@ object DashboardConfigurator : Loop {
     override fun onStart(timestamp: Double) {}
 
     override fun onLoop(timestamp: Double, dT: Double) {
-        // Read new PID gains and motion constraints.
-        configurableSubsystems.forEach {
-            it.config.velocityPIDGains.kP =
-                SmartDashboard.getNumber("${it.config.name}/velocityPID/kP", it.config.velocityPIDGains.kP)
-            it.config.velocityPIDGains.kI =
-                SmartDashboard.getNumber("${it.config.name}/velocityPID/kI", it.config.velocityPIDGains.kI)
-            it.config.velocityPIDGains.kD =
-                SmartDashboard.getNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kD)
-            it.config.velocityPIDGains.iZone = SmartDashboard.getNumber("" +
-                "${it.config.name}/velocityPID/iZone",
-                it.config.velocityPIDGains.iZone.toDouble()
-            ).roundToInt()
-
-            it.config.positionPIDGains.kP =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kP", it.config.positionPIDGains.kP)
-            it.config.positionPIDGains.kI =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kI)
-            it.config.positionPIDGains.kD =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kD)
-            it.config.positionPIDGains.iZone = SmartDashboard.getNumber(
-                    "${it.config.name}/positionPID/iZone",
-                    it.config.positionPIDGains.iZone.toDouble()
-            ).roundToInt()
-
-            it.config.motionConstraints.maxAccel =
-                SmartDashboard.getNumber("${it.config.name}/motion/maxAccel", it.config.motionConstraints.maxAccel)
-            it.config.motionConstraints.cruiseVelocity =
-                SmartDashboard.getNumber("" +
-                    "${it.config.name}/motion/cruiseVel",
-                    it.config.motionConstraints.cruiseVelocity
+        // Read new values for configurable properties.
+        configurables.forEach {
+            configurable -> configurable.properties.forEach {
+                configurable.updateProperty(it.key, SmartDashboard.getNumber(
+                    "${configurable.keyPrefix}/${it.key}",
+                    it.value.get().toDouble())
                 )
-            it.config.motionConstraints.forwardSoftLimit = SmartDashboard.getNumber(
-                "${it.config.name}/motion/forwardSoftLimit",
-                it.config.motionConstraints.forwardSoftLimit
-            )
-            it.config.motionConstraints.reverseSoftLimit = SmartDashboard.getNumber(
-                "${it.config.name}/motion/reverseSoftLimit",
-                it.config.motionConstraints.reverseSoftLimit
-            )
-            it.config.motionConstraints.motionProfileCurveStrength = SmartDashboard.getNumber(
-                "${it.config.name}/motion/motionProfileCurveStrength",
-                it.config.motionConstraints.motionProfileCurveStrength.toDouble()
-            ).roundToInt()
+            }
         }
     }
 

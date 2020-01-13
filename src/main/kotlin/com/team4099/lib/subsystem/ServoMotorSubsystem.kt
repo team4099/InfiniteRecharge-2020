@@ -9,12 +9,19 @@ import kotlin.math.roundToInt
 import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.limit
+import com.team4099.lib.config.Configurable
 
 abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,
     val masterMotorController: TalonSRX,
     val slaveMotorControllers: List<BaseMotorController>
-) : Subsystem {
+) : Subsystem() {
+    override val configurableProperties = listOf<Configurable<out Number>>(
+        config.positionPIDGains,
+        config.velocityPIDGains,
+        config.motionConstraints
+    )
+
     enum class ControlState(val usesPositionControl: Boolean, val usesVelocityControl: Boolean) {
         OPEN_LOOP(false, false),
         MOTION_MAGIC(false, true),
@@ -28,6 +35,10 @@ abstract class ServoMotorSubsystem(
         get() = masterMotorController.selectedSensorPosition
 
     init {
+        config.positionPIDGains.updateHook = { updatePIDGains() }
+        config.velocityPIDGains.updateHook = { updatePIDGains() }
+        config.motionConstraints.updateHook = { updateMotionConstraints() }
+
         updateMotionConstraints()
         updatePIDGains()
     }
@@ -165,7 +176,7 @@ abstract class ServoMotorSubsystem(
         )
 
         masterMotorController.configMotionCruiseVelocity(
-            unitsPerSecondToTicksPer100ms(config.motionConstraints.cruiseVelocity),
+            unitsPerSecondToTicksPer100ms(config.motionConstraints.cruiseVel),
             config.masterMotorControllerConfiguration.timeout
         )
         masterMotorController.configMotionAcceleration(
@@ -234,8 +245,8 @@ abstract class ServoMotorSubsystem(
 
     protected fun constrainVelocityUnitsPerSecond(units: Double): Double {
         return units.limit(
-            -config.motionConstraints.cruiseVelocity,
-            config.motionConstraints.cruiseVelocity
+            -config.motionConstraints.cruiseVel,
+            config.motionConstraints.cruiseVel
         )
     }
 }

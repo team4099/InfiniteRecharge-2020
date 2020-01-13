@@ -91,6 +91,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib"
 
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.1.1"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.60"
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
