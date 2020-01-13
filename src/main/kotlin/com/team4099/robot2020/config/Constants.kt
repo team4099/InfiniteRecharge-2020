@@ -180,7 +180,7 @@ object Constants {
         const val COMPRESSOR_STOP_CURRENT = 70
     }
 
-    object SampleWrist : ServoMotorSubsystemConfig(
+    object Wrist : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",
