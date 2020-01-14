@@ -10,7 +10,7 @@ typealias UpdateHook = () -> Unit
 /**
  * Represents an object that can be manipulated through SmartDashboard.
  */
-abstract class Configurable<out T>(private val fromDouble: (Double) -> T) {
+abstract class Configurable<T>(private val fromDouble: (Double) -> T) {
     /**
      * A prefix for the keys used in SmartDashboard. Typically will be the name of the subsystem or other qualifier.
      */

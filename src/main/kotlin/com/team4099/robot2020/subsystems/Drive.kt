@@ -28,7 +28,7 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 
-object Drive : Subsystem() {
+object Drive : Subsystem {
     private val rightMasterTalon: TalonFX
     private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
             Constants.Drive.RIGHT_SLAVE_1_ID,

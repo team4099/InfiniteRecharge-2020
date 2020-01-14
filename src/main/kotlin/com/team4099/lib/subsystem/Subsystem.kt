@@ -10,7 +10,7 @@ interface Subsystem : Loop {
     /**
      * A list of objects that can be configured over SmartDashboard.
      */
-    val configurableProperties: List<Configurable<Number>>
+    val configurableProperties: List<Configurable<out Number>>
 
     /**
      * Output telemetry from this subsystem. Typically will be data sent to SmartDashboard.
