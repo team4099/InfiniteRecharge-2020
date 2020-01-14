@@ -10,9 +10,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Intake : Subsystem {
 
-    private val sparkMax = CANSparkMax(Constants.Intake.INTAKE_SPARK_MAX_ID, MotorType.kBrushless)
+    private val sparkMax: CANSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Intake.INTAKE_SPARK_MAX_ID)
 
     private var intakePower = 0.0
+    set(value) {
+        if (field != value) {
+            field = value
+            sparkMax.set(value)
+        }
+    }
     var intakeState = IntakeState.IDLE
 
     enum class IntakeState {
@@ -27,11 +33,6 @@ object Intake : Subsystem {
         sparkMax.inverted = false
     }
 
-    @Synchronized
-
-    private fun setIntakePower(power: Double) {
-        sparkMax.set(power)
-    }
 
 
     override fun outputTelemetry() {
@@ -42,7 +43,7 @@ object Intake : Subsystem {
     override fun checkSystem() {}
 
     override fun registerLogging() {
-        HelixLogger.addSource("Intake motor power") { sparkMax.outputCurrent}
+        HelixLogger.addSource("Intake output current") { sparkMax.outputCurrent}
     }
 
     override fun zeroSensors() {}
@@ -51,43 +52,19 @@ object Intake : Subsystem {
         intakeState = IntakeState.IDLE
     }
 
+    @Synchronized
     override fun onLoop(timestamp: Double, dt: Double) {
-        synchronized(this@Intake) {
+        synchronized(this) {
             when (intakeState) {
-                IntakeState.IN -> setIntakePower(-1.0)
-                IntakeState.OUT -> setIntakePower(1.0)
-                IntakeState.IDLE -> setIntakePower(0.0)
+                IntakeState.IN -> intakePower = -1.0
+                IntakeState.OUT -> intakePower = 1.0
+                IntakeState.IDLE -> intakePower = 0.0
             }
         }
     }
 
     override fun onStop(timestamp: Double) {
         intakeState = IntakeState.IDLE
-        setIntakePower(0.0)
+        intakePower = 0.0
     }
 }
-//        val loop = object: Loop {
-//            override fun onStart(timestamp: Double) {
-//                intakeState = IntakeState.IDLE
-//            }
-//
-//            /**
-//             * Sets Intake to -1 if pulling in, to 0 if stationary, and 1 if pushing out
-//             */
-//           fun onLoop(timestamp: Double) {
-//                synchronized(this@Intake) {
-//                    when (intakeState) {
-//                        IntakeState.IN -> setIntakePower(-1.0)
-//                        IntakeState.IDLE -> setIntakePower(0.0)
-//                        IntakeState.OUT -> setIntakePower(1.0)
-//                    }
-//                }
-//            }
-//            override fun onStop(timestamp: Double) = stop()
-//        }
-//        fun stop() {
-//            intakeState = IntakeState.IDLE
-//            setIntakePower(0.0)
-//        }
-//
-//        override fun zeroSensors() {}
