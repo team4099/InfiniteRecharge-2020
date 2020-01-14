@@ -2,11 +2,10 @@ package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.DemandType
-import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonFX
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.kauailabs.navx.frc.AHRS
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
@@ -147,22 +146,21 @@ object Drive : Subsystem {
 
         rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
         leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, masterConfig)
-
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
         leftSlaveTalon.inverted = false
 
         rightMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                0,
-                Constants.Universal.CTRE_CONFIG_TIMEOUT
+            TalonFXFeedbackDevice.IntegratedSensor,
+            0,
+            Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         leftMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                0,
-                Constants.Universal.CTRE_CONFIG_TIMEOUT
+            TalonFXFeedbackDevice.IntegratedSensor,
+            0,
+            Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         // TODO: SET CONVERSION FACTORS
@@ -214,10 +212,20 @@ object Drive : Subsystem {
         HelixLogger.addSource("DT Left Output %") { leftMasterTalon.motorOutputPercent }
         HelixLogger.addSource("DT Right Output %") { rightMasterTalon.motorOutputPercent }
 
-        HelixLogger.addSource("DT Left Master Input Current") { leftMasterTalon.outputCurrent }
-        HelixLogger.addSource("DT Left Slave Input Current") { leftSlaveTalon.outputCurrent }
-        HelixLogger.addSource("DT Right Master Input Current") { rightMasterTalon.outputCurrent }
-        HelixLogger.addSource("DT Right Slave Input Current") { rightSlaveTalon.outputCurrent }
+        HelixLogger.addSource("DT Left Master Supply Current") { leftMasterTalon.supplyCurrent }
+        HelixLogger.addSource("DT Left Slave Supply Current") { leftSlaveTalon.supplyCurrent }
+        HelixLogger.addSource("DT Right Master Supply Current") { rightMasterTalon.supplyCurrent }
+        HelixLogger.addSource("DT Right Slave Supply Current") { rightSlaveTalon.supplyCurrent }
+
+        HelixLogger.addSource("DT Left Master Stator Current") { leftMasterTalon.statorCurrent }
+        HelixLogger.addSource("DT Left Slave Stator Current") { leftSlaveTalon.statorCurrent }
+        HelixLogger.addSource("DT Right Master Stator Current") { rightMasterTalon.statorCurrent }
+        HelixLogger.addSource("DT Right Slave Stator Current") { rightSlaveTalon.statorCurrent }
+
+        HelixLogger.addSource("DT Left Master Temp") { leftMasterTalon.temperature }
+        HelixLogger.addSource("DT Left Slave Temp") { leftSlaveTalon.temperature }
+        HelixLogger.addSource("DT Right Master Temp") { rightMasterTalon.temperature }
+        HelixLogger.addSource("DT Right Slave Temp") { rightSlaveTalon.temperature }
 
         HelixLogger.addSource("DT Left Velocity (in/s)") { leftVelocityMetersPerSec }
         HelixLogger.addSource("DT Right Velocity (in/s)") { rightVelocityMetersPerSec }
@@ -234,9 +242,9 @@ object Drive : Subsystem {
 
     override fun outputTelemetry() {
         if (ahrs.isConnected) {
-            SmartDashboard.putNumber("gyro", yaw)
+            SmartDashboard.putNumber("drive/gyro", yaw)
         } else {
-            SmartDashboard.putNumber("gyro", Constants.Drive.GYRO_BAD_VALUE)
+            SmartDashboard.putNumber("drive/gyro", Constants.Drive.GYRO_BAD_VALUE)
         }
     }
 
