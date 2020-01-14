@@ -92,8 +92,8 @@ object Constants {
             const val RAMSETE_B = 2.0
             const val RAMSETE_ZETA = 0.7
 
-            val LEFT_PID = PIDGains("drive/left",0, 0.0, 0.0, 0.0, 0.0, 0)
-            val RIGHT_PID = PIDGains("drive/right",0, 0.0, 0.0, 0.0, 0.0, 0)
+            val LEFT_PID = PIDGains("drive/left", 0, 0.0, 0.0, 0.0, 0.0, 0)
+            val RIGHT_PID = PIDGains("drive/right", 0, 0.0, 0.0, 0.0, 0.0, 0)
         }
     }
 
@@ -146,8 +146,8 @@ object Constants {
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",
-        PIDGains("wrist/velocity_pid",0, 1.0, 0.0, 0.0, 0.0, 0),
-        PIDGains("wrist/position_pid",1, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains("wrist/velocity_pid", 0, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains("wrist/position_pid", 1, 1.0, 0.0, 0.0, 0.0, 0),
         -90.0,
         ServoMotorSubsystemMotionConstraints("wrist", -20.0, 90.0, 90.0, 90.0, 0),
         0.0,

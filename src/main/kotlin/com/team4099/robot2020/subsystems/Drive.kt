@@ -23,7 +23,6 @@ import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
 import com.team4099.lib.around
-import com.team4099.lib.config.Configurable
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
