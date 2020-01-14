@@ -20,10 +20,11 @@ object Shooter : Subsystem {
     var shooterState = State.IDLE
 
     init {
-        masterSparkMax.pidController.setP(Constants.Shooter.P_VALUE)
-        masterSparkMax.pidController.setI(Constants.Shooter.I_VALUE)
-        masterSparkMax.pidController.setD(Constants.Shooter.D_VALUE)
-        masterSparkMax.pidController.setFF(Constants.Shooter.F_VALUE)
+        masterSparkMax.pidController.setP(Constants.Shooter.SHOOTER_PID.kP)
+        masterSparkMax.pidController.setI(Constants.Shooter.SHOOTER_PID.kI)
+        masterSparkMax.pidController.setD(Constants.Shooter.SHOOTER_PID.kD)
+        masterSparkMax.pidController.setFF(Constants.Shooter.SHOOTER_PID.kF)
+        masterSparkMax.pidController.setIZone(Constants.Shooter.SHOOTER_PID.INT)
 
         masterSparkMax.setSmartCurrentLimit(0)
 
