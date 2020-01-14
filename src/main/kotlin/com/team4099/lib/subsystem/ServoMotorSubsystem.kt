@@ -15,7 +15,7 @@ abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,
     val masterMotorController: TalonSRX,
     val slaveMotorControllers: List<BaseMotorController>
-) : Subsystem() {
+) : Subsystem {
     override val configurableProperties = listOf<Configurable<out Number>>(
         config.positionPIDGains,
         config.velocityPIDGains,

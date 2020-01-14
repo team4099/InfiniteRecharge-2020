@@ -23,6 +23,7 @@ import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
 import com.team4099.lib.around
+import com.team4099.lib.config.Configurable
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
@@ -240,6 +241,8 @@ object Drive : Subsystem {
 
         HelixLogger.addSource("DT Pathfollow Timestamp") { trajCurTime }
     }
+
+    override val configurableProperties = listOf(Constants.Drive.Gains.LEFT_PID, Constants.Drive.Gains.RIGHT_PID)
 
     override fun outputTelemetry() {
         if (ahrs.isConnected) {
