@@ -147,7 +147,7 @@ abstract class ServoMotorSubsystem(
         masterMotorController.config_kP(gains.slotNumber, gains.kP, timeout)
         masterMotorController.config_kI(gains.slotNumber, gains.kI, timeout)
         masterMotorController.config_kD(gains.slotNumber, gains.kD, timeout)
-        masterMotorController.config_IntegralZone(gains.slotNumber, gains.iZone, timeout)
+        masterMotorController.config_IntegralZone(gains.slotNumber, gains.iZone.roundToInt(), timeout)
     }
 
     fun updatePIDGains() {

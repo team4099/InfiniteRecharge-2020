@@ -21,20 +21,14 @@ class PIDGains(
     var kI: Double,
     var kD: Double,
     var kF: Double,
-    var iZone: Int
+    var iZone: Double
 ) : Configurable<Double>({ it }) {
-    private var iZoneDouble = iZone.toDouble()
-        set(value) {
-            iZone = value.roundToInt()
-            field = value
-        }
-
     override val properties = mapOf(
         "kP" to ::kP,
         "kI" to ::kI,
         "kD" to ::kD,
         "kF" to ::kF,
-        "iZone" to ::iZoneDouble
+        "iZone" to ::iZone
     )
 
     override var updateHook = {}
