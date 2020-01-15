@@ -7,7 +7,8 @@ object SuperStructure : Loop {
     // TODO: Do this
     private var hasStateChanged = false
 
-    private lateinit var currentWantedState: SuperStructure.WantedState
+    private var currentWantedState = SuperStructure.States.DEFAULT
+    private var currentRobotState = SuperStructure.States.DEFAULT
 
     override fun onStart(timestamp: Double) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -15,24 +16,19 @@ object SuperStructure : Loop {
 
     override fun onLoop(timestamp: Double, dT: Double) {
         when (currentWantedState) {
-            SuperStructure.WantedState.IDLE -> {
-
-            }
-            SuperStructure.WantedState.SPIN_UP_FLYWHEEL -> {
-
-            }
-            SuperStructure.WantedState.SHOOT -> {}
-            SuperStructure.WantedState.UNJAM_SHOOTER -> {}
-            SuperStructure.WantedState.CLIMB -> {}
-            SuperStructure.WantedState.INTAKE -> {}
-            SuperStructure.WantedState.UNJAM_INTAKE -> {}
-            SuperStructure.WantedState.FEED -> {}
-            SuperStructure.WantedState.UNJAM_FEEDER -> {}
-
+            SuperStructure.States.IDLE -> {}
+            SuperStructure.States.SPIN_UP_FLYWHEEL -> {}
+            SuperStructure.States.SHOOT -> {}
+            SuperStructure.States.UNJAM_SHOOTER -> {}
+            SuperStructure.States.CLIMB -> {}
+            SuperStructure.States.INTAKE -> {}
+            SuperStructure.States.UNJAM_INTAKE -> {}
+            SuperStructure.States.FEED -> {}
+            SuperStructure.States.UNJAM_FEEDER -> {}
         }
     }
 
-    public fun setState(wantedState: SuperStructure.WantedState) {
+    public fun setState(wantedState: SuperStructure.States) {
         currentWantedState = wantedState
     }
 
