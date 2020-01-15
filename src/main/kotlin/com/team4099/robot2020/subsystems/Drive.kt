@@ -23,6 +23,7 @@ import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
 import com.team4099.lib.around
+import com.team4099.lib.config.PIDGains
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
@@ -164,17 +165,9 @@ object Drive : Subsystem {
             Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
-        // TODO: SET CONVERSION FACTORS
-
-        leftMasterTalon.config_kP(0, Constants.Drive.Gains.LEFT_PID.kP, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        leftMasterTalon.config_kI(0, Constants.Drive.Gains.LEFT_PID.kI, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        leftMasterTalon.config_kD(0, Constants.Drive.Gains.LEFT_PID.kD, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        leftMasterTalon.config_kF(0, Constants.Drive.Gains.LEFT_PID.kF, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-
-        rightMasterTalon.config_kP(0, Constants.Drive.Gains.RIGHT_PID.kP, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        rightMasterTalon.config_kI(0, Constants.Drive.Gains.RIGHT_PID.kI, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        rightMasterTalon.config_kD(0, Constants.Drive.Gains.RIGHT_PID.kD, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        rightMasterTalon.config_kF(0, Constants.Drive.Gains.RIGHT_PID.kF, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        Constants.Drive.Gains.LEFT_PID.updateHook = { updatePIDGains() }
+        Constants.Drive.Gains.RIGHT_PID.updateHook = { updatePIDGains() }
+        updatePIDGains()
 
         setOpenLoop(DriveSignal.NEUTRAL)
         zeroSensors()
@@ -485,6 +478,18 @@ object Drive : Subsystem {
             leftAcceleration, rightAcceleration)
 
         lastWheelSpeeds = wheelSpeeds
+    }
+
+    fun updatePIDGains() {
+        leftMasterTalon.config_kP(0, Constants.Drive.Gains.LEFT_PID.kP, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.config_kI(0, Constants.Drive.Gains.LEFT_PID.kI, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.config_kD(0, Constants.Drive.Gains.LEFT_PID.kD, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.config_kF(0, Constants.Drive.Gains.LEFT_PID.kF, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+
+        rightMasterTalon.config_kP(0, Constants.Drive.Gains.RIGHT_PID.kP, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.config_kI(0, Constants.Drive.Gains.RIGHT_PID.kI, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.config_kD(0, Constants.Drive.Gains.RIGHT_PID.kD, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.config_kF(0, Constants.Drive.Gains.RIGHT_PID.kF, Constants.Universal.CTRE_CONFIG_TIMEOUT)
     }
 
     /**
