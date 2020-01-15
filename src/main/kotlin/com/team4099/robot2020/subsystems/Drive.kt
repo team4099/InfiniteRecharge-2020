@@ -23,7 +23,6 @@ import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
 import com.team4099.lib.around
-import com.team4099.lib.config.PIDGains
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
@@ -182,18 +181,16 @@ object Drive : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
-        synchronized(this@Drive) {
-            when (currentState) {
-                DriveControlState.OPEN_LOOP -> {
-                    leftTargetVel = 0.0
-                    rightTargetVel = 0.0
-                }
-                DriveControlState.VELOCITY_SETPOINT -> {}
-                DriveControlState.PATH_FOLLOWING -> {
-                    updatePathFollowing(timestamp, dT)
-                }
-                DriveControlState.MOTION_MAGIC -> {}
+        when (currentState) {
+            DriveControlState.OPEN_LOOP -> {
+                leftTargetVel = 0.0
+                rightTargetVel = 0.0
             }
+            DriveControlState.VELOCITY_SETPOINT -> {}
+            DriveControlState.PATH_FOLLOWING -> {
+                updatePathFollowing(timestamp, dT)
+            }
+            DriveControlState.MOTION_MAGIC -> {}
         }
     }
 
