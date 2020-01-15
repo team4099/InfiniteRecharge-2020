@@ -20,30 +20,36 @@ object LED : Subsystem {
 
     enum class Color(var h:Int,val s:Int,val v:Int) {
         //Pink is for firing
-        PINK(307, 117, 128),
+        PINK(227, 117, 128),
         //Turquoise is for getting ready to fire
-        TURQUOISE(180, 255, 118),
+        TURQUOISE(124, 255, 118),
         //orange is for when the intake is empty
-        ORANGE(23, 184, 128),
+        ORANGE(18, 184, 128),
         //magenta is 1 ball
-        MAGENTA(277, 242, 128),
+        MAGENTA(209, 242, 128),
         //sky blue is 2 ball
-        SKY_BLUE(203, 242, 128),
+        SKY_BLUE(145, 242, 128),
         //tan is 3 ball
-        TAN(27, 122, 128),
+        TAN(17, 122, 128),
         //green is 4 ball
-        GREEN(98, 207, 128),
+        GREEN(74, 207, 128),
         //brown is final state of climb
         BROWN(34, 255, 45),
         //rainbow is for climbing and when 5 balls
         RAINBOW(0, 255, 128),
     }
+    var initialRainbowHue: Int = 0
     fun updateColor(wantedColor:Color) {
         for (i in 0 until ledBuffer.length) {
             ledBuffer.setHSV(i, wantedColor.h, wantedColor.s, wantedColor.v)
             if (wantedColor == Color.RAINBOW) {
-                wantedColor.h = (0 + (i * 180 / ledBuffer.length)) % 180;
+                wantedColor.h = (initialRainbowHue + (i * 180 / ledBuffer.length)) % 180;
+                ledBuffer.setHSV(i, wantedColor.h, wantedColor.s, wantedColor.v)
+                initialRainbowHue += 6;
+                initialRainbowHue %= 180;
+
             }
+
         }
         led.setData(ledBuffer);
     }
