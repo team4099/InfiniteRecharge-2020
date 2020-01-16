@@ -1,5 +1,6 @@
 package com.team4099.robot2020.subsystems
 
+import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.loop.Loop
 import com.team4099.robot2020.config.Constants.SuperStructure
 
@@ -16,7 +17,9 @@ object SuperStructure : Loop {
 
     override fun onLoop(timestamp: Double, dT: Double) {
         when (currentWantedState) {
-            SuperStructure.States.IDLE -> {}
+            SuperStructure.States.IDLE -> {
+                Drive.setOpenLoop(DriveSignal.NEUTRAL)
+            }
             SuperStructure.States.SPIN_UP_FLYWHEEL -> {}
             SuperStructure.States.SHOOT -> {}
             SuperStructure.States.UNJAM_SHOOTER -> {}
