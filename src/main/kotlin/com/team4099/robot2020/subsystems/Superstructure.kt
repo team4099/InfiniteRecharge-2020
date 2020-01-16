@@ -2,9 +2,13 @@ package com.team4099.robot2020.subsystems
 
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.loop.Loop
+<<<<<<< HEAD
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.Constants.SuperStructure
 import com.team4099.robot2020.config.ControlBoard
+=======
+import com.team4099.robot2020.config.Constants.SuperStructure
+>>>>>>> Set drivetrain to off in IDLE state
 
 object SuperStructure : Loop {
     // TODO: Do this
@@ -21,6 +25,7 @@ object SuperStructure : Loop {
         when (currentWantedState) {
             SuperStructure.States.IDLE -> {
                 Drive.setOpenLoop(DriveSignal.NEUTRAL)
+<<<<<<< HEAD
                 Intake.intakeState = Intake.IntakeState.IDLE
                 Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
             }
@@ -42,6 +47,16 @@ object SuperStructure : Loop {
             SuperStructure.States.FEED -> {
                 Feeder.feederState = Feeder.State.FEEDING
             }
+=======
+            }
+            SuperStructure.States.SPIN_UP_FLYWHEEL -> {}
+            SuperStructure.States.SHOOT -> {}
+            SuperStructure.States.UNJAM_SHOOTER -> {}
+            SuperStructure.States.CLIMB -> {}
+            SuperStructure.States.INTAKE -> {}
+            SuperStructure.States.UNJAM_INTAKE -> {}
+            SuperStructure.States.FEED -> {}
+>>>>>>> Set drivetrain to off in IDLE state
             SuperStructure.States.UNJAM_FEEDER -> {}
         }
     }
@@ -51,6 +66,13 @@ object SuperStructure : Loop {
     }
 
     override fun onStop(timestamp: Double) {
+<<<<<<< HEAD
         // Hello i dont have a life
     }
+=======
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
+>>>>>>> Set drivetrain to off in IDLE state
 }
