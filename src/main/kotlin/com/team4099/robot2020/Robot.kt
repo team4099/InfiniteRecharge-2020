@@ -160,7 +160,6 @@ object Robot : TimedRobot() {
                 ControlBoard.runIntakeOut -> Intake.intakeState = Intake.IntakeState.OUT
                 else -> Intake.intakeState = Intake.IntakeState.IDLE
             }
-
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
             throw t
