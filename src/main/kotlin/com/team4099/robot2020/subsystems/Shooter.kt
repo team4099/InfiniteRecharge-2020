@@ -23,8 +23,8 @@ object Shooter : Subsystem {
         masterSparkMax.pidController.setP(Constants.Shooter.SHOOTER_PID.kP)
         masterSparkMax.pidController.setI(Constants.Shooter.SHOOTER_PID.kI)
         masterSparkMax.pidController.setD(Constants.Shooter.SHOOTER_PID.kD)
-        masterSparkMax.pidController.setFF(Constants.Shooter.SHOOTER_PID.kF)
-        masterSparkMax.pidController.setIZone(Constants.Shooter.SHOOTER_PID.INT)
+        // masterSparkMax.pidController.setFF(Constants.Shooter.SHOOTER_PID.kF)
+        masterSparkMax.pidController.setIZone(Constants.Shooter.SHOOTER_PID.iZone.toDouble())
 
         masterSparkMax.setSmartCurrentLimit(0)
 
