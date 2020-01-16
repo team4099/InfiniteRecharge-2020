@@ -125,10 +125,6 @@ object Constants {
         const val MASTER_SPARKMAX_ID = 0
         const val SLAVE_SPARKMAX_ID = 1
 
-//        const val P_VALUE = 0.0
-//        const val I_VALUE = 0.0
-//        const val D_VALUE = 0.0
-//        const val F_VALUE = 0.0
         val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
 
         const val targetSpeed = 0.0

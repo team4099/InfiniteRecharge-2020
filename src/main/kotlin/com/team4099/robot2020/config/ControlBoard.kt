@@ -38,6 +38,10 @@ object ControlBoard {
     val runIntakeOut: Boolean
         get() = operator.bButton
 
-    val shoot: Boolean
+
+    val startShooter: Boolean
         get() = operator.aButton
+
+    val stopShooter: Boolean
+        get() = operator.bButton
 }
