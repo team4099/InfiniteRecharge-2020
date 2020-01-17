@@ -1,20 +1,16 @@
 package com.team4099.lib.subsystem
 
-import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import kotlin.math.roundToInt
-import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
+import com.team4099.lib.hardware.ServoMotorHardware
 import com.team4099.lib.limit
 import com.team4099.lib.config.Configurable
 
 abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,
-    val masterMotorController: TalonSRX,
-    val slaveMotorControllers: List<BaseMotorController>
+    private val hardware: ServoMotorHardware
 ) : Subsystem {
     override val configurableProperties = listOf<Configurable<out Number>>(
         config.positionPIDGains,
@@ -32,7 +28,7 @@ abstract class ServoMotorSubsystem(
     private var state: ControlState = ControlState.OPEN_LOOP
 
     private val positionTicks: Int
-        get() = masterMotorController.selectedSensorPosition
+        get() = hardware.positionTicks
 
     init {
         config.positionPIDGains.updateHook = { updatePIDGains() }
@@ -62,7 +58,7 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainPositionUnits(value)
-            masterMotorController.set(ControlMode.MotionMagic, field)
+            hardware.setMotionProfile(field)
         }
 
     /**
@@ -77,11 +73,11 @@ abstract class ServoMotorSubsystem(
                 enterPositionClosedLoop()
             }
             field = constrainPositionUnits(value)
-            masterMotorController.set(ControlMode.Position, field)
+            hardware.setPosition(field)
         }
 
     private val velocityTicksPer100Ms: Int
-        get() = masterMotorController.selectedSensorVelocity
+        get() = hardware.velocityTicksPer100Ms
 
     /**
      * The current velocity of the mechanism in units per second.
@@ -102,7 +98,7 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainVelocityUnitsPerSecond(value)
-            masterMotorController.set(ControlMode.Velocity, field)
+            hardware.setVelocity(field)
         }
 
     /**
@@ -112,7 +108,7 @@ abstract class ServoMotorSubsystem(
     var openLoopPower: Double = 0.0
         set(value) {
             if (state != ControlState.OPEN_LOOP) state = ControlState.OPEN_LOOP
-            masterMotorController.set(ControlMode.PercentOutput, value)
+            hardware.setOpenLoop(value)
             field = value
         }
 
@@ -138,54 +134,26 @@ abstract class ServoMotorSubsystem(
     override fun outputTelemetry() {}
 
     override fun zeroSensors() {
-        masterMotorController.selectedSensorPosition = 0
-    }
-
-    private fun applyPIDGains(gains: PIDGains) {
-        val timeout = config.masterMotorControllerConfiguration.timeout
-
-        masterMotorController.config_kP(gains.slotNumber, gains.kP, timeout)
-        masterMotorController.config_kI(gains.slotNumber, gains.kI, timeout)
-        masterMotorController.config_kD(gains.slotNumber, gains.kD, timeout)
-        masterMotorController.config_IntegralZone(gains.slotNumber, gains.iZone.roundToInt(), timeout)
+        hardware.zeroSensors()
     }
 
     fun updatePIDGains() {
-        applyPIDGains(config.velocityPIDGains)
-        applyPIDGains(config.positionPIDGains)
+        hardware.applyPIDGains(config.velocityPIDGains)
+        hardware.applyPIDGains(config.positionPIDGains)
 
         HelixEvents.addEvent(config.name, "Updated PID gains")
     }
 
     fun updateMotionConstraints() {
-        masterMotorController.configReverseSoftLimitEnable(
-            !config.motionConstraints.reverseSoftLimit.isNaN(),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configReverseSoftLimitThreshold(
+        hardware.applyMotionConstraints(
+            config.motionConstraints.reverseSoftLimit.isNaN(),
             homeAwareUnitsToTicks(config.motionConstraints.reverseSoftLimit),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configForwardSoftLimitEnable(
-            !config.motionConstraints.forwardSoftLimit.isNaN(),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configForwardSoftLimitThreshold(
+            config.motionConstraints.forwardSoftLimit.isNaN(),
             homeAwareUnitsToTicks(config.motionConstraints.forwardSoftLimit),
-            config.masterMotorControllerConfiguration.timeout
-        )
-
-        masterMotorController.configMotionCruiseVelocity(
             unitsPerSecondToTicksPer100ms(config.motionConstraints.cruiseVel),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configMotionAcceleration(
             unitsPerSecondToTicksPer100ms(config.motionConstraints.maxAccel),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configMotionSCurveStrength(
             config.motionConstraints.motionProfileCurveStrength,
-            config.masterMotorControllerConfiguration.timeout
+            config.velocityPIDGains.slotNumber
         )
 
         HelixEvents.addEvent(config.name, "Updated motion constraints")
@@ -197,8 +165,7 @@ abstract class ServoMotorSubsystem(
      */
     @Synchronized
     private fun enterVelocityClosedLoop() {
-        masterMotorController.selectProfileSlot(config.velocityPIDGains.slotNumber, 0)
-
+        hardware.pidSlot = config.velocityPIDGains.slotNumber
         HelixEvents.addEvent(config.name, "Entered velocity closed loop")
     }
 
@@ -207,8 +174,7 @@ abstract class ServoMotorSubsystem(
      */
     @Synchronized
     private fun enterPositionClosedLoop() {
-        masterMotorController.selectProfileSlot(config.positionPIDGains.slotNumber, 0)
-
+        hardware.pidSlot = config.positionPIDGains.slotNumber
         HelixEvents.addEvent(config.name, "Entered position closed loop")
     }
 
