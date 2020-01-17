@@ -3,6 +3,7 @@ package com.team4099.lib.hardware
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.team4099.lib.config.PIDGains
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import kotlin.math.roundToInt
 
 class CTREServoMotorHardware(
     masterId: Int,
@@ -46,7 +47,7 @@ class CTREServoMotorHardware(
         masterMotorController.config_kP(gains.slotNumber, gains.kP, timeout)
         masterMotorController.config_kI(gains.slotNumber, gains.kI, timeout)
         masterMotorController.config_kD(gains.slotNumber, gains.kD, timeout)
-        masterMotorController.config_IntegralZone(gains.slotNumber, gains.iZone, timeout)
+        masterMotorController.config_IntegralZone(gains.slotNumber, gains.iZone.roundToInt(), timeout)
     }
 
     override fun applyMotionConstraints(
