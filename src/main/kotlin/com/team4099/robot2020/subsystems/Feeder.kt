@@ -2,17 +2,18 @@ package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 
 object Feeder : Subsystem {
-    private val inMasterTalon = CTREMotorControllerFactory.createDefaultTalon(Constants.Feeder.FEEDER_IN_MASTER_ID)
-    private val inSlaveVictor = CTREMotorControllerFactory.createPermanentSlaveVictor(
+    private val inMasterTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.FEEDER_IN_MASTER_ID)
+    private val inSlaveVictor = CTREMotorControllerFactory.createPermanentSlaveVictorSPX(
         Constants.Feeder.FEEDER_IN_MASTER_ID,
         Constants.Feeder.FEEDER_IN_SLAVE_ID
     )
 
-    private val outTalon = CTREMotorControllerFactory.createDefaultTalon(Constants.Feeder.FEEDER_OUT_ID)
+    private val outSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_OUT_ID)
 
     var feederState = FeederState.HOLD
     private var feederInPower = 0.0
@@ -25,7 +26,7 @@ object Feeder : Subsystem {
     private var feederOutPower = 0.0
         set(value) {
             if (value != field) {
-                outTalon.set(ControlMode.PercentOutput, value)
+                outSparkMax.set(value)
             }
             field = value
         }
@@ -35,7 +36,7 @@ object Feeder : Subsystem {
         inMasterTalon.inverted = false
         inSlaveVictor.inverted = true
 
-        outTalon.inverted = true
+        outSparkMax.inverted = true
     }
 
     enum class FeederState {
