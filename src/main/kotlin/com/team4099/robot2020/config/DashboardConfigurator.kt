@@ -8,6 +8,7 @@ import com.team4099.lib.auto.AutoMode
 import com.team4099.lib.auto.AutoModeProvider
 import com.team4099.lib.loop.Loop
 import com.team4099.lib.subsystem.ServoMotorSubsystem
+import com.team4099.robot2020.auto.modes.DriveForwardMode
 import com.team4099.robot2020.auto.modes.StandStillMode
 
 /**
@@ -29,13 +30,14 @@ object DashboardConfigurator : Loop {
     }
 
     private val defaultStart = StartingPosition.CENTER
-    private val defaultMode = { _: StartingPosition, _: Double -> StandStillMode(0.0) }
+    private val defaultMode: AutoModeProvider = { _: StartingPosition, _: Double -> StandStillMode(0.0) }
 
     /**
      * Maps the name of a mode to a function that creates an instance of it.
      */
-    private val allModes = mapOf<String, AutoModeProvider>(
-            Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode
+    private val allModes = mapOf(
+        Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode,
+        "Drive Forward" to { _: StartingPosition, delay: Double -> DriveForwardMode(delay) }
     )
 
     private val configurableSubsystems = mutableListOf<ServoMotorSubsystem>()
