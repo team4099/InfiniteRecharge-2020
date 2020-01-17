@@ -22,7 +22,7 @@ class ServoMotorSubsystemMotionConstraints(
     var maxAccel: Double,
     var motionProfileCurveStrength: Int
 ) : Configurable<Double>({ it }) {
-    private var motionProfileCurveStrengthDouble = motionProfileCurveStrength.toDouble()
+    var motionProfileCurveStrengthDouble = motionProfileCurveStrength.toDouble()
         set(value) {
             motionProfileCurveStrength = value.roundToInt()
             field = value
