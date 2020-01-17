@@ -140,14 +140,20 @@ object Robot : TimedRobot() {
 
     override fun teleopPeriodic() {
         try {
-            Drive.setCheesyishDrive(
+            if (ControlBoard.enableVisionAlignment) {
+                Vision.state = Vision.VisionState.AIMING
+                Drive.setCheesyishDrive(
+                    0.0,
+                    Vision.steeringAdjust,
+                    true
+                )
+            } else {
+                Vision.state = Vision.VisionState.IDLE
+                Drive.setCheesyishDrive(
                     ControlBoard.throttle,
                     ControlBoard.turn,
                     ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-            )
-
-            if (ControlBoard.enableVisionAlignment) {
-                Vision.
+                )
             }
 
             when {

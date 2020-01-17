@@ -6,26 +6,26 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 import edu.wpi.first.networktables.NetworkTableEntry
+import edu.wpi.first.wpilibj.controller.PIDController
 import kotlin.math.abs
 import kotlin.math.sign
 import kotlin.math.tan
 
 object Vision : Subsystem {
     enum class VisionState {
-        IDLE, AIMING, SEEKING
+        IDLE, AIMING
     }
 
-    private var state = VisionState.IDLE
+    var state = VisionState.IDLE
         set(value) {
             if (value != field) {
-                pipeline = when (value) {
+                pipeline = when(value) {
                     VisionState.IDLE -> {
                         steeringAdjust = 0.0
                         distanceAdjust = 0.0
                         Constants.Vision.DRIVER_PIPELINE_ID
                     }
                     VisionState.AIMING -> Constants.Vision.TARGETING_PIPELINE_ID
-                    VisionState.SEEKING -> Constants.Vision.TARGETING_PIPELINE_ID
                 }
                 field = value
             }
@@ -43,6 +43,19 @@ object Vision : Subsystem {
     private val ta get() = table.getEntry("ta").getDouble(0.0) // target area
 
     private val pipelineEntry: NetworkTableEntry = table.getEntry("pipeline")
+    private val turnController = PIDController(
+        Constants.Vision.TURN_GAINS.kP,
+        Constants.Vision.TURN_GAINS.kI,
+        Constants.Vision.TURN_GAINS.kD,
+        Constants.Vision.TURN_GAINS.kF
+    )
+    private val distanceController = PIDController(
+        Constants.Vision.DISTANCE_GAINS.kP,
+        Constants.Vision.DISTANCE_GAINS.kI,
+        Constants.Vision.DISTANCE_GAINS.kD,
+        Constants.Vision.DISTANCE_GAINS.kF
+    )
+
     private var pipeline = Constants.Vision.DRIVER_PIPELINE_ID
         set(value) {
             pipelineEntry.setNumber(value)
@@ -62,22 +75,23 @@ object Vision : Subsystem {
         when (state) {
             VisionState.IDLE -> {}
             VisionState.AIMING -> {
-                if (tv == 0.0) state = VisionState.SEEKING
+                println("aiming")
+                if (tv == 0.0)
                 else {
-                    steeringAdjust = tv * Constants.Vision.TURN_GAINS.kP
-                    distanceAdjust = distanceError * Constants.Vision.DISTANCE_GAINS.kP
-                    distanceAdjust += sign(distanceError) * Constants.Vision.MIN_COMMAND
+//                    onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
+//
+                        steeringAdjust = turnController.calculate(tx)
+//                      steeringAdjust = tx * Constants.Vision.TURN_GAINS.kP
+//                      steeringAdjust += sign(tx) * Constants.Vision.MIN_COMMAND
+//                      distanceAdjust = distanceError * Constants.Vision.DISTANCE_GAINS.kP
+//                      distanceAdjust += sign(distanceError) * Constants.Vision.MIN_COMMAND
 
-                    onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
+//                      if (tx > 0) steeringAdjust *= -1
+
+
+
                 }
-            }
-            VisionState.SEEKING -> {
-                if (tv > 0.0) state = VisionState.AIMING
-                else {
-                    steeringAdjust = Constants.Vision.SEEKING_TURN_POWER
-                    distanceAdjust = 0.0
-                    onTarget = false
-                }
+                println("adjust: $steeringAdjust")
             }
         }
     }

@@ -151,6 +151,9 @@ object Drive : Subsystem {
         leftMasterTalon.inverted = false
         leftSlaveTalon.inverted = false
 
+        rightSlaveTalon.configNeutralDeadband(0.0)
+        leftSlaveTalon.configNeutralDeadband(0.0)
+
         rightMasterTalon.configSelectedFeedbackSensor(
             TalonFXFeedbackDevice.IntegratedSensor,
             0,
@@ -338,7 +341,8 @@ object Drive : Subsystem {
      */
     // thank you team 254 but i like 148 better...
     @Synchronized
-    fun setCheesyishDrive(throttle: Double, turn: Double, quickTurn: Boolean) {var mThrottle = throttle
+    fun setCheesyishDrive(throttle: Double, turn: Double, quickTurn: Boolean) {
+        var mThrottle = throttle
         var mTurn = turn
         if (mThrottle.around(0.0, Constants.Joysticks.THROTTLE_DEADBAND)) {
             mThrottle = 0.0
@@ -347,8 +351,6 @@ object Drive : Subsystem {
         if (mTurn.around(0.0, Constants.Joysticks.TURN_DEADBAND)) {
             mTurn = 0.0
         }
-
-        
 
         val denominator = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY)
         // Apply a sin function that's scaled to make it feel better.
