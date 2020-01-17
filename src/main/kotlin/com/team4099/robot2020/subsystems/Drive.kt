@@ -2,10 +2,10 @@ package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.DemandType
-import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.NeutralMode
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.kauailabs.navx.frc.AHRS
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
@@ -29,14 +29,14 @@ import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 
 object Drive : Subsystem {
-    private val rightMasterTalon: TalonSRX
-    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
+    private val rightMasterTalon: TalonFX
+    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
             Constants.Drive.RIGHT_SLAVE_1_ID,
             Constants.Drive.RIGHT_MASTER_ID
     )
 
-    private val leftMasterTalon: TalonSRX
-    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalon(
+    private val leftMasterTalon: TalonFX
+    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
             Constants.Drive.LEFT_SLAVE_1_ID,
             Constants.Drive.LEFT_MASTER_ID
     )
@@ -144,24 +144,23 @@ object Drive : Subsystem {
         masterConfig.motionMagicAcceleration =
             metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
 
-        rightMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-        leftMasterTalon = CTREMotorControllerFactory.createTalon(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-
+        rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
+        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, masterConfig)
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
-        leftMasterTalon.inverted = false
+        leftSlaveTalon.inverted = false
 
         rightMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                0,
-                Constants.Universal.CTRE_CONFIG_TIMEOUT
+            TalonFXFeedbackDevice.IntegratedSensor,
+            0,
+            Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         leftMasterTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative,
-                0,
-                Constants.Universal.CTRE_CONFIG_TIMEOUT
+            TalonFXFeedbackDevice.IntegratedSensor,
+            0,
+            Constants.Universal.CTRE_CONFIG_TIMEOUT
         )
 
         // TODO: SET CONVERSION FACTORS
@@ -213,10 +212,20 @@ object Drive : Subsystem {
         HelixLogger.addSource("DT Left Output %") { leftMasterTalon.motorOutputPercent }
         HelixLogger.addSource("DT Right Output %") { rightMasterTalon.motorOutputPercent }
 
-        HelixLogger.addSource("DT Left Master Input Current") { leftMasterTalon.outputCurrent }
-        HelixLogger.addSource("DT Left Slave Input Current") { leftSlaveTalon.outputCurrent }
-        HelixLogger.addSource("DT Right Master Input Current") { rightMasterTalon.outputCurrent }
-        HelixLogger.addSource("DT Right Slave Input Current") { rightSlaveTalon.outputCurrent }
+        HelixLogger.addSource("DT Left Master Supply Current") { leftMasterTalon.supplyCurrent }
+        HelixLogger.addSource("DT Left Slave Supply Current") { leftSlaveTalon.supplyCurrent }
+        HelixLogger.addSource("DT Right Master Supply Current") { rightMasterTalon.supplyCurrent }
+        HelixLogger.addSource("DT Right Slave Supply Current") { rightSlaveTalon.supplyCurrent }
+
+        HelixLogger.addSource("DT Left Master Stator Current") { leftMasterTalon.statorCurrent }
+        HelixLogger.addSource("DT Left Slave Stator Current") { leftSlaveTalon.statorCurrent }
+        HelixLogger.addSource("DT Right Master Stator Current") { rightMasterTalon.statorCurrent }
+        HelixLogger.addSource("DT Right Slave Stator Current") { rightSlaveTalon.statorCurrent }
+
+        HelixLogger.addSource("DT Left Master Temp") { leftMasterTalon.temperature }
+        HelixLogger.addSource("DT Left Slave Temp") { leftSlaveTalon.temperature }
+        HelixLogger.addSource("DT Right Master Temp") { rightMasterTalon.temperature }
+        HelixLogger.addSource("DT Right Slave Temp") { rightSlaveTalon.temperature }
 
         HelixLogger.addSource("DT Left Velocity (in/s)") { leftVelocityMetersPerSec }
         HelixLogger.addSource("DT Right Velocity (in/s)") { rightVelocityMetersPerSec }
@@ -233,9 +242,9 @@ object Drive : Subsystem {
 
     override fun outputTelemetry() {
         if (ahrs.isConnected) {
-            SmartDashboard.putNumber("gyro", yaw)
+            SmartDashboard.putNumber("drive/gyro", yaw)
         } else {
-            SmartDashboard.putNumber("gyro", Constants.Drive.GYRO_BAD_VALUE)
+            SmartDashboard.putNumber("drive/gyro", Constants.Drive.GYRO_BAD_VALUE)
         }
     }
 
@@ -248,8 +257,8 @@ object Drive : Subsystem {
             HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
         }
 
-        rightMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
-        leftMasterTalon.sensorCollection.setQuadraturePosition(0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        rightMasterTalon.sensorCollection.setIntegratedSensorPosition(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
+        leftMasterTalon.sensorCollection.setIntegratedSensorPosition(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
     }
 
     /**
@@ -324,35 +333,35 @@ object Drive : Subsystem {
      * Uses a sinusoidal scaling function for curvature.
      *
      * @param throttle The magnitude of the output. Controlled by the triggers on the driver controller.
-     * @param wheel The curvature of the path. Controlled by the left/right axis of a joystick.
+     * @param turn The curvature of the path. Controlled by the left/right axis of a joystick.
      * @param quickTurn True if the curvature should not be scaled. Typically used when turning in place.
      */
     // thank you team 254 but i like 148 better...
     @Synchronized
-    fun setCheesyishDrive(throttle: Double, wheel: Double, quickTurn: Boolean) {
+    fun setCheesyishDrive(throttle: Double, turn: Double, quickTurn: Boolean) {
         var mThrottle = throttle
-        var mWheel = wheel
+        var mTurn = turn
         if (mThrottle.around(0.0, Constants.Joysticks.THROTTLE_DEADBAND)) {
             mThrottle = 0.0
         }
 
-        if (mWheel.around(0.0, Constants.Joysticks.TURN_DEADBAND)) {
-            mWheel = 0.0
+        if (mTurn.around(0.0, Constants.Joysticks.TURN_DEADBAND)) {
+            mTurn = 0.0
         }
 
         val denominator = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY)
         // Apply a sin function that's scaled to make it feel better.
         if (!quickTurn) {
-            mWheel = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mWheel)
-            mWheel = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mWheel)
-            mWheel = mWheel / (denominator * denominator) * abs(mThrottle)
+            mTurn = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mTurn)
+            mTurn = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mTurn)
+            mTurn = mTurn / (denominator * denominator) * abs(mThrottle)
         }
 
-        mWheel *= Constants.Drive.WHEEL_GAIN
-        val driveSignal = if (abs(mWheel) < Constants.Universal.EPSILON) {
+        mTurn *= Constants.Drive.WHEEL_GAIN
+        val driveSignal = if (abs(mTurn) < Constants.Universal.EPSILON) {
             DriveSignal(mThrottle, mThrottle)
         } else {
-            val deltaV = Constants.Drive.WHEEL_TRACK_WIDTH_INCHES * mWheel / (2 * Constants.Drive.TRACK_SCRUB_FACTOR)
+            val deltaV = Constants.Drive.WHEEL_TRACK_WIDTH_INCHES * mTurn / (2 * Constants.Drive.TRACK_SCRUB_FACTOR)
             DriveSignal(mThrottle - deltaV, mThrottle + deltaV)
         }
 
