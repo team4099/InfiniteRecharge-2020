@@ -1,7 +1,5 @@
 package com.team4099.robot2020.subsystems
 
-import com.revrobotics.CANSparkMax
-import com.revrobotics.CANSparkMaxLowLevel.MotorType
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
@@ -10,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Intake : Subsystem {
 
-    private val sparkMax = CANSparkMax(Constants.Intake.INTAKE_SPARK_MAX_ID, MotorType.kBrushless)
+    private val sparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Intake.INTAKE_SPARK_MAX_ID)
 
     private var intakePower = 0.0
         set(value) {
@@ -68,28 +66,3 @@ object Intake : Subsystem {
         intakePower = 0.0
     }
 }
-//        val loop = object: Loop {
-//            override fun onStart(timestamp: Double) {
-//                intakeState = IntakeState.IDLE
-//            }
-//
-//            /**
-//             * Sets Intake to -1 if pulling in, to 0 if stationary, and 1 if pushing out
-//             */
-//           fun onLoop(timestamp: Double) {
-//                synchronized(this@Intake) {
-//                    when (intakeState) {
-//                        IntakeState.IN -> setIntakePower(-1.0)
-//                        IntakeState.IDLE -> setIntakePower(0.0)
-//                        IntakeState.OUT -> setIntakePower(1.0)
-//                    }
-//                }
-//            }
-//            override fun onStop(timestamp: Double) = stop()
-//        }
-//        fun stop() {
-//            intakeState = IntakeState.IDLE
-//            setIntakePower(0.0)
-//        }
-//
-//        override fun zeroSensors() {}
