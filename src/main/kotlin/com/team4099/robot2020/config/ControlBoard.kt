@@ -25,4 +25,10 @@ object ControlBoard {
 
     val wristHorizontal: Boolean
         get() = operator.rightShoulderButton
+
+    val runIntakeIn: Boolean
+        get() = operator.aButton
+
+    val runIntakeOut: Boolean
+        get() = operator.bButton
 }
