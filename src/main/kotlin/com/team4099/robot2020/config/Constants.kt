@@ -124,6 +124,7 @@ object Constants {
             DOWN(0.0),
             UP(45.0)
         }
+    }
 
     object Intake {
         const val INTAKE_SPARK_MAX_ID = 69
