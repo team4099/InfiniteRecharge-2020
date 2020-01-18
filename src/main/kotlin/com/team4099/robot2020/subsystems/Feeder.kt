@@ -5,6 +5,7 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
     private val inMasterTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.FEEDER_IN_MASTER_ID)
@@ -43,7 +44,11 @@ object Feeder : Subsystem {
         HOLD, INTAKE, SHOOT
     }
 
-    override fun outputTelemetry() { }
+    override fun outputTelemetry() {
+        SmartDashboard.putString("feeder/feederState", feederState.toString())
+        SmartDashboard.putNumber("feeder/feederInPower", feederInPower)
+        SmartDashboard.putNumber("feeder/feederOutPower", feederOutPower)
+    }
 
     override fun checkSystem() { }
 

@@ -389,6 +389,4 @@ object CTREMotorControllerFactory {
             )
         }
     }
-
-
 }
