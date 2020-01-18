@@ -18,6 +18,7 @@ import com.team4099.robot2020.config.DashboardConfigurator
 import com.team4099.robot2020.loops.BrownoutDefender
 import com.team4099.robot2020.loops.FaultDetector
 import com.team4099.robot2020.loops.VoltageEstimator
+import com.team4099.robot2020.subsystems.Climber
 import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Wrist
@@ -57,6 +58,7 @@ object Robot : TimedRobot() {
 
             // Register all subsystems
             SubsystemManager.register(Drive)
+            SubsystemManager.register(Climber)
             SubsystemManager.register(Intake)
             SubsystemManager.register(Wrist)
 
@@ -145,6 +147,12 @@ object Robot : TimedRobot() {
                     ControlBoard.turn,
                     ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
             )
+
+            when {
+                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
+                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+                else -> Climber.velocitySetpoint = 0.0
+            }
 
             when {
                 ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
