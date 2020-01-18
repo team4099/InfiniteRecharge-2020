@@ -1,5 +1,6 @@
 package com.team4099.robot2020.subsystems
 
+import com.team4099.lib.config.Configurable
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
@@ -31,6 +32,8 @@ object Intake : Subsystem {
         sparkMax.inverted = false
     }
 
+    override val configurableProperties: List<Configurable<out Number>> = listOf()
+
     override fun outputTelemetry() {
         SmartDashboard.putString("intake/intakeState", intakeState.toString())
         SmartDashboard.putNumber("intake/intakePower", intakePower)
@@ -51,7 +54,7 @@ object Intake : Subsystem {
     }
 
     @Synchronized
-    override fun onLoop(timestamp: Double, dt: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         synchronized(this) {
             when (intakeState) {
                 IntakeState.IN -> intakePower = -1.0

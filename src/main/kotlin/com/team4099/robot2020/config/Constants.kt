@@ -101,10 +101,10 @@ object Constants {
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
         "inches",
-        PIDGains(0, 1.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        PIDGains("climber/velocity_pid", 0, 1.0, 0.0, 0.0, 0.0, 0.0),
+        PIDGains("climber/position_pid", 1, 1.0, 0.0, 0.0, 0.0, 0.0),
         0.0,
-        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        ServoMotorSubsystemMotionConstraints("wrist", -20.0, 90.0, 90.0, 90.0, 0),
         0.0,
         1024
     ) {
