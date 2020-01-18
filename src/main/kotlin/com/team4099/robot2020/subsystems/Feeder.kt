@@ -62,20 +62,18 @@ object Feeder : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
-        synchronized(this) {
-            when (feederState) {
-                FeederState.INTAKE -> {
-                    feederOutPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                    feederInPower = Constants.Feeder.FEEDER_MAX_POWER
-                }
-                FeederState.HOLD -> {
-                    feederOutPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                    feederInPower = Constants.Feeder.FEEDER_HOLD_POWER
-                }
-                FeederState.SHOOT -> {
-                    feederOutPower = Constants.Feeder.FEEDER_MAX_POWER
-                    feederInPower = Constants.Feeder.FEEDER_MAX_POWER
-                }
+        when (feederState) {
+            FeederState.INTAKE -> {
+                feederOutPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                feederInPower = Constants.Feeder.FEEDER_MAX_POWER
+            }
+            FeederState.HOLD -> {
+                feederOutPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                feederInPower = Constants.Feeder.FEEDER_HOLD_POWER
+            }
+            FeederState.SHOOT -> {
+                feederOutPower = Constants.Feeder.FEEDER_MAX_POWER
+                feederInPower = Constants.Feeder.FEEDER_MAX_POWER
             }
         }
     }
