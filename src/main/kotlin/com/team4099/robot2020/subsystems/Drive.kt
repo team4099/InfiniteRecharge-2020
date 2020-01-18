@@ -145,12 +145,11 @@ object Drive : Subsystem {
             metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
 
         rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-
+        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, masterConfig)
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
-        leftMasterTalon.inverted = false
+        leftSlaveTalon.inverted = false
 
         rightMasterTalon.configSelectedFeedbackSensor(
             TalonFXFeedbackDevice.IntegratedSensor,
@@ -326,35 +325,35 @@ object Drive : Subsystem {
      * Uses a sinusoidal scaling function for curvature.
      *
      * @param throttle The magnitude of the output. Controlled by the triggers on the driver controller.
-     * @param wheel The curvature of the path. Controlled by the left/right axis of a joystick.
+     * @param turn The curvature of the path. Controlled by the left/right axis of a joystick.
      * @param quickTurn True if the curvature should not be scaled. Typically used when turning in place.
      */
     // thank you team 254 but i like 148 better...
     @Synchronized
-    fun setCheesyishDrive(throttle: Double, wheel: Double, quickTurn: Boolean) {
+    fun setCheesyishDrive(throttle: Double, turn: Double, quickTurn: Boolean) {
         var mThrottle = throttle
-        var mWheel = wheel
+        var mTurn = turn
         if (mThrottle.around(0.0, Constants.Joysticks.THROTTLE_DEADBAND)) {
             mThrottle = 0.0
         }
 
-        if (mWheel.around(0.0, Constants.Joysticks.TURN_DEADBAND)) {
-            mWheel = 0.0
+        if (mTurn.around(0.0, Constants.Joysticks.TURN_DEADBAND)) {
+            mTurn = 0.0
         }
 
         val denominator = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY)
         // Apply a sin function that's scaled to make it feel better.
         if (!quickTurn) {
-            mWheel = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mWheel)
-            mWheel = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mWheel)
-            mWheel = mWheel / (denominator * denominator) * abs(mThrottle)
+            mTurn = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mTurn)
+            mTurn = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mTurn)
+            mTurn = mTurn / (denominator * denominator) * abs(mThrottle)
         }
 
-        mWheel *= Constants.Drive.WHEEL_GAIN
-        val driveSignal = if (abs(mWheel) < Constants.Universal.EPSILON) {
+        mTurn *= Constants.Drive.WHEEL_GAIN
+        val driveSignal = if (abs(mTurn) < Constants.Universal.EPSILON) {
             DriveSignal(mThrottle, mThrottle)
         } else {
-            val deltaV = Constants.Drive.WHEEL_TRACK_WIDTH_INCHES * mWheel / (2 * Constants.Drive.TRACK_SCRUB_FACTOR)
+            val deltaV = Constants.Drive.WHEEL_TRACK_WIDTH_INCHES * mTurn / (2 * Constants.Drive.TRACK_SCRUB_FACTOR)
             DriveSignal(mThrottle - deltaV, mThrottle + deltaV)
         }
 
