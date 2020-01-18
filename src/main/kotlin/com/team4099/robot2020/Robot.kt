@@ -149,10 +149,15 @@ object Robot : TimedRobot() {
                 )
             } else {
                 Vision.state = Vision.VisionState.IDLE
+//                Drive.setCheesyishDrive(
+//                    ControlBoard.throttle,
+//                    ControlBoard.turn,
+//                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+//                )
                 Drive.setCheesyishDrive(
-                    ControlBoard.throttle,
+                    0.0,
                     ControlBoard.turn,
-                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+                    true
                 )
             }
 

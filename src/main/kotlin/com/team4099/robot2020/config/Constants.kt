@@ -117,9 +117,9 @@ object Constants {
         const val MAX_DIST_ERROR = 0.1
         const val MAX_ANGLE_ERROR = 0.1
 
-        val TURN_GAINS = PIDGains(0, 0.014, 0.0, 0.0, 0.1, 0)
+        val TURN_GAINS = PIDGains(0, 0.009, 0.0, 0.0, 0.0, 0)
         val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
-        const val MIN_COMMAND = 0.1
+        const val MIN_COMMAND = 0.0838
         val SEEKING_TURN_POWER = 0.3
     }
 

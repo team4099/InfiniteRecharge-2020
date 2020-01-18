@@ -75,23 +75,15 @@ object Vision : Subsystem {
         when (state) {
             VisionState.IDLE -> {}
             VisionState.AIMING -> {
-                println("aiming")
                 if (tv == 0.0)
                 else {
-//                    onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
-//
-                        steeringAdjust = turnController.calculate(tx)
-//                      steeringAdjust = tx * Constants.Vision.TURN_GAINS.kP
-//                      steeringAdjust += sign(tx) * Constants.Vision.MIN_COMMAND
-//                      distanceAdjust = distanceError * Constants.Vision.DISTANCE_GAINS.kP
-//                      distanceAdjust += sign(distanceError) * Constants.Vision.MIN_COMMAND
+                    onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
 
-//                      if (tx > 0) steeringAdjust *= -1
-
-
-
+                    steeringAdjust = turnController.calculate(tx)
+                    steeringAdjust += -sign(tx) * Constants.Vision.MIN_COMMAND
+                    distanceAdjust = distanceError * Constants.Vision.DISTANCE_GAINS.kP
+                    distanceAdjust += sign(distanceError) * Constants.Vision.MIN_COMMAND
                 }
-                println("adjust: $steeringAdjust")
             }
         }
     }
