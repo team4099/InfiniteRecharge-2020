@@ -183,6 +183,6 @@ object Constants {
         const val FEEDER_OUT_ID = 13
 
         const val FEEDER_MAX_POWER = 1.0
-        const val FEEDER_HOLD_POWER = 0.5
+        const val FEEDER_HOLD_POWER = 0.1
     }
 }
