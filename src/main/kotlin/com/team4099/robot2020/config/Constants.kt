@@ -97,7 +97,6 @@ object Constants {
             const val LEFT_KD = 0.0000
             const val LEFT_KF = 0.0000 // 1023.0 / 2220.0
 
-            // subject to change
             const val RIGHT_KP = 0.0000 // .1 * 1023 / 70
             const val RIGHT_KI = 0.0000
             const val RIGHT_KD = 0.0000
@@ -116,16 +115,18 @@ object Constants {
         0.0,
         1024
     ) {
-        // subject to change
         const val MASTER_ID = 9
         const val SLAVE_ID = 10
 
         const val OPERATOR_CONTROL_VEL = 90.0
 
         enum class ClimberPosition(val position: Double) {
-            DOWN(0.0), // values subject to change
+            DOWN(0.0),
             UP(45.0)
         }
+
+    object Intake {
+        const val INTAKE_SPARK_MAX_ID = 69
     }
 
     object Looper {

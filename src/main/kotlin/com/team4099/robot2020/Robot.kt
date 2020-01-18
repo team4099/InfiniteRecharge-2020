@@ -20,6 +20,7 @@ import com.team4099.robot2020.loops.FaultDetector
 import com.team4099.robot2020.loops.VoltageEstimator
 import com.team4099.robot2020.subsystems.Climber
 import com.team4099.robot2020.subsystems.Drive
+import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Wrist
 
 object Robot : TimedRobot() {
@@ -58,6 +59,7 @@ object Robot : TimedRobot() {
             // Register all subsystems
             SubsystemManager.register(Drive)
             SubsystemManager.register(Climber)
+            SubsystemManager.register(Intake)
             SubsystemManager.register(Wrist)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
@@ -159,6 +161,12 @@ object Robot : TimedRobot() {
                     Constants.Wrist.WristPosition.VERTICAL
                 else -> Wrist.velocitySetpoint =
                     ControlBoard.sampleWristVelocity * Constants.Wrist.OPERATOR_CONTROL_VEL
+            }
+
+            when {
+                ControlBoard.runIntakeIn -> Intake.intakeState = Intake.IntakeState.IN
+                ControlBoard.runIntakeOut -> Intake.intakeState = Intake.IntakeState.OUT
+                else -> Intake.intakeState = Intake.IntakeState.IDLE
             }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
