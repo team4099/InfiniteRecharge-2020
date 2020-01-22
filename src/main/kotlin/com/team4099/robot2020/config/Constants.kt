@@ -32,6 +32,36 @@ object Constants {
         )
     }
 
+    object SuperStructure {
+
+        enum class States {
+            DEFAULT, // For initializing at runtime, doesn't do anything
+
+            IDLE,
+
+            SPIN_UP_FLYWHEEL, // Just start spinning the flywheel
+            SHOOT,
+            UNJAM_SHOOTER,
+
+            CLIMB,
+
+            INTAKE,
+            UNJAM_INTAKE,
+
+            FEED, // Just feed the stuff into the feeder but don't let it leave
+            UNJAM_FEEDER,
+
+            // Wanted States
+            IS_ACCELERATING_FLYWHEEL,
+
+            IS_SPINNING_UP_SHOOTER,
+
+            IS_INTAKING,
+
+            IS
+        }
+    }
+
     object Drive {
         const val LEFT_MASTER_ID = 10
         const val LEFT_SLAVE_1_ID = 9
@@ -97,7 +127,6 @@ object Constants {
             const val LEFT_KD = 0.0000
             const val LEFT_KF = 0.0000 // 1023.0 / 2220.0
 
-            // subject to change
             const val RIGHT_KP = 0.0000 // .1 * 1023 / 70
             const val RIGHT_KI = 0.0000
             const val RIGHT_KD = 0.0000
@@ -105,16 +134,31 @@ object Constants {
         }
     }
 
-    object Shooter {
-        const val MASTER_SPARKMAX_ID = 0
-        const val SLAVE_SPARKMAX_ID = 1
-
-        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
-
-        const val targetSpeed = 0.0
-        const val speedThreshold = 0.0
+    }
+        const val INTAKE_SPARK_MAX_ID = 69
+    object Intake {
     }
 
+            UP(45.0)
+        }
+    object Climber : ServoMotorSubsystemConfig(
+            DOWN(0.0),
+        enum class ClimberPosition(val position: Double) {
+
+        const val OPERATOR_CONTROL_VEL = 90.0
+
+        const val MASTER_ID = 9
+        const val SLAVE_ID = 10
+    ) {
+        1024
+        0.0,
+        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        0.0,
+        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        PIDGains(0, 1.0, 0.0, 0.0, 0),
+        CTREMotorControllerFactory.defaultConfiguration,
+        "inches",
+        "CLIMBER",
     object Looper {
         const val LOOPER_DT = 0.02 // 50 Hz
     }
@@ -160,7 +204,7 @@ object Constants {
         const val COMPRESSOR_STOP_CURRENT = 70
     }
 
-    object SampleWrist : ServoMotorSubsystemConfig(
+    object Wrist : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",

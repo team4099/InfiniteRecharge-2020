@@ -61,6 +61,7 @@ detekt {
     toolVersion = "1.1.1"
     input = files("src/main/kotlin")
     config = files("config/detekt/detekt.yml")
+    ignoreFailures = project.hasProperty("failOnDetekt") ? !project.findProperty("failOnDetekt") : true
 }
 
 repositories {

@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
+import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.team4099.robot2020.config.Constants
 
 /**
@@ -17,7 +18,7 @@ import com.team4099.robot2020.config.Constants
  */
 object CTREMotorControllerFactory {
     /**
-     * Represents the configuration of a Talon SRX or Victor SPX
+     * Represents the configuration of a Talon FX, Talon SRX or, Victor SPX
      */
     @Suppress("MagicNumber")
     class Configuration {
@@ -83,8 +84,8 @@ object CTREMotorControllerFactory {
      *
      * @param id The CAN ID of the Talon SRX to create.
      */
-    fun createDefaultTalon(id: Int): TalonSRX {
-        return createTalon(id, defaultConfiguration)
+    fun createDefaultTalonSRX(id: Int): TalonSRX {
+        return createTalonSRX(id, defaultConfiguration)
     }
 
     /**
@@ -92,9 +93,18 @@ object CTREMotorControllerFactory {
      *
      * @param id The CAN ID of the Victor SPX to create.
      */
-    fun createDefaultVictor(id: Int): VictorSPX {
-        return createVictor(id, defaultConfiguration)
+    fun createDefaultVictorSPX(id: Int): VictorSPX {
+        return createVictorSPX(id, defaultConfiguration)
     }
+
+    /**
+     * Create a Talon FX with the default [Configuration].
+     *
+     * @param id The CAN ID of the Talon FX to create
+     */
+     fun createDefaultTalonFX(id: Int): TalonFX {
+         return createTalonFX(id, defaultConfiguration)
+     }
 
     /**
      * Create a Talon SRX that follows another motor controller.
@@ -102,8 +112,8 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Talon SRX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveTalon(id: Int, masterId: Int): TalonSRX {
-        val talon = createTalon(id, slaveConfiguration)
+    fun createPermanentSlaveTalonSRX(id: Int, masterId: Int): TalonSRX {
+        val talon = createTalonSRX(id, slaveConfiguration)
         talon.set(ControlMode.Follower, masterId.toDouble())
         return talon
     }
@@ -114,10 +124,22 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Victor SPX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveVictor(id: Int, masterId: Int): VictorSPX {
-        val victor = createVictor(id, slaveConfiguration)
+    fun createPermanentSlaveVictorSPX(id: Int, masterId: Int): VictorSPX {
+        val victor = createVictorSPX(id, slaveConfiguration)
         victor.set(ControlMode.Follower, masterId.toDouble())
         return victor
+    }
+
+    /**
+     * Create a Talon FX that follows another motor controller.
+     *
+     * @param id The CAN ID of the Talon FX to create.
+     * @param masterId The CAN ID of the motor controller to follow.
+     */
+    fun createPermanentSlaveTalonFX(id: Int, masterId: Int): TalonFX {
+        val talonFX = createTalonFX(id, slaveConfiguration)
+        talonFX.set(ControlMode.Follower, masterId.toDouble())
+        return talonFX
     }
 
     /**
@@ -127,7 +149,7 @@ object CTREMotorControllerFactory {
      * @param config The [Configuration] to use for this motor controller.
      */
     @Suppress("LongMethod")
-    fun createTalon(id: Int, config: Configuration): TalonSRX {
+    fun createTalonSRX(id: Int, config: Configuration): TalonSRX {
         return LazyTalonSRX(id).apply {
             configFactoryDefault(config.timeout)
             set(ControlMode.PercentOutput, 0.0)
@@ -221,7 +243,7 @@ object CTREMotorControllerFactory {
      * @param config The [Configuration] to use for this motor controller.
      */
     @Suppress("LongMethod")
-    fun createVictor(id: Int, config: Configuration): VictorSPX {
+    fun createVictorSPX(id: Int, config: Configuration): VictorSPX {
         return LazyVictorSPX(id).apply {
             configFactoryDefault(config.timeout)
             set(ControlMode.PercentOutput, 0.0)
@@ -234,6 +256,83 @@ object CTREMotorControllerFactory {
             clearStickyFaults(config.timeout)
             configForwardLimitSwitchSource(
                     config.remoteLimitSwitchSource,
+                    config.limitSwitchNormallyOpen,
+                    config.timeout
+            )
+            configPeakOutputForward(config.maxOutputVoltage, config.timeout)
+            configPeakOutputReverse(-config.maxOutputVoltage, config.timeout)
+            configNominalOutputForward(config.nominalVoltage, config.timeout)
+            configNominalOutputReverse(-config.nominalVoltage, config.timeout)
+
+            configReverseLimitSwitchSource(
+                    config.remoteLimitSwitchSource,
+                    config.limitSwitchNormallyOpen,
+                    config.timeout
+            )
+            setNeutralMode(config.neutralMode)
+            configForwardSoftLimitEnable(config.enableSoftLimit, config.timeout)
+            configReverseSoftLimitEnable(config.enableSoftLimit, config.timeout)
+            overrideSoftLimitsEnable(config.enableSoftLimit)
+            overrideLimitSwitchesEnable(config.enableLimitSwitch)
+
+            inverted = config.inverted
+            setSensorPhase(config.sensorPhase)
+
+            configForwardSoftLimitThreshold(config.forwardSoftLimit, config.timeout)
+
+            selectProfileSlot(0, 0)
+            configReverseSoftLimitThreshold(config.reverseSoftLimit, config.timeout)
+            configVelocityMeasurementPeriod(config.velocityMeasurementPeriod, config.timeout)
+            configVelocityMeasurementWindow(config.velocityMeasurementRollingAverageWindow, config.timeout)
+            configClosedloopRamp(config.voltageCompensationRampRate, config.timeout)
+            configOpenloopRamp(config.voltageRampRate, config.timeout)
+
+            enableVoltageCompensation(config.enableVoltageCompensation)
+            configVoltageCompSaturation(config.voltageCompensationLevel, config.timeout)
+
+            configNeutralDeadband(config.neutralDeadband, config.timeout)
+
+            configMotionCruiseVelocity(config.motionMagicCruiseVelocity, config.timeout)
+            configMotionAcceleration(config.motionMagicAcceleration, config.timeout)
+
+            setStatusFramePeriod(
+                    StatusFrame.Status_1_General,
+                    config.generalStatusFrameRateMs,
+                    config.timeout
+            )
+            setStatusFramePeriod(
+                    StatusFrame.Status_2_Feedback0,
+                    config.feedbackStatusFrameRateMs,
+                    config.timeout
+            )
+            setStatusFramePeriod(
+                    StatusFrame.Status_4_AinTempVbat,
+                    config.analogTempVbatStatusFrameMs,
+                    config.timeout
+            )
+        }
+    }
+
+    /**
+     * Create a Talon FX.
+     *
+     * @param id The CAN ID of the Talon FX to create.
+     * @param config The [Configuration] to use for this motor controller.
+     */
+    @Suppress("LongMethod")
+    fun createTalonFX(id: Int, config: Configuration): TalonFX {
+        return LazyTalonFX(id).apply {
+            configFactoryDefault(config.timeout)
+            set(ControlMode.PercentOutput, 0.0)
+            changeMotionControlFramePeriod(config.motionControlFramePeriodMs)
+            for (i in 0..10) {
+                setIntegralAccumulator(0.0, i, config.timeout)
+            }
+            clearMotionProfileHasUnderrun(config.timeout)
+            clearMotionProfileTrajectories()
+            clearStickyFaults(config.timeout)
+            configForwardLimitSwitchSource(
+                    config.limitSwitchSource,
                     config.limitSwitchNormallyOpen,
                     config.timeout
             )
