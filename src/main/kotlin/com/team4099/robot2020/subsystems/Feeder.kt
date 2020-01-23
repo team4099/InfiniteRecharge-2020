@@ -53,9 +53,9 @@ object Feeder : Subsystem {
     override fun checkSystem() {}
 
     override fun registerLogging() {
-        HelixLogger.addSource("Feeder master motor power") { inMasterTalon.motorOutputVoltage}
-        HelixLogger.addSource("Feeder slave motor power") { inSlaveVictor.motorOutputVoltage}
-        HelixLogger.addSource("Feeder out motor power") { outSparkMax.outputCurrent}
+        HelixLogger.addSource("Feeder master motor power") { inMasterTalon.motorOutputVoltage }
+        HelixLogger.addSource("Feeder slave motor power") { inSlaveVictor.motorOutputVoltage }
+        HelixLogger.addSource("Feeder out motor power") { outSparkMax.outputCurrent }
     }
 
     override fun zeroSensors() { }
