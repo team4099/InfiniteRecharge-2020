@@ -270,6 +270,10 @@ object Drive : Subsystem {
      */
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
+        setLeftRightPower(
+            signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
+            signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
+        )
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
             rightMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
@@ -277,10 +281,6 @@ object Drive : Subsystem {
             HelixEvents.addEvent("DRIVETRAIN", "Entered open loop control")
         }
         brakeMode = if (signal.brakeMode) NeutralMode.Brake else NeutralMode.Coast
-        setLeftRightPower(
-                signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
-                signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
-        )
     }
 
     @Synchronized
