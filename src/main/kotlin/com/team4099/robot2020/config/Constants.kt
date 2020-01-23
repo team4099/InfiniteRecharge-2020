@@ -111,8 +111,8 @@ object Constants {
 
         val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
 
-        const val targetSpeed = 0.0
-        const val speedThreshold = 0.0
+        const val TARGET_SPEED = 0.0
+        const val SPEED_THRESHOLD = 0.0
     }
 
     object Looper {
