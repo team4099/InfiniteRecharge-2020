@@ -17,7 +17,7 @@ object Feeder : Subsystem {
 
     private val outSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_OUT_ID)
 
-    var feederState = FeederState.HOLD
+    var feederState = FeederState.IDLE
     private var feederInPower = 0.0
         set(value) {
             if (value != field) {
@@ -61,7 +61,7 @@ object Feeder : Subsystem {
     override fun zeroSensors() { }
 
     override fun onStart(timestamp: Double) {
-        feederState = FeederState.IDLE
+        feederState = FeederState.HOLD
     }
 
     @Synchronized
