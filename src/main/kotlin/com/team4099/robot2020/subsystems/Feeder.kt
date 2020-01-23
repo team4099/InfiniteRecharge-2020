@@ -1,6 +1,7 @@
 package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
+import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
@@ -33,7 +34,6 @@ object Feeder : Subsystem {
         }
 
     init {
-
         inMasterTalon.inverted = false
         inSlaveVictor.inverted = true
 
@@ -41,7 +41,7 @@ object Feeder : Subsystem {
     }
 
     enum class FeederState {
-        HOLD, INTAKE, SHOOT
+        HOLD, INTAKE, SHOOT, IDLE
     }
 
     override fun outputTelemetry() {
@@ -50,14 +50,18 @@ object Feeder : Subsystem {
         SmartDashboard.putNumber("feeder/feederOutPower", feederOutPower)
     }
 
-    override fun checkSystem() { }
+    override fun checkSystem() {}
 
-    override fun registerLogging() { }
+    override fun registerLogging() {
+        HelixLogger.addSource("Feeder master motor power") { inMasterTalon.motorOutputVoltage}
+        HelixLogger.addSource("Feeder slave motor power") { inSlaveVictor.motorOutputVoltage}
+        HelixLogger.addSource("Feeder out motor power") { outSparkMax.outputCurrent}
+    }
 
     override fun zeroSensors() { }
 
     override fun onStart(timestamp: Double) {
-        feederState = FeederState.HOLD
+        feederState = FeederState.IDLE
     }
 
     @Synchronized
@@ -75,11 +79,15 @@ object Feeder : Subsystem {
                 feederOutPower = Constants.Feeder.FEEDER_MAX_POWER
                 feederInPower = Constants.Feeder.FEEDER_MAX_POWER
             }
+            FeederState.IDLE -> {
+                feederOutPower = 0.0
+                feederInPower = 0.0
+            }
         }
     }
 
     override fun onStop(timestamp: Double) {
-        feederState = FeederState.HOLD
+        feederState = FeederState.IDLE
         feederInPower = 0.0
         feederOutPower = 0.0
     }
