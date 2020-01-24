@@ -17,7 +17,7 @@ import com.team4099.robot2020.config.Constants
  * Creates CTRE motor controllers with consistent default configurations.
  */
 object CTREMotorControllerFactory {
-    const val SLAVE_FRAME_PERIOD_MS = 1000
+    private const val SLAVE_FRAME_PERIOD_MS = 1000
 
     /**
      * Represents the configuration of a Talon FX, Talon SRX or, Victor SPX
@@ -111,7 +111,8 @@ object CTREMotorControllerFactory {
             feedbackStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
             quadEncoderStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
             analogTempVbatStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
-            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS
+            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
+            neutralDeadband = 0.0
         )
         val talon = createTalonSRX(id, slaveConfiguration)
         talon.set(ControlMode.Follower, masterId.toDouble())
@@ -132,7 +133,8 @@ object CTREMotorControllerFactory {
             feedbackStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
             quadEncoderStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
             analogTempVbatStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
-            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS
+            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
+            neutralDeadband = 0.0
         )
         val victor = createVictorSPX(id, slaveConfiguration)
         victor.set(ControlMode.Follower, masterId.toDouble())
@@ -153,7 +155,8 @@ object CTREMotorControllerFactory {
             feedbackStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
             quadEncoderStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
             analogTempVbatStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
-            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS
+            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
+            neutralDeadband = 0.0
         )
         val talonFX = createTalonFX(id, slaveConfiguration)
         talonFX.set(ControlMode.Follower, masterId.toDouble())
