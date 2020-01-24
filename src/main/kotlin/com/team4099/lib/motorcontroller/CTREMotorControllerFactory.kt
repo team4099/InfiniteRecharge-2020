@@ -17,67 +17,58 @@ import com.team4099.robot2020.config.Constants
  * Creates CTRE motor controllers with consistent default configurations.
  */
 object CTREMotorControllerFactory {
+    const val SLAVE_FRAME_PERIOD_MS = 1000
+
     /**
      * Represents the configuration of a Talon FX, Talon SRX or, Victor SPX
      */
     @Suppress("MagicNumber")
-    class Configuration {
-        var enableLimitSwitch = false
-        var limitSwitchSource = LimitSwitchSource.Deactivated
-        var remoteLimitSwitchSource = RemoteLimitSwitchSource.Deactivated
-        var limitSwitchNormallyOpen = LimitSwitchNormal.NormallyOpen
+    data class Configuration(
+        var enableLimitSwitch: Boolean = false,
+        var limitSwitchSource: LimitSwitchSource = LimitSwitchSource.Deactivated,
+        var remoteLimitSwitchSource: RemoteLimitSwitchSource = RemoteLimitSwitchSource.Deactivated,
+        var limitSwitchNormallyOpen: LimitSwitchNormal = LimitSwitchNormal.NormallyOpen,
 
-        var enableSoftLimit = false
-        var forwardSoftLimit = 0
-        var reverseSoftLimit = 0
+        var enableSoftLimit: Boolean = false,
+        var forwardSoftLimit: Int = 0,
+        var reverseSoftLimit: Int = 0,
 
-        var maxOutputVoltage = 12.0
-        var nominalVoltage = 0.0
+        var maxOutputVoltage: Double = 12.0,
+        var nominalVoltage: Double = 0.0,
 
-        var neutralMode = NeutralMode.Coast
-        var neutralDeadband = 0.04
+        var neutralMode: NeutralMode = NeutralMode.Coast,
+        var neutralDeadband: Double = 0.04,
 
-        var enableVoltageCompensation = false
-        var voltageCompensationLevel = 12.0
+        var enableVoltageCompensation: Boolean = false,
+        var voltageCompensationLevel: Double = 12.0,
 
-        var enableCurrentLimit = false
-        var currentLimit = 0
+        var enableCurrentLimit: Boolean = false,
+        var currentLimit: Int = 0,
 
-        var inverted = false
-        var sensorPhase = false
+        var inverted: Boolean = false,
+        var sensorPhase: Boolean = false,
 
-        var controlFramePeriodMs = 5
-        var motionControlFramePeriodMs = 100
-        var generalStatusFrameRateMs = 5
-        var feedbackStatusFrameRateMs = 100
-        var quadEncoderStatusFrameRateMs = 100
-        var analogTempVbatStatusFrameMs = 100
-        var pulseWidthStatusFrameMs = 100
+        var controlFramePeriodMs: Int = 5,
+        var motionControlFramePeriodMs: Int = 100,
+        var generalStatusFrameRateMs: Int = 5,
+        var feedbackStatusFrameRateMs: Int = 100,
+        var quadEncoderStatusFrameRateMs: Int = 100,
+        var analogTempVbatStatusFrameMs: Int = 100,
+        var pulseWidthStatusFrameMs: Int = 100,
 
-        var velocityMeasurementPeriod = VelocityMeasPeriod.Period_100Ms
-        var velocityMeasurementRollingAverageWindow = 64
+        var velocityMeasurementPeriod: VelocityMeasPeriod = VelocityMeasPeriod.Period_100Ms,
+        var velocityMeasurementRollingAverageWindow: Int = 64,
 
-        var voltageCompensationRampRate = 0.0
-        var voltageRampRate = 0.0
+        var voltageCompensationRampRate: Double = 0.0,
+        var voltageRampRate: Double = 0.0,
 
-        var motionMagicCruiseVelocity = 0
-        var motionMagicAcceleration = 0
+        var motionMagicCruiseVelocity: Int = 0,
+        var motionMagicAcceleration: Int = 0,
 
-        var timeout = Constants.Universal.CTRE_CONFIG_TIMEOUT
-    }
+        var timeout: Int = Constants.Universal.CTRE_CONFIG_TIMEOUT
+    )
 
     val defaultConfiguration = Configuration()
-    private val slaveConfiguration = Configuration()
-
-    init {
-        slaveConfiguration.controlFramePeriodMs = 1000
-        slaveConfiguration.motionControlFramePeriodMs = 1000
-        slaveConfiguration.generalStatusFrameRateMs = 1000
-        slaveConfiguration.feedbackStatusFrameRateMs = 1000
-        slaveConfiguration.quadEncoderStatusFrameRateMs = 1000
-        slaveConfiguration.analogTempVbatStatusFrameMs = 1000
-        slaveConfiguration.pulseWidthStatusFrameMs = 1000
-    }
 
     /**
      * Create a Talon SRX with the default [Configuration].
@@ -112,7 +103,16 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Talon SRX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveTalonSRX(id: Int, masterId: Int): TalonSRX {
+    fun createPermanentSlaveTalonSRX(id: Int, masterId: Int, config: Configuration = defaultConfiguration): TalonSRX {
+        val slaveConfiguration = config.copy(
+            controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
+            motionControlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
+            generalStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            feedbackStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            quadEncoderStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            analogTempVbatStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
+            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS
+        )
         val talon = createTalonSRX(id, slaveConfiguration)
         talon.set(ControlMode.Follower, masterId.toDouble())
         return talon
@@ -124,7 +124,16 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Victor SPX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveVictorSPX(id: Int, masterId: Int): VictorSPX {
+    fun createPermanentSlaveVictorSPX(id: Int, masterId: Int, config: Configuration = defaultConfiguration): VictorSPX {
+        val slaveConfiguration = config.copy(
+            controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
+            motionControlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
+            generalStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            feedbackStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            quadEncoderStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            analogTempVbatStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
+            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS
+        )
         val victor = createVictorSPX(id, slaveConfiguration)
         victor.set(ControlMode.Follower, masterId.toDouble())
         return victor
@@ -136,7 +145,16 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Talon FX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveTalonFX(id: Int, masterId: Int): TalonFX {
+    fun createPermanentSlaveTalonFX(id: Int, masterId: Int, config: Configuration = defaultConfiguration): TalonFX {
+        val slaveConfiguration = config.copy(
+            controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
+            motionControlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
+            generalStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            feedbackStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            quadEncoderStatusFrameRateMs = SLAVE_FRAME_PERIOD_MS,
+            analogTempVbatStatusFrameMs = SLAVE_FRAME_PERIOD_MS,
+            pulseWidthStatusFrameMs = SLAVE_FRAME_PERIOD_MS
+        )
         val talonFX = createTalonFX(id, slaveConfiguration)
         talonFX.set(ControlMode.Follower, masterId.toDouble())
         return talonFX
