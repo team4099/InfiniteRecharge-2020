@@ -148,7 +148,7 @@ object Drive : Subsystem {
             Constants.Drive.LEFT_MASTER_ID,
             talonConfig
         )
-        
+
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
