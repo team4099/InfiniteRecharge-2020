@@ -30,16 +30,10 @@ import com.team4099.robot2020.config.Constants
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonFX
-    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
-            Constants.Drive.RIGHT_SLAVE_1_ID,
-            Constants.Drive.RIGHT_MASTER_ID
-    )
+    private val rightSlaveTalon: TalonFX
 
     private val leftMasterTalon: TalonFX
-    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
-            Constants.Drive.LEFT_SLAVE_1_ID,
-            Constants.Drive.LEFT_MASTER_ID
-    )
+    private val leftSlaveTalon: TalonFX
 
     private val ahrs = AHRS(SPI.Port.kMXP)
     private var trajDuration = 0.0
@@ -124,28 +118,37 @@ object Drive : Subsystem {
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
-        val masterConfig = CTREMotorControllerFactory.Configuration()
-        masterConfig.feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS
+        val talonConfig = CTREMotorControllerFactory.Configuration(
+            feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS,
+            sensorPhase = true,
 
-        masterConfig.sensorPhase = true
-        masterConfig.enableVoltageCompensation = true
+            enableVoltageCompensation = true,
+            voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL,
 
-        masterConfig.voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL
+            neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND,
+            velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms,
 
-        masterConfig.neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND
+            voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP,
+            enableCurrentLimit = true,
+            currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT,
 
-        masterConfig.velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms
-        masterConfig.voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP
+            motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt(),
+            motionMagicAcceleration = metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
+        )
 
-        masterConfig.enableCurrentLimit = true
-        masterConfig.currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT
-
-        masterConfig.motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt()
-        masterConfig.motionMagicAcceleration =
-            metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
-
-        rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, masterConfig)
+        rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, talonConfig)
+        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, talonConfig)
+        rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
+            Constants.Drive.RIGHT_SLAVE_1_ID,
+            Constants.Drive.RIGHT_MASTER_ID,
+            talonConfig
+        )
+        leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
+            Constants.Drive.LEFT_SLAVE_1_ID,
+            Constants.Drive.LEFT_MASTER_ID,
+            talonConfig
+        )
+        
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
