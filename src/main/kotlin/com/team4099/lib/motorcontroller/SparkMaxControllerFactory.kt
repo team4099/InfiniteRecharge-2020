@@ -54,9 +54,9 @@ object SparkMaxControllerFactory {
      * @param id The CAN ID of the Spark Max to create.
      * @param master The CAN ID of the Spark Max to follow.
      */
-    fun createPermanentSlaveSparkMax(id: Int, master: LazySparkMax): LazySparkMax {
+    fun createPermanentSlaveSparkMax(id: Int, master: LazySparkMax, invertToMaster: Boolean = false): LazySparkMax {
         val sparkMax: LazySparkMax = createSparkMax(id, slaveConfiguration)
-        sparkMax.follow(master)
+        sparkMax.follow(master, invertToMaster)
         return sparkMax
     }
 
