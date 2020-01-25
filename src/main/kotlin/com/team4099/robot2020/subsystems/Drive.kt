@@ -145,7 +145,7 @@ object Drive : Subsystem {
             metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
 
         rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
+        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, masterConfig)
 
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
@@ -285,8 +285,8 @@ object Drive : Subsystem {
 
     @Synchronized
     private fun setLeftRightPower(left: Double, right: Double) {
-        leftMasterTalon.set(ControlMode.PercentOutput, left)
-        rightMasterTalon.set(ControlMode.PercentOutput, right)
+        leftMasterTalon.set(ControlMode.PercentOutput, left, DemandType.ArbitraryFeedForward, 0.0)
+        rightMasterTalon.set(ControlMode.PercentOutput, right, DemandType.ArbitraryFeedForward, 0.0)
     }
 
     /**
@@ -447,8 +447,8 @@ object Drive : Subsystem {
             enterVelocityClosedLoop()
             currentState = DriveControlState.MOTION_MAGIC
         }
-        leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters))
-        rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters))
+        leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters), DemandType.ArbitraryFeedForward, 0.0)
+        rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters), DemandType.ArbitraryFeedForward, 0.0)
     }
 
     /**
