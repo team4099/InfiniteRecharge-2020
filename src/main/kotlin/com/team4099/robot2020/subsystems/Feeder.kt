@@ -1,6 +1,7 @@
 package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
+import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
@@ -18,6 +19,11 @@ object Feeder : Subsystem {
     private val outSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_OUT_ID)
 
     var feederState = FeederState.IDLE
+        set(value) {
+            if (value != field) {
+                HelixEvents.addEvent("FEEDER", "state changed to $value")
+            }
+        }
     private var feederInPower = 0.0
         set(value) {
             if (value != field) {
@@ -56,6 +62,7 @@ object Feeder : Subsystem {
         HelixLogger.addSource("Feeder master motor power") { inMasterTalon.motorOutputVoltage }
         HelixLogger.addSource("Feeder slave motor power") { inSlaveVictor.motorOutputVoltage }
         HelixLogger.addSource("Feeder out motor power") { outSparkMax.outputCurrent }
+        HelixLogger.addSource("Feeder state") { feederState }
     }
 
     override fun zeroSensors() { }
