@@ -2,9 +2,11 @@ package com.team4099.robot2020.subsystems
 
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.loop.Loop
+import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.Constants.SuperStructure
+import com.team4099.robot2020.config.ControlBoard
 
-object SuperStructure : Loop {
+object Superstructure : Loop {
     // TODO: Do this
     private var hasStateChanged = false
 
@@ -19,13 +21,23 @@ object SuperStructure : Loop {
         when (currentWantedState) {
             SuperStructure.States.IDLE -> {
                 Drive.setOpenLoop(DriveSignal.NEUTRAL)
+                Intake.intakeState = Intake.IntakeState.IDLE
+                Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
             }
-            SuperStructure.States.SPIN_UP_FLYWHEEL -> {}
+            SuperStructure.States.SPIN_UP_FLYWHEEL -> {
+                Shooter.shooterState = Shooter.State.ACCELERATING
+            }
             SuperStructure.States.SHOOT -> {}
             SuperStructure.States.UNJAM_SHOOTER -> {}
-            SuperStructure.States.CLIMB -> {}
-            SuperStructure.States.INTAKE -> {}
-            SuperStructure.States.UNJAM_INTAKE -> {}
+            SuperStructure.States.CLIMB -> {
+                Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
+            }
+            SuperStructure.States.INTAKE -> {
+                Intake.intakeState = Intake.IntakeState.IN
+            }
+            SuperStructure.States.UNJAM_INTAKE -> {
+                Intake.intakeState = Intake.IntakeState.OUT
+            }
             SuperStructure.States.FEED -> {}
             SuperStructure.States.UNJAM_FEEDER -> {}
         }
