@@ -87,8 +87,8 @@ object Shooter : Subsystem {
 
     override fun registerLogging() {
         // not sure if this should go here
-        HelixLogger.addSource("SHOOTER MASTER MOTOR POWER") { masterSparkMax.outputCurrent }
-        HelixLogger.addSource("SHOOTER SLAVE MOTOR POWER") { slaveSparkMax.outputCurrent }
+        HelixLogger.addSource("Shooter Master Motor Power") { masterSparkMax.outputCurrent }
+        HelixLogger.addSource("Shooter Slave Motor Power") { slaveSparkMax.outputCurrent }
     }
 
     override fun outputTelemetry() {
