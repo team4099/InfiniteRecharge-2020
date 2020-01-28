@@ -33,7 +33,6 @@ object Constants {
     }
 
     object SuperStructure {
-
         enum class States {
             DEFAULT, // For initializing at runtime, doesn't do anything
 
@@ -62,10 +61,6 @@ object Constants {
         }
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 8c9d080... Set drivetrain to off in IDLE state
     object Drive {
         const val LEFT_MASTER_ID = 10
         const val LEFT_SLAVE_1_ID = 9
