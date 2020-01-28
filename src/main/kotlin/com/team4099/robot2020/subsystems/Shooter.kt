@@ -26,7 +26,7 @@ object Shooter : Subsystem {
             Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax)
 
     enum class State {
-        SHOOTING, IDLE, ACCELERATING
+        SHOOTING, IDLE
     }
 
     private var currentSpeed = 0.0
@@ -43,7 +43,7 @@ object Shooter : Subsystem {
             field = value
         }
 
-    var shooterReady: Boolean = false
+    var shooterReady = false
 
     init {
         masterSparkMax.pidController.setP(Constants.Shooter.SHOOTER_PID.kP)
@@ -87,8 +87,8 @@ object Shooter : Subsystem {
 
     override fun registerLogging() {
         // not sure if this should go here
-        HelixLogger.addSource("Shooter master motor power") { masterSparkMax.outputCurrent }
-        HelixLogger.addSource("Shooter slave motor power") { slaveSparkMax.outputCurrent }
+        HelixLogger.addSource("SHOOTER MASTER MOTOR POWER") { masterSparkMax.outputCurrent }
+        HelixLogger.addSource("SHOOTER SLAVE MOTOR POWER") { slaveSparkMax.outputCurrent }
     }
 
     override fun outputTelemetry() {
