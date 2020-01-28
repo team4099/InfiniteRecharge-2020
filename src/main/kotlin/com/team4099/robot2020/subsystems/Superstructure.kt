@@ -27,8 +27,9 @@ object Superstructure : Loop {
             SuperStructure.States.SPIN_UP_FLYWHEEL -> {
                 Shooter.shooterState = Shooter.State.ACCELERATING
             }
-            SuperStructure.States.SHOOT -> {}
-            SuperStructure.States.UNJAM_SHOOTER -> {}
+            SuperStructure.States.SHOOT -> {
+                Shooter.shooterState = Shooter.State.SHOOTING
+            }
             SuperStructure.States.CLIMB -> {
                 Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
             }
@@ -38,7 +39,9 @@ object Superstructure : Loop {
             SuperStructure.States.UNJAM_INTAKE -> {
                 Intake.intakeState = Intake.IntakeState.OUT
             }
-            SuperStructure.States.FEED -> {}
+            SuperStructure.States.FEED -> {
+                Feeder.feederState = Feeder.State.FEEDING
+            }
             SuperStructure.States.UNJAM_FEEDER -> {}
         }
     }
@@ -48,7 +51,7 @@ object Superstructure : Loop {
     }
 
     override fun onStop(timestamp: Double) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // Hello i dont have a life
     }
 
 
