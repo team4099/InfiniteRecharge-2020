@@ -134,31 +134,42 @@ object Constants {
         }
     }
 
-    }
-        const val INTAKE_SPARK_MAX_ID = 69
-    object Intake {
-    }
+    object Shooter {
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
 
-            UP(45.0)
-        }
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
+
+        const val TARGET_SPEED = 0.0
+        const val SPEED_THRESHOLD = 0.0
+    }
+      
     object Climber : ServoMotorSubsystemConfig(
-            DOWN(0.0),
-        enum class ClimberPosition(val position: Double) {
-
-        const val OPERATOR_CONTROL_VEL = 90.0
-
-        const val MASTER_ID = 9
-        const val SLAVE_ID = 10
-    ) {
-        1024
+        CTREMotorControllerFactory.defaultConfiguration,
+        "CLIMBER",
+        "inches",
+        PIDGains(0, 1.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0),
         0.0,
         ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
         0.0,
-        PIDGains(1, 1.0, 0.0, 0.0, 0),
-        PIDGains(0, 1.0, 0.0, 0.0, 0),
-        CTREMotorControllerFactory.defaultConfiguration,
-        "inches",
-        "CLIMBER",
+        1024
+    ) {
+        const val MASTER_ID = 9
+        const val SLAVE_ID = 10
+
+        const val OPERATOR_CONTROL_VEL = 90.0
+
+        enum class ClimberPosition(val position: Double) {
+            DOWN(0.0),
+            UP(45.0)
+        }
+    }
+
+    object Intake {
+        const val INTAKE_SPARK_MAX_ID = 69
+    }
+
     object Looper {
         const val LOOPER_DT = 0.02 // 50 Hz
     }

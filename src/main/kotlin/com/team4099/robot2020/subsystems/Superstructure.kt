@@ -25,7 +25,7 @@ object Superstructure : Loop {
                 Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
             }
             SuperStructure.States.SPIN_UP_FLYWHEEL -> {
-                Shooter.shooterState = Shooter.State.ACCELERATING
+//                Shooter.shooterState = Shooter.State.ACCELERATING
             }
             SuperStructure.States.SHOOT -> {
                 Shooter.shooterState = Shooter.State.SHOOTING
@@ -40,7 +40,7 @@ object Superstructure : Loop {
                 Intake.intakeState = Intake.IntakeState.OUT
             }
             SuperStructure.States.FEED -> {
-                Feeder.feederState = Feeder.State.FEEDING
+//                Feeder.feederState = Feeder.State.FEEDING
             }
             SuperStructure.States.UNJAM_FEEDER -> {}
         }
