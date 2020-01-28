@@ -6,7 +6,7 @@ import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.Constants.SuperStructure
 import com.team4099.robot2020.config.ControlBoard
 
-object Superstructure : Loop {
+object SuperStructure : Loop {
     // TODO: Do this
     private var hasStateChanged = false
 
@@ -53,6 +53,4 @@ object Superstructure : Loop {
     override fun onStop(timestamp: Double) {
         // Hello i dont have a life
     }
-
-
 }
