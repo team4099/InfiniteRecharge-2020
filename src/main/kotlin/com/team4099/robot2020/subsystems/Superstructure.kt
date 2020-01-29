@@ -4,7 +4,7 @@ import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.loop.Loop
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.Constants.Superstructure
-import com.team4099.robot2020.statemachines.ShootingStatemachine
+import com.team4099.robot2020.statemachines.ShooterStatemachine
 
 object Superstructure : Loop {
     // TODO: Do this
@@ -28,7 +28,7 @@ object Superstructure : Loop {
                 currentRobotState = Superstructure.RobotState.IDLING
             }
             Superstructure.WantedState.SHOOTER_SHOOT -> {
-                ShootingStatemachine.wantedShootState = ShootingStatemachine.ShootState.SHOOT
+                ShooterStatemachine.wantedShootState = ShooterStatemachine.ShootState.SHOOT
 
                 currentRobotState = Superstructure.RobotState.SHOOTING
             }

@@ -1,6 +1,6 @@
 package com.team4099.robot2020.statemachines
 
-object ShootingStatemachine {
+object ShooterStatemachine {
     enum class ShootState {
         OFF,
         SPIN_UP_FLYWHEEL,
