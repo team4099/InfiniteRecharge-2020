@@ -9,7 +9,7 @@ object ShooterStatemachine {
     }
 
     var wantedShootState: ShootState = ShootState.OFF
-        set (value) {
+        set(value) {
             when (value) {
                 ShootState.OFF -> {
                     Shooter.shooterState = Shooter.State.IDLE
