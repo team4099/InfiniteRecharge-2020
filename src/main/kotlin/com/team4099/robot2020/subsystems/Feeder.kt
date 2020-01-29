@@ -41,7 +41,7 @@ object Feeder : Subsystem {
 
     private var beamBroken = false
         get() = beamBreak.get()
-    
+
     // take this out after adding one ballCount in superstructure to work with intake
     var ballCount = 0
 
