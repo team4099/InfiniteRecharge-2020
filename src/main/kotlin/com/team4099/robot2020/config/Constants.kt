@@ -32,33 +32,33 @@ object Constants {
         )
     }
 
-    object SuperStructure {
-        enum class States {
+    object Superstructure {
+        enum class WantedState {
             DEFAULT, // For initializing at runtime, doesn't do anything
 
             IDLE,
 
             SPIN_UP_FLYWHEEL, // Just start spinning the flywheel
-            SHOOT,
-            UNJAM_SHOOTER,
+            SHOOTER_SHOOT,
+            SHOOTER_UNJAM,
 
-            CLIMB,
+            CLIMBER_CLIMB,
 
-            INTAKE,
-            UNJAM_INTAKE,
+            INTAKE_INTAKE,
+            INTAKE_UNJAM,
 
-            FEED, // Just feed the stuff into the feeder but don't let it leave
-            UNJAM_FEEDER,
-
-            // Wanted States
-            IS_ACCELERATING_FLYWHEEL,
-
-            IS_SPINNING_UP_SHOOTER,
-
-            IS_INTAKING,
-
-            IS
+            FEEDER_FEED, // Just feed the stuff into the feeder but don't let it leave
+            FEEDER_UNJAM
         }
+        enum class RobotState {
+            DEFAULT,
+            IDLING,
+            SHOOTING,
+            INTAKING,
+            SPINNING_FLYWHEEL,
+
+        }
+
     }
 
     object Drive {
