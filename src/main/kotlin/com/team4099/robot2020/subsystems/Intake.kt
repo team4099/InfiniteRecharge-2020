@@ -73,12 +73,16 @@ object Intake : Subsystem {
             beamBrokenTimestamp = -1.0
         }
 
-        synchronized(this) {
-            when (intakeState) {
-                IntakeState.IN -> intakePower = -1.0
-                IntakeState.OUT -> intakePower = 1.0
-                IntakeState.IDLE -> intakePower = 0.0
+        when (intakeState) {
+            IntakeState.IN -> {
+                if (ballCount >= 5) {
+                    intakePower = 0.0
+                } else {
+                    intakePower = -1.0
+                }
             }
+            IntakeState.OUT -> intakePower = 1.0
+            IntakeState.IDLE -> intakePower = 0.0
         }
     }
 
