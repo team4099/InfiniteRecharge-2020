@@ -27,7 +27,7 @@ object Feeder : Subsystem {
 
     private var beamBroken = false
         get() = beamBreak.get()
-    
+
     // take this out after adding one ballCount in superstructure to work with intake
     var ballCount = 0
 
@@ -98,9 +98,8 @@ object Feeder : Subsystem {
             if (beamBrokenTimestamp == -1.0) {
                 beamBrokenTimestamp = timestamp
             }
-        }
-        else {
-            if (timestamp - beamBrokenTimestamp >= Constants.BeamBreak.FEEDER_BEAM_BROKEN_BALL_TIME){
+        } else {
+            if (timestamp - beamBrokenTimestamp >= Constants.BeamBreak.FEEDER_BEAM_BROKEN_BALL_TIME) {
                 ballCount--
             }
             beamBrokenTimestamp = -1.0
