@@ -7,6 +7,7 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
@@ -18,6 +19,16 @@ object Feeder : Subsystem {
     )
 
     private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonFX(Constants.Feeder.FEEDER_OUT_ID)
+
+    private val beamBreak = DigitalInput(Constants.BeamBreak.FEEDER_BEAM_BREAK_PORT)
+
+    private var beamBroken = false
+        get() = beamBreak.get()
+    
+    // take this out after adding one ballCount in superstructure to work with intake
+    var ballCount = 0
+
+    private var beamBrokenTimestamp = 0.0
 
     var feederState = FeederState.IDLE
         set(value) {
@@ -79,6 +90,19 @@ object Feeder : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
+
+        if (beamBroken) {
+            if (beamBrokenTimestamp == -1.0) {
+                beamBrokenTimestamp = timestamp
+            }
+        }
+        else {
+            if (timestamp - beamBrokenTimestamp >= Constants.BeamBreak.FEEDER_BEAM_BROKEN_BALL_TIME){
+                ballCount--
+            }
+            beamBrokenTimestamp = -1.0
+        }
+
         when (feederState) {
             FeederState.INTAKE -> {
                 feederStopperPower = -Constants.Feeder.FEEDER_HOLD_POWER

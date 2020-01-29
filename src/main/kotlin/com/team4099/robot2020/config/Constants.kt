@@ -205,5 +205,15 @@ object Constants {
 
         const val FEEDER_MAX_POWER = 1.0
         const val FEEDER_HOLD_POWER = 0.1
+
+    }
+
+    object BeamBreak {
+        const val INTAKE_BEAM_BREAK_PORT = 0
+        const val FEEDER_BEAM_BREAK_PORT = 0
+
+        // test how long it takes one ball to pass through intake and feeder
+        const val INTAKE_BEAM_BROKEN_BALL_TIME = 0.0
+        const val FEEDER_BEAM_BROKEN_BALL_TIME = 0.0
     }
 }
