@@ -8,17 +8,11 @@ object FeederStatemachine {
     }
 
     var wantedFeederState: FeederState = FeederState.OFF
-        set (value) {
+        set(value) {
             when (wantedFeederState) {
-                FeederState.OFF -> {
-
-                }
-                FeederState.HOLD -> {
-
-                }
-                FeederState.FEED_IN -> {
-
-                }
+                FeederState.OFF -> { }
+                FeederState.HOLD -> { }
+                FeederState.FEED_IN -> { }
             }
             field = value
         }
