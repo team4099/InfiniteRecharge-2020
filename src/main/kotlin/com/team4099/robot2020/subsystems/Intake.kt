@@ -62,15 +62,14 @@ object Intake : Subsystem {
     }
 
     @Synchronized
-    override fun onLoop(timestamp: Double, dt: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
 
         if (beamBroken) {
             if (beamBrokenTimestamp == -1.0) {
                 beamBrokenTimestamp = timestamp
             }
-        }
-        else {
-            if (timestamp - beamBrokenTimestamp >= Constants.BeamBreak.INTAKE_BEAM_BROKEN_BALL_TIME){
+        } else {
+            if (timestamp - beamBrokenTimestamp >= Constants.BeamBreak.INTAKE_BEAM_BROKEN_BALL_TIME) {
                 ballCount++
             }
             beamBrokenTimestamp = -1.0

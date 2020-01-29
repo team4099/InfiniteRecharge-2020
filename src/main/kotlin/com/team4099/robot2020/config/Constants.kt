@@ -205,7 +205,6 @@ object Constants {
 
         const val FEEDER_MAX_POWER = 1.0
         const val FEEDER_HOLD_POWER = 0.1
-
     }
 
     object BeamBreak {
