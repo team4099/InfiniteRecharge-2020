@@ -6,22 +6,14 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Intake : Subsystem {
 
     private val talon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Intake.INTAKE_TALON_ID)
 
-    private val beamBreak = DigitalInput(Constants.BeamBreak.INTAKE_BEAM_BREAK_PORT)
-
-    private var beamBroken = false
-        get() = beamBreak.get()
-
     // take this out after adding one ballCount in superstructure to work with feeder
     var ballCount = 0
-
-    private var beamBrokenTimestamp = 0.0
 
     private var intakePower = 0.0
         set(value) {
@@ -62,17 +54,6 @@ object Intake : Subsystem {
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
         @SuppressWarnings("MagicNumber")
-        if (beamBroken) {
-            if (beamBrokenTimestamp == -1.0) {
-                beamBrokenTimestamp = timestamp
-            }
-        } else {
-            if (timestamp - beamBrokenTimestamp >= Constants.BeamBreak.INTAKE_BEAM_BROKEN_BALL_TIME) {
-                ballCount++
-            }
-            beamBrokenTimestamp = -1.0
-        }
-
         when (intakeState) {
             IntakeState.IN -> {
                 if (ballCount >= 5) {

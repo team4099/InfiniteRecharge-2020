@@ -37,15 +37,8 @@ object Feeder : Subsystem {
 
     private var outBeamBrokenTimestamp = -1.0
 
-    private val beamBreak = DigitalInput(Constants.BeamBreak.FEEDER_BEAM_BREAK_PORT)
-
-    private var beamBroken = false
-        get() = beamBreak.get()
-
     // take this out after adding one ballCount in superstructure to work with intake
     var ballCount = 0
-
-    private var beamBrokenTimestamp = 0.0
 
     var feederState = FeederState.IDLE
         set(value) {
