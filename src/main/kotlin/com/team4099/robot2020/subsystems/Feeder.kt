@@ -23,15 +23,22 @@ object Feeder : Subsystem {
 
     private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.FEEDER_OUT_ID)
 
-    private val beamBreak = DigitalInput(Constants.BeamBreak.FEEDER_BEAM_BREAK_PORT)
+    private val inBeamBreak = DigitalInput(Constants.BeamBreak.IN_BEAM_BREAK_PORT)
 
-    private var beamBroken = false
-        get() = beamBreak.get()
+    private var inBeamBroken = false
+        get() = inBeamBreak.get()
+
+    private var inBeamBrokenTimestamp = 0.0
+
+    private val outBeamBreak = DigitalInput(Constants.BeamBreak.OUT_BEAM_BREAK_PORT)
+
+    private var outBeamBroken = false
+        get() = outBeamBreak.get()
+
+    private var outBeamBrokenTimestamp = 0.0
 
     // take this out after adding one ballCount in superstructure to work with intake
     var ballCount = 0
-
-    private var beamBrokenTimestamp = 0.0
 
     var feederState = FeederState.IDLE
         set(value) {
@@ -94,15 +101,26 @@ object Feeder : Subsystem {
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
 
-        if (beamBroken) {
-            if (beamBrokenTimestamp == -1.0) {
-                beamBrokenTimestamp = timestamp
+        if (inBeamBroken) {
+            if (inBeamBrokenTimestamp == -1.0) {
+                inBeamBrokenTimestamp = timestamp
             }
         } else {
-            if (timestamp - beamBrokenTimestamp >= Constants.BeamBreak.FEEDER_BEAM_BROKEN_BALL_TIME) {
+            if (timestamp - inBeamBrokenTimestamp >= Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME) {
+                ballCount++
+            }
+            inBeamBrokenTimestamp = -1.0
+        }
+
+        if (outBeamBroken) {
+            if (outBeamBrokenTimestamp == -1.0) {
+                outBeamBrokenTimestamp = timestamp
+            }
+        } else {
+            if (timestamp - outBeamBrokenTimestamp >= Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME) {
                 ballCount--
             }
-            beamBrokenTimestamp = -1.0
+            outBeamBrokenTimestamp = -1.0
         }
 
         when (feederState) {
