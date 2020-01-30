@@ -106,27 +106,29 @@ object Feeder : Subsystem {
                 inBeamBrokenTimestamp = timestamp
             }
         } else {
-            if (timestamp - inBeamBrokenTimestamp >= Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME) {
-                ballCount++
-            }
             inBeamBrokenTimestamp = -1.0
         }
+        ballCount += (Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME / (timestamp - inBeamBrokenTimestamp)).toInt()
 
         if (outBeamBroken) {
             if (outBeamBrokenTimestamp == -1.0) {
                 outBeamBrokenTimestamp = timestamp
             }
         } else {
-            if (timestamp - outBeamBrokenTimestamp >= Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME) {
-                ballCount--
-            }
             outBeamBrokenTimestamp = -1.0
         }
+        ballCount -= (Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME / (timestamp - outBeamBrokenTimestamp)).toInt()
 
         when (feederState) {
             FeederState.INTAKE -> {
-                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                inPower = Constants.Feeder.FEEDER_MAX_POWER
+                if (inBeamBrokenTimestamp == -1.0) {
+                    stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                    inPower = Constants.Feeder.FEEDER_MAX_POWER
+                }
+                else {
+                    stopperPower = 0.0
+                    inPower = 0.0
+                }
             }
             FeederState.HOLD -> {
                 stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
