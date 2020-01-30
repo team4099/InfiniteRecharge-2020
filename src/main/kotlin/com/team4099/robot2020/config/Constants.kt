@@ -52,7 +52,7 @@ object Constants {
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
-        const val ENCODER_RESOLUTION = 2048
+        const val ENCODER_RESOLUTION = 4096
         const val NATIVE_UNITS_PER_REV = ENCODER_RESOLUTION / 0.08665966387
 
         const val WHEEL_DIAMETER_METERS = 0.1524
@@ -69,23 +69,23 @@ object Constants {
         const val MAX_ACCEL_METERS_PER_SEC_SQ = 3.5
 
         object Characterization {
-            const val LEFT_KV_FORWARD = 0.4993
-            const val RIGHT_KV_FORWARD = 0.5412
+            const val LEFT_KV_FORWARD = 2.67
+            const val RIGHT_KV_FORWARD = 2.67
 
-            const val LEFT_KA_FORWARD = 0.0468
-            const val RIGHT_KA_FORWARD = 0.0601
+            const val LEFT_KA_FORWARD = 0.101
+            const val RIGHT_KA_FORWARD = 0.114
 
-            const val LEFT_V_INTERCEPT_FORWARD = 0.1879
-            const val RIGHT_V_INTERCEPT_FORWARD = 0.1364
+            const val LEFT_V_INTERCEPT_FORWARD = 0.0371
+            const val RIGHT_V_INTERCEPT_FORWARD = 0.0408
 
-            const val LEFT_KV_REVERSE = 0.4987
-            const val RIGHT_KV_REVERSE = 0.5194
+            const val LEFT_KV_REVERSE = 2.63
+            const val RIGHT_KV_REVERSE = 2.63
 
-            const val LEFT_KA_REVERSE = 0.0372
-            const val RIGHT_KA_REVERSE = 0.0644
+            const val LEFT_KA_REVERSE = 0.196
+            const val RIGHT_KA_REVERSE = 0.216
 
-            const val LEFT_V_INTERCEPT_REVERSE = -0.1856
-            const val RIGHT_V_INTERCEPT_REVERSE = -0.2003
+            const val LEFT_V_INTERCEPT_REVERSE = -0.0893
+            const val RIGHT_V_INTERCEPT_REVERSE = -0.0803
         }
 
         object Gains {
