@@ -12,7 +12,7 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 object Constants {
     object LED {
         const val PWMPORT = 0
-        enum class Color(var h: Int, val s: Int, val v: Int) {
+        enum class Color(var h: Int, var s: Int, var v: Int) {
             // Pink is for firing
             PINK(227, 117, 128),
             // Turquoise is for getting ready to fire

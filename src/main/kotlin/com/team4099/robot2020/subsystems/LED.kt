@@ -1,10 +1,12 @@
 package com.team4099.robot2020.subsystems
 
+import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants.LED.Color
 import com.team4099.robot2020.config.Constants
 import edu.wpi.first.wpilibj.AddressableLED
 import edu.wpi.first.wpilibj.AddressableLEDBuffer
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object LED : Subsystem {
 
@@ -38,32 +40,26 @@ object LED : Subsystem {
     }
 
     override fun outputTelemetry() {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        SmartDashboard.putString("led/ledColor", LED.currentColor.toString())
     }
 
-    override fun checkSystem() {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun checkSystem() {}
 
     override fun registerLogging() {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        HelixLogger.addSource("Current color") { LED.currentColor }
     }
 
-    override fun zeroSensors() {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun zeroSensors() {}
 
     override fun onStart(timestamp: Double) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
         mLED.setData(mLEDBuffer)
         mLED.start()
     }
     override fun onLoop(timestamp: Double, dT: Double) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
         updateColor(currentColor)
     }
 
     override fun onStop(timestamp: Double) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        mLED.setLength(0)
     }
 }
