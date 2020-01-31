@@ -1,27 +1,12 @@
 package com.team4099.robot2020.subsystems
 
+import Shooter
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.loop.Loop
-import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.Constants.Superstructure
+import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.statemachines.ShooterStatemachine
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
-object Superstructure : Loop {
-
-    private var hasStateChanged = false
-
-//    private var previousWantedState = Superstructure.WantedState.NA
-    private var currentWantedState = Superstructure.WantedState.DEFAULT
-        set(value) {
-//            previousWantedState = currentWantedState
-
-            if (value != currentWantedState) {
-                 // TODO: Do a transition handler
-
-                field = value
-            }
-        }
 
 object Superstructure : Loop {
     // TODO: Do this
@@ -49,10 +34,6 @@ object Superstructure : Loop {
                 while (!Shooter.shooterReady) {
                     currentRobotState = Superstructure.RobotState.SPINNING_FLYWHEEL
                 }
-
-            Superstructure.WantedState.SHOOTER_SHOOT -> {
-                ShooterStatemachine.wantedShootState = ShooterStatemachine.ShootState.SHOOT
-
                 currentRobotState = Superstructure.RobotState.SHOOTING
             }
             Superstructure.WantedState.CLIMBER_CLIMB -> {
@@ -73,19 +54,9 @@ object Superstructure : Loop {
 
                 currentRobotState = Superstructure.RobotState.EXHAUSTING
             }
-            }
-            Superstructure.WantedState.INTAKE_INTAKE -> {
-                Intake.intakeState = Intake.IntakeState.IN
-            }
-            Superstructure.WantedState.INTAKE_UNJAM -> {
-                Intake.intakeState = Intake.IntakeState.OUT
-            }
-            Superstructure.WantedState.FEEDER_FEED -> {
-//                Feeder.feederState = Feeder.State.FEEDING
-            }
-            Superstructure.WantedState.FEEDER_UNJAM -> { }
         }
     }
 
-    override fun onStop(timestamp: Double) { }
+    override fun onStop(timestamp: Double) {}
 }
+

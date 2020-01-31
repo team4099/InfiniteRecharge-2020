@@ -26,11 +26,7 @@ object Shooter : Subsystem {
             Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax)
 
     enum class State {
-<<<<<<< HEAD
         SHOOTING, IDLE, EXHAUST
-=======
-        SHOOTING, IDLE
->>>>>>> 7dcfd11f7a7a668e4f0e2b5f423a5d1accdbc61d
     }
 
     private var currentSpeed = 0.0
@@ -43,12 +39,9 @@ object Shooter : Subsystem {
                 State.SHOOTING -> {
                     setVelocity(Constants.Shooter.TARGET_SPEED)
                 }
-<<<<<<< HEAD
                 State.EXHAUST -> {
                     setVelocity(-Constants.Shooter.TARGET_SPEED/8)
                 }
-=======
->>>>>>> 7dcfd11f7a7a668e4f0e2b5f423a5d1accdbc61d
             }
             field = value
         }
