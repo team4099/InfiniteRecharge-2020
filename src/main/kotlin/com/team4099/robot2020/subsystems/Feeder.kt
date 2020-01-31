@@ -74,7 +74,7 @@ object Feeder : Subsystem {
     override fun zeroSensors() { }
 
     override fun onStart(timestamp: Double) {
-        feederState = FeederState.HOLD
+        feederState = FeederState.IDLE
     }
 
     @Synchronized
@@ -105,7 +105,5 @@ object Feeder : Subsystem {
 
     override fun onStop(timestamp: Double) {
         feederState = FeederState.IDLE
-        feederInPower = 0.0
-        feederStopperPower = 0.0
     }
 }
