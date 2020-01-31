@@ -25,14 +25,14 @@ object Feeder : Subsystem {
     private var inBeamBroken = false
         get() = inBeamBreak.get()
 
-    private var inBeamBrokenTimestamp = 0.0
+    private var inBeamBrokenTimestamp = -1.0
 
     private val outBeamBreak = DigitalInput(Constants.BeamBreak.OUT_BEAM_BREAK_PORT)
 
     private var outBeamBroken = false
         get() = outBeamBreak.get()
 
-    private var outBeamBrokenTimestamp = 0.0
+    private var outBeamBrokenTimestamp = -1.0
 
     // take this out after adding one ballCount in superstructure to work with intake
     var ballCount = 0
@@ -105,7 +105,7 @@ object Feeder : Subsystem {
         } else {
             inBeamBrokenTimestamp = -1.0
         }
-        ballCount += (Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME / (timestamp - inBeamBrokenTimestamp)).toInt()
+        ballCount += ((timestamp - inBeamBrokenTimestamp) / Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME).toInt()
 
         if (outBeamBroken) {
             if (outBeamBrokenTimestamp == -1.0) {
@@ -114,17 +114,15 @@ object Feeder : Subsystem {
         } else {
             outBeamBrokenTimestamp = -1.0
         }
-        ballCount -= (Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME / (timestamp - outBeamBrokenTimestamp)).toInt()
+        ballCount -= ((timestamp - outBeamBrokenTimestamp) / Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME).toInt()
 
         when (feederState) {
             FeederState.INTAKE -> {
-                if (inBeamBrokenTimestamp == -1.0) {
+                if (inBeamBrokenTimestamp != -1.0) {
                     feederStopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
                     feederInPower = Constants.Feeder.FEEDER_MAX_POWER
-                }
-                else {
-                    feederStopperPower = 0.0
-                    feederInPower = 0.0
+                } else {
+                    feederState = FeederState.HOLD
                 }
             }
             FeederState.HOLD -> {
@@ -132,8 +130,12 @@ object Feeder : Subsystem {
                 feederInPower = Constants.Feeder.FEEDER_HOLD_POWER
             }
             FeederState.SHOOT -> {
-                feederStopperPower = Constants.Feeder.FEEDER_MAX_POWER
-                feederInPower = Constants.Feeder.FEEDER_MAX_POWER
+                if (outBeamBroken) {
+                    feederStopperPower = Constants.Feeder.FEEDER_MAX_POWER
+                    feederInPower = Constants.Feeder.FEEDER_MAX_POWER
+                } else {
+                    feederState = FeederState.HOLD
+                }
             }
             FeederState.EXHAUST -> {
                 feederStopperPower = -Constants.Feeder.FEEDER_MAX_POWER
