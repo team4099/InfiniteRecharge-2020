@@ -25,14 +25,14 @@ object Feeder : Subsystem {
                 HelixEvents.addEvent("FEEDER", "state changed to $value")
             }
         }
-    private var feederInPower = 0.0
+    private var inPower = 0.0
         set(value) {
             if (value != field) {
                 inMasterSparkMax.set(value)
             }
             field = value
         }
-    private var feederStopperPower = 0.0
+    private var stopperPower = 0.0
         set(value) {
             if (value != field) {
                 stopperTalon.set(ControlMode.PercentOutput, value)
@@ -41,10 +41,10 @@ object Feeder : Subsystem {
         }
 
     init {
-        inMasterSparkMax.inverted = false
-        inSlaveSparkMax.inverted = true
+        inMasterSparkMax.setInverted(false)
+        inSlaveSparkMax.setInverted(true)
 
-        stopperTalon.inverted = true
+        stopperTalon.setInverted(true)
     }
 
     enum class FeederState {
@@ -53,8 +53,8 @@ object Feeder : Subsystem {
 
     override fun outputTelemetry() {
         SmartDashboard.putString("feeder/feederState", feederState.toString())
-        SmartDashboard.putNumber("feeder/feederInPower", feederInPower)
-        SmartDashboard.putNumber("feeder/feederStopperPower", feederStopperPower)
+        SmartDashboard.putNumber("feeder/inPower", inPower)
+        SmartDashboard.putNumber("feeder/stopperPower", stopperPower)
     }
 
     override fun checkSystem() {}
@@ -81,24 +81,24 @@ object Feeder : Subsystem {
     override fun onLoop(timestamp: Double, dT: Double) {
         when (feederState) {
             FeederState.INTAKE -> {
-                feederStopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                feederInPower = Constants.Feeder.FEEDER_MAX_POWER
+                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.HOLD -> {
-                feederStopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                feederInPower = Constants.Feeder.FEEDER_HOLD_POWER
+                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                inPower = Constants.Feeder.FEEDER_HOLD_POWER
             }
             FeederState.SHOOT -> {
-                feederStopperPower = Constants.Feeder.FEEDER_MAX_POWER
-                feederInPower = Constants.Feeder.FEEDER_MAX_POWER
+                stopperPower = Constants.Feeder.FEEDER_MAX_POWER
+                inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.EXHAUST -> {
-                feederStopperPower = -Constants.Feeder.FEEDER_MAX_POWER
-                feederInPower = -Constants.Feeder.FEEDER_MAX_POWER
+                stopperPower = -Constants.Feeder.FEEDER_MAX_POWER
+                inPower = -Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.IDLE -> {
-                feederStopperPower = 0.0
-                feederInPower = 0.0
+                stopperPower = 0.0
+                inPower = 0.0
             }
         }
     }
