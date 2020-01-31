@@ -12,13 +12,13 @@ object LED : Subsystem {
 
     // PWM port 9
     // Must be a PWM header, not MXP or DIO
-    private var mLED = AddressableLED(Constants.LED.PWMPORT)
-    private var currentColor = Color.ORANGE
+    var mLED = AddressableLED(Constants.LED.PWMPORT)
+    var currentColor = Color.ORANGE
 
     // Reuse buffer
     // Default to a length of 60, start empty output
     // Length is expensive to set, so only set it once, then just update data
-    private var mLEDBuffer = AddressableLEDBuffer(60)
+    var mLEDBuffer = AddressableLEDBuffer(60)
 
     private var initialRainbowHue: Int = 0
 
