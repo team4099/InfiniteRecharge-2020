@@ -31,6 +31,7 @@ object Constants {
                 2 to RobotName.MULE
         )
     }
+
     object Shooter {
         const val MASTER_SPARKMAX_ID = 0
         const val SLAVE_SPARKMAX_ID = 1
@@ -68,7 +69,6 @@ object Constants {
             UP(45.0)
         }
     }
-
 
     object Superstructure {
 
@@ -172,9 +172,6 @@ object Constants {
             const val RIGHT_KF = 0.0000 // 1023.0 / 4420.0
         }
     }
-
-
-
 
         object Intake {
             const val INTAKE_SPARK_MAX_ID = 69

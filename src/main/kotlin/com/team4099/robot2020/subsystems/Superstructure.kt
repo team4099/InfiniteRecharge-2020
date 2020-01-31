@@ -23,6 +23,11 @@ object Superstructure : Loop {
             }
         }
 
+object Superstructure : Loop {
+    // TODO: Do this
+    private var hasStateChanged = false
+
+    private var currentWantedState = Superstructure.WantedState.DEFAULT
     private var currentRobotState = Superstructure.RobotState.DEFAULT
 
     override fun onStart(timestamp: Double) {
@@ -33,7 +38,6 @@ object Superstructure : Loop {
         when (currentWantedState) {
             Superstructure.WantedState.IDLE -> {
                 Drive.setOpenLoop(DriveSignal.NEUTRAL)
-
                 Intake.intakeState = Intake.IntakeState.IDLE
                 Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
 
@@ -45,6 +49,10 @@ object Superstructure : Loop {
                 while (!Shooter.shooterReady) {
                     currentRobotState = Superstructure.RobotState.SPINNING_FLYWHEEL
                 }
+
+            Superstructure.WantedState.SHOOTER_SHOOT -> {
+                ShooterStatemachine.wantedShootState = ShooterStatemachine.ShootState.SHOOT
+
                 currentRobotState = Superstructure.RobotState.SHOOTING
             }
             Superstructure.WantedState.CLIMBER_CLIMB -> {
@@ -65,6 +73,17 @@ object Superstructure : Loop {
 
                 currentRobotState = Superstructure.RobotState.EXHAUSTING
             }
+            }
+            Superstructure.WantedState.INTAKE_INTAKE -> {
+                Intake.intakeState = Intake.IntakeState.IN
+            }
+            Superstructure.WantedState.INTAKE_UNJAM -> {
+                Intake.intakeState = Intake.IntakeState.OUT
+            }
+            Superstructure.WantedState.FEEDER_FEED -> {
+//                Feeder.feederState = Feeder.State.FEEDING
+            }
+            Superstructure.WantedState.FEEDER_UNJAM -> { }
         }
     }
 

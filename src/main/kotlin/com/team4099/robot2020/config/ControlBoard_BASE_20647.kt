@@ -26,12 +26,6 @@ object ControlBoard {
     val wristHorizontal: Boolean
         get() = operator.rightShoulderButton
 
-    val startShooter: Boolean
-        get() = operator.xButton
-
-    val stopShooter: Boolean
-        get() = operator.yButton
-
     val climberUp: Boolean
         get() = operator.dPadUp
 
@@ -39,17 +33,8 @@ object ControlBoard {
         get() = operator.dPadDown
 
     val runIntakeIn: Boolean
-        get() = operator.bButton
-<<<<<<< HEAD
-
-
-    val startShooter: Boolean
         get() = operator.aButton
 
-    val stopShooter: Boolean
-        get() = operator.bButton
-=======
     val runIntakeOut: Boolean
-        get() = operator.aButton
->>>>>>> 7dcfd11f7a7a668e4f0e2b5f423a5d1accdbc61d
+        get() = operator.bButton
 }
