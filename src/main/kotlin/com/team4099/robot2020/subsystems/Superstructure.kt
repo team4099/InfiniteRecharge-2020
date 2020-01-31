@@ -5,12 +5,24 @@ import com.team4099.lib.loop.Loop
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.Constants.Superstructure
 import com.team4099.robot2020.statemachines.ShooterStatemachine
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Superstructure : Loop {
-    // TODO: Do this
+
     private var hasStateChanged = false
 
+//    private var previousWantedState = Superstructure.WantedState.NA
     private var currentWantedState = Superstructure.WantedState.DEFAULT
+        set(value) {
+//            previousWantedState = currentWantedState
+
+            if (value != currentWantedState) {
+                 // TODO: Do a transition handler
+
+                field = value
+            }
+        }
+
     private var currentRobotState = Superstructure.RobotState.DEFAULT
 
     override fun onStart(timestamp: Double) {
@@ -27,26 +39,34 @@ object Superstructure : Loop {
 
                 currentRobotState = Superstructure.RobotState.IDLING
             }
-            Superstructure.WantedState.SHOOTER_SHOOT -> {
+            Superstructure.WantedState.SHOOT -> {
                 ShooterStatemachine.wantedShootState = ShooterStatemachine.ShootState.SHOOT
 
+                while (!Shooter.shooterReady) {
+                    currentRobotState = Superstructure.RobotState.SPINNING_FLYWHEEL
+                }
                 currentRobotState = Superstructure.RobotState.SHOOTING
             }
             Superstructure.WantedState.CLIMBER_CLIMB -> {
                 Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
-            }
-            Superstructure.WantedState.INTAKE_INTAKE -> {
-                Intake.intakeState = Intake.IntakeState.IN
-            }
-            Superstructure.WantedState.INTAKE_UNJAM -> {
-                Intake.intakeState = Intake.IntakeState.OUT
-            }
-            Superstructure.WantedState.FEEDER_FEED -> {
-                Feeder.feederState = Feeder.FeederState.INTAKE
-            }
-            Superstructure.WantedState.FEEDER_UNJAM -> {
-            }
 
+                currentRobotState = Superstructure.RobotState.CLIMBING
+            }
+            Superstructure.WantedState.INTAKE -> {
+                Feeder.feederState = Feeder.FeederState.INTAKE
+                Intake.intakeState = Intake.IntakeState.IN
+
+                currentRobotState = Superstructure.RobotState.INTAKING
+            }
+            Superstructure.WantedState.EXHAUST -> {
+                Shooter.shooterState = Shooter.State.EXHAUST
+                Feeder.feederState = Feeder.FeederState.EXHAUST
+                Intake.intakeState = Intake.IntakeState.OUT
+
+                currentRobotState = Superstructure.RobotState.EXHAUSTING
+            }
         }
     }
+
+    override fun onStop(timestamp: Double) { }
 }
