@@ -4,28 +4,17 @@ import Shooter
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.loop.Loop
+import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants.Superstructure
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.statemachines.ShooterStatemachine
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 
-object Superstructure : Loop {
-    // TODO: Do this
-    private var hasStateChanged = false
+object Superstructure : Subsystem {
 
     private var currentWantedState = Superstructure.WantedState.DEFAULT
-        set(value) {
-            if (value != currentWantedState) {
-                field = value
-            }
-        }
-
     private var currentRobotState = Superstructure.RobotState.DEFAULT
-        set(value) {
-            SmartDashboard.putString("RobotState", value.toString())
-            field = value
-        }
 
     override fun onLoop(timestamp: Double, dT: Double) {
         when (currentWantedState) {
@@ -78,5 +67,14 @@ object Superstructure : Loop {
     }
 
     override fun onStop(timestamp: Double) {}
-}
 
+    override fun outputTelemetry() {
+        SmartDashboard.putString("RobotState", currentRobotState.toString())
+    }
+
+    override fun checkSystem() { }
+
+    override fun registerLogging() { }
+
+    override fun zeroSensors() { }
+}
