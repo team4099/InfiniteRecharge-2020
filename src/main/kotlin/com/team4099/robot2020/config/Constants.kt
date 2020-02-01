@@ -118,7 +118,8 @@ object Constants {
 
         val TURN_GAINS = PIDGains(0, 0.009, 0.0, 0.0, 0.0, 0)
         val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
-        const val MIN_COMMAND = 0.0838
+        const val MIN_TURN_COMMAND = 0.0838
+        const val MIN_DIST_COMMAND = 0.0838
     }
 
     object Shooter {

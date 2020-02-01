@@ -83,9 +83,9 @@ object Vision : Subsystem {
                     onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
 
                     steeringAdjust = turnController.calculate(tx)
-                    steeringAdjust += -sign(tx) * Constants.Vision.MIN_COMMAND
+                    steeringAdjust += -sign(tx) * Constants.Vision.MIN_TURN_COMMAND
                     distanceAdjust = distanceController.calculate(distanceError)
-                    distanceAdjust += sign(distanceError) * Constants.Vision.MIN_COMMAND
+                    distanceAdjust += sign(distanceError) * Constants.Vision.MIN_DIST_COMMAND
                 }
             }
         }
