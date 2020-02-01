@@ -26,12 +26,15 @@ object ControlBoard {
     val wristHorizontal: Boolean
         get() = operator.rightShoulderButton
 
+    val enableVisionAlignment: Boolean
+        get() = driver.aButton
+
     val startShooter: Boolean
         get() = operator.xButton
 
     val stopShooter: Boolean
         get() = operator.yButton
-  
+
     val climberUp: Boolean
         get() = operator.dPadUp
 

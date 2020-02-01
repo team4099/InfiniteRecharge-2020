@@ -151,6 +151,9 @@ object Drive : Subsystem {
         leftMasterTalon.inverted = false
         leftSlaveTalon.inverted = false
 
+        rightSlaveTalon.configNeutralDeadband(0.0)
+        leftSlaveTalon.configNeutralDeadband(0.0)
+
         rightMasterTalon.configSelectedFeedbackSensor(
             TalonFXFeedbackDevice.IntegratedSensor,
             0,

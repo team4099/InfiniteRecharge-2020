@@ -1,5 +1,6 @@
 package com.team4099.robot2020
 
+import com.team4099.lib.around
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import edu.wpi.first.cameraserver.CameraServer
@@ -7,7 +8,6 @@ import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.TimedRobot
 import kotlin.math.pow
-import com.team4099.lib.around
 import com.team4099.lib.auto.AutoModeExecuter
 import com.team4099.lib.logging.CrashTracker
 import com.team4099.lib.loop.Looper
@@ -22,6 +22,7 @@ import com.team4099.robot2020.subsystems.Climber
 import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Wrist
+import com.team4099.robot2020.subsystems.Vision
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -61,6 +62,7 @@ object Robot : TimedRobot() {
             SubsystemManager.register(Climber)
             SubsystemManager.register(Intake)
             SubsystemManager.register(Wrist)
+            SubsystemManager.register(Vision)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
             enabledLooper.register(BrownoutDefender)
@@ -142,11 +144,21 @@ object Robot : TimedRobot() {
 
     override fun teleopPeriodic() {
         try {
-            Drive.setCheesyishDrive(
+            if (ControlBoard.enableVisionAlignment) {
+                Vision.state = Vision.VisionState.AIMING
+                Drive.setCheesyishDrive(
+                    0.0,
+                    Vision.steeringAdjust,
+                    true
+                )
+            } else {
+                Vision.state = Vision.VisionState.IDLE
+                Drive.setCheesyishDrive(
                     ControlBoard.throttle,
                     ControlBoard.turn,
                     ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-            )
+                )
+            }
 
             when {
                 ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
