@@ -104,6 +104,16 @@ object Constants {
         }
     }
 
+    object Shooter {
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
+
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
+
+        const val TARGET_SPEED = 0.0
+        const val SPEED_THRESHOLD = 0.0
+    }
+      
     object Climber : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
