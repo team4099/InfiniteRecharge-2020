@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.TimedRobot
 import kotlin.math.pow
-import com.team4099.lib.around
 import com.team4099.lib.auto.AutoModeExecuter
 import com.team4099.lib.logging.CrashTracker
 import com.team4099.lib.loop.Looper

@@ -7,6 +7,7 @@ import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.wpilibj.controller.PIDController
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import kotlin.math.abs
 import kotlin.math.sign
 import kotlin.math.tan
@@ -19,7 +20,7 @@ object Vision : Subsystem {
     var state = VisionState.IDLE
         set(value) {
             if (value != field) {
-                pipeline = when(value) {
+                pipeline = when (value) {
                     VisionState.IDLE -> {
                         steeringAdjust = 0.0
                         distanceAdjust = 0.0
@@ -39,8 +40,8 @@ object Vision : Subsystem {
     private val table: NetworkTable = NetworkTableInstance.getDefault().getTable("limelight")
     private val tx get() = table.getEntry("tx").getDouble(0.0)
     private val ty get() = table.getEntry("ty").getDouble(0.0)
-    private val tv get() = table.getEntry("tv").getDouble(0.0) // is this a valid target?
-    private val ta get() = table.getEntry("ta").getDouble(0.0) // target area
+    private val tv get() = table.getEntry("tv").getDouble(0.0)
+    private val ta get() = table.getEntry("ta").getDouble(0.0)
 
     private val pipelineEntry: NetworkTableEntry = table.getEntry("pipeline")
     private val turnController = PIDController(
@@ -75,13 +76,12 @@ object Vision : Subsystem {
         when (state) {
             VisionState.IDLE -> {}
             VisionState.AIMING -> {
-                if (tv == 0.0)
-                else {
+                if (tv != 0.0) {
                     onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
 
                     steeringAdjust = turnController.calculate(tx)
                     steeringAdjust += -sign(tx) * Constants.Vision.MIN_COMMAND
-                    distanceAdjust = distanceError * Constants.Vision.DISTANCE_GAINS.kP
+                    distanceAdjust = distanceController.calculate(distanceError)
                     distanceAdjust += sign(distanceError) * Constants.Vision.MIN_COMMAND
                 }
             }
@@ -93,7 +93,17 @@ object Vision : Subsystem {
         state = VisionState.IDLE
     }
 
-    override fun outputTelemetry() {}
+    override fun outputTelemetry() {
+        SmartDashboard.putString("vision/state", state.toString())
+        SmartDashboard.putNumber("vision/pipeline", pipeline.toDouble())
+
+        SmartDashboard.putNumber("vision/steeringAdjust", steeringAdjust)
+        SmartDashboard.putNumber("vision/distanceAdjust", steeringAdjust)
+        SmartDashboard.putBoolean("vision/onTarget", onTarget)
+
+        SmartDashboard.putNumber("vision/distance", distance)
+        SmartDashboard.putNumber("vision/distanceError", distanceError)
+    }
 
     override fun checkSystem() {}
 
