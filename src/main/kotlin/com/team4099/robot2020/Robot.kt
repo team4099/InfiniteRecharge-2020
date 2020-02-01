@@ -18,8 +18,10 @@ import com.team4099.robot2020.config.DashboardConfigurator
 import com.team4099.robot2020.loops.BrownoutDefender
 import com.team4099.robot2020.loops.FaultDetector
 import com.team4099.robot2020.loops.VoltageEstimator
+import com.team4099.robot2020.subsystems.Climber
 import com.team4099.robot2020.subsystems.Drive
-import com.team4099.robot2020.subsystems.SampleWrist
+import com.team4099.robot2020.subsystems.Intake
+import com.team4099.robot2020.subsystems.Wrist
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -56,7 +58,9 @@ object Robot : TimedRobot() {
 
             // Register all subsystems
             SubsystemManager.register(Drive)
-            SubsystemManager.register(SampleWrist)
+            SubsystemManager.register(Climber)
+            SubsystemManager.register(Intake)
+            SubsystemManager.register(Wrist)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
             enabledLooper.register(BrownoutDefender)
@@ -145,12 +149,24 @@ object Robot : TimedRobot() {
             )
 
             when {
-                ControlBoard.wristHorizontal -> SampleWrist.positionSetpoint =
-                    Constants.SampleWrist.WristPosition.HORIZONTAL
-                ControlBoard.wristVertical -> SampleWrist.positionSetpoint =
-                    Constants.SampleWrist.WristPosition.VERTICAL
-                else -> SampleWrist.velocitySetpoint =
-                    ControlBoard.sampleWristVelocity * Constants.SampleWrist.OPERATOR_CONTROL_VEL
+                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
+                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+                else -> Climber.velocitySetpoint = 0.0
+            }
+
+            when {
+                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
+                    Constants.Wrist.WristPosition.HORIZONTAL
+                ControlBoard.wristVertical -> Wrist.positionSetpoint =
+                    Constants.Wrist.WristPosition.VERTICAL
+                else -> Wrist.velocitySetpoint =
+                    ControlBoard.sampleWristVelocity * Constants.Wrist.OPERATOR_CONTROL_VEL
+            }
+
+            when {
+                ControlBoard.runIntakeIn -> Intake.intakeState = Intake.IntakeState.IN
+                ControlBoard.runIntakeOut -> Intake.intakeState = Intake.IntakeState.OUT
+                else -> Intake.intakeState = Intake.IntakeState.IDLE
             }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)

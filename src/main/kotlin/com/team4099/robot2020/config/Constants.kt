@@ -26,10 +26,79 @@ object Constants {
         }
 
         val ROBOT_ID_MAP = mapOf<Int, RobotName>(
-            0 to RobotName.COMPETITION,
-            1 to RobotName.PRACTICE,
-            2 to RobotName.MULE
+                0 to RobotName.COMPETITION,
+                1 to RobotName.PRACTICE,
+                2 to RobotName.MULE
         )
+    }
+
+    object Shooter {
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
+
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
+
+        const val TARGET_SPEED = 0.0
+        const val SPEED_THRESHOLD = 0.0
+
+        // set later
+        const val P_VALUE = 0.0
+        const val I_VALUE = 0.0
+        const val D_VALUE = 0.0
+        const val F_VALUE = 0.0
+    }
+
+    object Climber : ServoMotorSubsystemConfig(
+            CTREMotorControllerFactory.defaultConfiguration,
+            "CLIMBER",
+            "inches",
+            PIDGains(0, 1.0, 0.0, 0.0, 0),
+            PIDGains(1, 1.0, 0.0, 0.0, 0),
+            0.0,
+            ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+            0.0,
+            1024
+    ) {
+        const val MASTER_ID = 9
+        const val SLAVE_ID = 10
+
+        const val OPERATOR_CONTROL_VEL = 90.0
+
+        enum class ClimberPosition(val position: Double) {
+            DOWN(0.0),
+            UP(45.0)
+        }
+    }
+
+    object Superstructure {
+
+        enum class WantedState {
+            DEFAULT, // For initializing at runtime, doesn't do anything
+
+            IDLE,
+
+            INTAKE,
+
+            SHOOT,
+
+            EXHAUST,
+
+            CLIMBER_CLIMB,
+
+            FEED, // Just feed the stuff into the feeder but don't let it leave
+
+            NA
+        }
+
+        enum class RobotState {
+            DEFAULT,
+            IDLING,
+            SHOOTING,
+            INTAKING,
+            EXHAUSTING,
+            CLIMBING,
+            SPINNING_FLYWHEEL,
+        }
     }
 
     object Drive {
@@ -97,7 +166,6 @@ object Constants {
             const val LEFT_KD = 0.0000
             const val LEFT_KF = 0.0000 // 1023.0 / 2220.0
 
-            // subject to change
             const val RIGHT_KP = 0.0000 // .1 * 1023 / 70
             const val RIGHT_KI = 0.0000
             const val RIGHT_KD = 0.0000
@@ -105,70 +173,84 @@ object Constants {
         }
     }
 
-    object Looper {
-        const val LOOPER_DT = 0.02 // 50 Hz
-    }
+        object Intake {
+            const val INTAKE_SPARK_MAX_ID = 69
+        }
 
-    object Autonomous {
-        const val AUTON_DT = 0.02 // 50 Hz
-        const val DEFAULT_MODE_NAME = "Stand Still"
-        const val DEFAULT_DELAY = 0.0
+        object Looper {
+            const val LOOPER_DT = 0.02 // 50 Hz
+        }
 
-        const val TURN_POWER = 0.5
-        const val SLOW_TURN_POWER = 0.2
+        object Autonomous {
+            const val AUTON_DT = 0.02 // 50 Hz
+            const val DEFAULT_MODE_NAME = "Stand Still"
+            const val DEFAULT_DELAY = 0.0
 
-        const val FORWARD_POWER = 1.0
-        const val SLOW_FORWARD_POWER = 0.6
-        const val FORWARD_MAX_TIME_SECONDS = 3
-        const val FORWARD_CORRECTION_KP = 0.01
-        const val FORWARD_GIVE_UP_ANGLE = 30.0
-    }
+            const val TURN_POWER = 0.5
+            const val SLOW_TURN_POWER = 0.2
 
-    object Dashboard {
-        const val ALLIANCE_COLOR_KEY = "dashboard/allianceColor"
+            const val FORWARD_POWER = 1.0
+            const val SLOW_FORWARD_POWER = 0.6
+            const val FORWARD_MAX_TIME_SECONDS = 3
+            const val FORWARD_CORRECTION_KP = 0.01
+            const val FORWARD_GIVE_UP_ANGLE = 30.0
+        }
 
-        const val AUTO_OPTIONS_KEY = "autonomous/autoOptions"
-        const val SELECTED_AUTO_MODE_KEY = "autonomous/selectedMode"
+        object Dashboard {
+            const val ALLIANCE_COLOR_KEY = "dashboard/allianceColor"
 
-        const val AUTO_STARTS_KEY = "autonomous/autoStarts"
-        const val SELECTED_AUTO_START_POS_KEY = "autonomous/selectedStart"
+            const val AUTO_OPTIONS_KEY = "autonomous/autoOptions"
+            const val SELECTED_AUTO_MODE_KEY = "autonomous/selectedMode"
 
-        const val SELECTED_AUTO_START_DELAY_KEY = "autonomous/selectedDelay"
-    }
+            const val AUTO_STARTS_KEY = "autonomous/autoStarts"
+            const val SELECTED_AUTO_START_POS_KEY = "autonomous/selectedStart"
 
-    object Joysticks {
-        const val DRIVER_PORT = 0
-        const val SHOTGUN_PORT = 1
+            const val SELECTED_AUTO_START_DELAY_KEY = "autonomous/selectedDelay"
+        }
 
-        const val QUICK_TURN_THROTTLE_TOLERANCE = 0.1
-        const val THROTTLE_DEADBAND = 0.04
-        const val TURN_DEADBAND = 0.035
-    }
+        object Joysticks {
+            const val DRIVER_PORT = 0
+            const val SHOTGUN_PORT = 1
 
-    object BrownoutDefender {
-        const val COMPRESSOR_STOP_VOLTAGE = 10
-        const val COMPRESSOR_STOP_CURRENT = 70
-    }
+            const val QUICK_TURN_THROTTLE_TOLERANCE = 0.1
+            const val THROTTLE_DEADBAND = 0.04
+            const val TURN_DEADBAND = 0.035
+        }
 
-    object SampleWrist : ServoMotorSubsystemConfig(
-        CTREMotorControllerFactory.defaultConfiguration,
-        "WRIST",
-        "degrees",
-        PIDGains(0, 1.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0),
-        -90.0,
-        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
-        0.0,
-        1024
-    ) {
-        const val MASTER_ID = 4
-        const val SLAVE1_ID = 5
+        object BrownoutDefender {
+            const val COMPRESSOR_STOP_VOLTAGE = 10
+            const val COMPRESSOR_STOP_CURRENT = 70
+        }
 
-        const val OPERATOR_CONTROL_VEL = 90.0
+        object Wrist : ServoMotorSubsystemConfig(
+                CTREMotorControllerFactory.defaultConfiguration,
+                "WRIST",
+                "degrees",
+                PIDGains(0, 1.0, 0.0, 0.0, 0),
+                PIDGains(1, 1.0, 0.0, 0.0, 0),
+                -90.0,
+                ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+                0.0,
+                1024
+        ) {
+            const val MASTER_ID = 4
+            const val SLAVE1_ID = 5
 
-        enum class WristPosition(val position: Double) {
-            HORIZONTAL(0.0),
-            VERTICAL(90.0)
+            const val OPERATOR_CONTROL_VEL = 90.0
+
+            enum class WristPosition(val position: Double) {
+                HORIZONTAL(0.0),
+                VERTICAL(90.0)
+            }
+        }
+
+        object Feeder {
+            const val FEEDER_IN_MASTER_ID = 11
+            const val FEEDER_IN_SLAVE_ID = 12
+
+            const val FEEDER_OUT_ID = 13
+
+            const val FEEDER_MAX_POWER = 1.0
+            const val FEEDER_HOLD_POWER = 0.1
         }
     }
-}
