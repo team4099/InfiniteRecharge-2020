@@ -119,25 +119,24 @@ object Constants {
         val TURN_GAINS = PIDGains(0, 0.009, 0.0, 0.0, 0.0, 0)
         val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
         const val MIN_COMMAND = 0.0838
-        val SEEKING_TURN_POWER = 0.3
     }
-  
+
     object Shooter {
         const val MASTER_SPARKMAX_ID = 0
         const val SLAVE_SPARKMAX_ID = 1
 
-        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0.0, 0)
 
         const val TARGET_SPEED = 0.0
         const val SPEED_THRESHOLD = 0.0
     }
-      
+
     object Climber : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
         "inches",
-        PIDGains(0, 1.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
         0.0,
         ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
         0.0,
