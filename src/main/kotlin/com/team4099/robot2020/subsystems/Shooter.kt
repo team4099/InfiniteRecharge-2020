@@ -16,7 +16,7 @@ object Shooter : Subsystem {
         }
     var velocityPower: Double = 0.0
         set(value) {
-            masterSparkMax.set(ControlType.kVelocity,value)
+            masterSparkMax.set(ControlType.kVelocity, value)
         }
     fun setOpenLoop() {
         masterSparkMax.set(openLoopPower)
@@ -32,7 +32,7 @@ object Shooter : Subsystem {
     private var currentSpeed = 0.0
     var shooterState = State.IDLE
         set(value) {
-            when(value) {
+            when (value) {
                 State.IDLE -> {
                     setOpenLoop(0.0)
                 }

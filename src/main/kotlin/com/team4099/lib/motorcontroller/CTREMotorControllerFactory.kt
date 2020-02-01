@@ -21,7 +21,6 @@ object CTREMotorControllerFactory {
         var limitSwitchSource: LimitSwitchSource = LimitSwitchSource.Deactivated,
         var remoteLimitSwitchSource: RemoteLimitSwitchSource = RemoteLimitSwitchSource.Deactivated,
         var limitSwitchNormallyOpen: LimitSwitchNormal = LimitSwitchNormal.NormallyOpen,
-
         var enableSoftLimit: Boolean = false,
         var forwardSoftLimit: Int = 0,
         var reverseSoftLimit: Int = 0,
@@ -97,10 +96,10 @@ object CTREMotorControllerFactory {
      * @param masterId The CAN ID of the motor controller to follow.
      */
     fun createPermanentSlaveTalonSRX(
-            id: Int,
-            masterId: Int,
-            config: Configuration = defaultConfiguration,
-            invertToMaster: Boolean = false
+        id: Int,
+        masterId: Int,
+        config: Configuration = defaultConfiguration,
+        invertToMaster: Boolean = false
     ): TalonSRX {
         val slaveConfiguration = config.copy(
             controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
@@ -125,10 +124,10 @@ object CTREMotorControllerFactory {
      * @param masterId The CAN ID of the motor controller to follow.
      */
     fun createPermanentSlaveVictorSPX(
-            id: Int,
-            masterId: Int,
-            config: Configuration = defaultConfiguration,
-            invertToMaster: Boolean = false
+        id: Int,
+        masterId: Int,
+        config: Configuration = defaultConfiguration,
+        invertToMaster: Boolean = false
     ): VictorSPX {
         val slaveConfiguration = config.copy(
             controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
@@ -153,10 +152,10 @@ object CTREMotorControllerFactory {
      * @param masterId The CAN ID of the motor controller to follow.
      */
     fun createPermanentSlaveTalonFX(
-            id: Int,
-            masterId: Int,
-            config: Configuration = defaultConfiguration,
-            invertToMaster: Boolean = false
+        id: Int,
+        masterId: Int,
+        config: Configuration = defaultConfiguration,
+        invertToMaster: Boolean = false
     ): TalonFX {
         val slaveConfiguration = config.copy(
             controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,

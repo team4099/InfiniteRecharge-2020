@@ -31,7 +31,7 @@ object ControlBoard {
 
     val stopShooter: Boolean
         get() = operator.yButton
-  
+
     val climberUp: Boolean
         get() = operator.dPadUp
 
