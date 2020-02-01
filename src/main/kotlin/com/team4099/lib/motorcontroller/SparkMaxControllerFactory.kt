@@ -58,7 +58,7 @@ object SparkMaxControllerFactory {
             statusFrame2RateMs = 1000
         )
         val sparkMax: LazySparkMax = createSparkMax(id, slaveConfiguration)
-        sparkMax.follow(master)
+        sparkMax.follow(master, invertToMaster)
         return sparkMax
     }
 

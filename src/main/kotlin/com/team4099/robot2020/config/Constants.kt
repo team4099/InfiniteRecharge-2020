@@ -104,6 +104,16 @@ object Constants {
         }
     }
 
+    object Shooter {
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
+
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
+
+        const val TARGET_SPEED = 0.0
+        const val SPEED_THRESHOLD = 0.0
+    }
+      
     object Climber : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
@@ -195,5 +205,15 @@ object Constants {
             HORIZONTAL(0.0),
             VERTICAL(90.0)
         }
+    }
+
+    object Feeder {
+        const val FEEDER_IN_MASTER_ID = 11
+        const val FEEDER_IN_SLAVE_ID = 12
+
+        const val FEEDER_OUT_ID = 13
+
+        const val FEEDER_MAX_POWER = 1.0
+        const val FEEDER_HOLD_POWER = 0.1
     }
 }
