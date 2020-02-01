@@ -1,6 +1,7 @@
 package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.InvertType
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
@@ -14,16 +15,19 @@ object Feeder : Subsystem {
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Feeder.FEEDER_IN_SLAVE_ID,
             inMasterSparkMax,
-            invertToMaster = true
+            true
     )
 
-    private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonFX(Constants.Feeder.FEEDER_OUT_ID)
+    private val inEncoder = inMasterSparkMax.encoder
+
+    private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.FEEDER_OUT_ID)
 
     var feederState = FeederState.IDLE
         set(value) {
             if (value != field) {
                 HelixEvents.addEvent("FEEDER", "state changed to $value")
             }
+            field = value
         }
     private var inPower = 0.0
         set(value) {
@@ -41,10 +45,7 @@ object Feeder : Subsystem {
         }
 
     init {
-        inMasterSparkMax.setInverted(false)
-        inSlaveSparkMax.setInverted(true)
-
-        stopperTalon.setInverted(true)
+        stopperTalon.setInverted(InvertType.InvertMotorOutput)
     }
 
     enum class FeederState {
@@ -71,7 +72,9 @@ object Feeder : Subsystem {
         HelixLogger.addSource("Feeder State") { feederState }
     }
 
-    override fun zeroSensors() { }
+    override fun zeroSensors() {
+        inEncoder.position = 0.0
+    }
 
     override fun onStart(timestamp: Double) {
         feederState = FeederState.IDLE
