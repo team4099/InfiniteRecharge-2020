@@ -98,7 +98,6 @@ object Constants {
             const val LEFT_KD = 0.0000
             const val LEFT_KF = 0.0000 // 1023.0 / 2220.0
 
-            // subject to change
             const val RIGHT_KP = 0.0000 // .1 * 1023 / 70
             const val RIGHT_KI = 0.0000
             const val RIGHT_KD = 0.0000
@@ -121,6 +120,42 @@ object Constants {
         val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
         const val MIN_COMMAND = 0.0838
         val SEEKING_TURN_POWER = 0.3
+    }
+  
+    object Shooter {
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
+
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
+
+        const val TARGET_SPEED = 0.0
+        const val SPEED_THRESHOLD = 0.0
+    }
+      
+    object Climber : ServoMotorSubsystemConfig(
+        CTREMotorControllerFactory.defaultConfiguration,
+        "CLIMBER",
+        "inches",
+        PIDGains(0, 1.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        0.0,
+        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        0.0,
+        1024
+    ) {
+        const val MASTER_ID = 9
+        const val SLAVE_ID = 10
+
+        const val OPERATOR_CONTROL_VEL = 90.0
+
+        enum class ClimberPosition(val position: Double) {
+            DOWN(0.0),
+            UP(45.0)
+        }
+    }
+
+    object Intake {
+        const val INTAKE_SPARK_MAX_ID = 69
     }
 
     object Looper {
@@ -188,5 +223,15 @@ object Constants {
             HORIZONTAL(0.0),
             VERTICAL(90.0)
         }
+    }
+
+    object Feeder {
+        const val FEEDER_IN_MASTER_ID = 11
+        const val FEEDER_IN_SLAVE_ID = 12
+
+        const val FEEDER_OUT_ID = 13
+
+        const val FEEDER_MAX_POWER = 1.0
+        const val FEEDER_HOLD_POWER = 0.1
     }
 }
