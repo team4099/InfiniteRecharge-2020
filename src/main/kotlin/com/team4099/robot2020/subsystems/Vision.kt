@@ -26,7 +26,10 @@ object Vision : Subsystem {
                         distanceAdjust = 0.0
                         Constants.Vision.DRIVER_PIPELINE_ID
                     }
-                    VisionState.AIMING -> Constants.Vision.TARGETING_PIPELINE_ID
+                    VisionState.AIMING -> {
+                        zeroSensors()
+                        Constants.Vision.TARGETING_PIPELINE_ID
+                    }
                 }
                 field = value
             }
@@ -119,5 +122,8 @@ object Vision : Subsystem {
         HelixLogger.addSource("VISION Distance Error") { distanceError }
     }
 
-    override fun zeroSensors() {}
+    override fun zeroSensors() {
+        turnController.reset()
+        distanceController.reset()
+    }
 }
