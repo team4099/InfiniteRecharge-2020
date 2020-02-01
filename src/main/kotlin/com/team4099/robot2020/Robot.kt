@@ -1,5 +1,6 @@
 package com.team4099.robot2020
 
+import com.team4099.lib.around
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import edu.wpi.first.cameraserver.CameraServer
@@ -148,15 +149,10 @@ object Robot : TimedRobot() {
                 )
             } else {
                 Vision.state = Vision.VisionState.IDLE
-//                Drive.setCheesyishDrive(
-//                    ControlBoard.throttle,
-//                    ControlBoard.turn,
-//                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-//                )
                 Drive.setCheesyishDrive(
-                    0.0,
+                    ControlBoard.throttle,
                     ControlBoard.turn,
-                    true
+                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
                 )
             }
 
