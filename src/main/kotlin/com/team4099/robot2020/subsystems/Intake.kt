@@ -56,6 +56,7 @@ object Intake : Subsystem {
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
 
+        @SuppressWarnings("MagicNumber")
         when (intakeState) {
             IntakeState.IN -> {
                 if (ballCount >= 5) {

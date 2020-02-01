@@ -113,7 +113,7 @@ object Constants {
         const val TARGET_SPEED = 0.0
         const val SPEED_THRESHOLD = 0.0
     }
-      
+
     object Climber : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
