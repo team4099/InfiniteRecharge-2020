@@ -1,13 +1,6 @@
 package com.team4099.lib.motorcontroller
 
-import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource
-import com.ctre.phoenix.motorcontrol.NeutralMode
-import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource
-import com.ctre.phoenix.motorcontrol.StatusFrame
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
+import com.ctre.phoenix.motorcontrol.*
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
 import com.ctre.phoenix.motorcontrol.can.TalonFX
@@ -103,7 +96,12 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Talon SRX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveTalonSRX(id: Int, masterId: Int, config: Configuration = defaultConfiguration): TalonSRX {
+    fun createPermanentSlaveTalonSRX(
+            id: Int,
+            masterId: Int,
+            config: Configuration = defaultConfiguration,
+            invertToMaster: Boolean = false
+    ): TalonSRX {
         val slaveConfiguration = config.copy(
             controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
             motionControlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
@@ -116,6 +114,7 @@ object CTREMotorControllerFactory {
         )
         val talon = createTalonSRX(id, slaveConfiguration)
         talon.set(ControlMode.Follower, masterId.toDouble())
+        talon.setInverted(if (invertToMaster) InvertType.OpposeMaster else InvertType.FollowMaster)
         return talon
     }
 
@@ -125,7 +124,12 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Victor SPX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveVictorSPX(id: Int, masterId: Int, config: Configuration = defaultConfiguration): VictorSPX {
+    fun createPermanentSlaveVictorSPX(
+            id: Int,
+            masterId: Int,
+            config: Configuration = defaultConfiguration,
+            invertToMaster: Boolean = false
+    ): VictorSPX {
         val slaveConfiguration = config.copy(
             controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
             motionControlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
@@ -138,6 +142,7 @@ object CTREMotorControllerFactory {
         )
         val victor = createVictorSPX(id, slaveConfiguration)
         victor.set(ControlMode.Follower, masterId.toDouble())
+        victor.setInverted(if (invertToMaster) InvertType.OpposeMaster else InvertType.FollowMaster)
         return victor
     }
 
@@ -147,7 +152,12 @@ object CTREMotorControllerFactory {
      * @param id The CAN ID of the Talon FX to create.
      * @param masterId The CAN ID of the motor controller to follow.
      */
-    fun createPermanentSlaveTalonFX(id: Int, masterId: Int, config: Configuration = defaultConfiguration): TalonFX {
+    fun createPermanentSlaveTalonFX(
+            id: Int,
+            masterId: Int,
+            config: Configuration = defaultConfiguration,
+            invertToMaster: Boolean = false
+    ): TalonFX {
         val slaveConfiguration = config.copy(
             controlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
             motionControlFramePeriodMs = SLAVE_FRAME_PERIOD_MS,
@@ -160,6 +170,7 @@ object CTREMotorControllerFactory {
         )
         val talonFX = createTalonFX(id, slaveConfiguration)
         talonFX.set(ControlMode.Follower, masterId.toDouble())
+        talonFX.setInverted(if (invertToMaster) InvertType.OpposeMaster else InvertType.FollowMaster)
         return talonFX
     }
 
