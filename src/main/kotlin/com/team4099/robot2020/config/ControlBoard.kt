@@ -28,4 +28,22 @@ object ControlBoard {
 
     val enableVisionAlignment: Boolean
         get() = driver.aButton
+  
+    val startShooter: Boolean
+        get() = operator.xButton
+
+    val stopShooter: Boolean
+        get() = operator.yButton
+  
+    val climberUp: Boolean
+        get() = operator.dPadUp
+
+    val climberDown: Boolean
+        get() = operator.dPadDown
+
+    val runIntakeIn: Boolean
+        get() = operator.aButton
+
+    val runIntakeOut: Boolean
+        get() = operator.bButton
 }
