@@ -50,7 +50,8 @@ object SparkMaxControllerFactory {
     fun createPermanentSlaveSparkMax(
         id: Int,
         master: CANSparkMax,
-        config: Configuration = defaultConfiguration
+        config: Configuration = defaultConfiguration,
+        invertToMaster: Boolean = false
     ): LazySparkMax {
         val slaveConfiguration = config.copy(
             statusFrame0RateMs = 1000,

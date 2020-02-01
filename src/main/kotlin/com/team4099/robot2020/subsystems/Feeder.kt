@@ -15,7 +15,7 @@ object Feeder : Subsystem {
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Feeder.FEEDER_IN_SLAVE_ID,
             inMasterSparkMax,
-            true
+            invertToMaster = true
     )
 
     private val inEncoder = inMasterSparkMax.encoder
