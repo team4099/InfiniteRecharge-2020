@@ -75,8 +75,8 @@ object Constants {
             const val LEFT_KA_FORWARD = 0.101
             const val RIGHT_KA_FORWARD = 0.114
 
-            const val LEFT_V_INTERCEPT_FORWARD = 0.0371
-            const val RIGHT_V_INTERCEPT_FORWARD = 0.0408
+            const val LEFT_KS_FORWARD = 0.0371
+            const val RIGHT_KS_FORWARD = 0.0408
 
             const val LEFT_KV_REVERSE = 2.63
             const val RIGHT_KV_REVERSE = 2.63
@@ -84,8 +84,8 @@ object Constants {
             const val LEFT_KA_REVERSE = 0.196
             const val RIGHT_KA_REVERSE = 0.216
 
-            const val LEFT_V_INTERCEPT_REVERSE = -0.0893
-            const val RIGHT_V_INTERCEPT_REVERSE = -0.0803
+            const val LEFT_KS_REVERSE = -0.0893
+            const val RIGHT_KS_REVERSE = -0.0803
         }
 
         object Gains {

@@ -63,7 +63,7 @@ object Drive : Subsystem {
 
     private val autoOdometry = DifferentialDriveOdometry(Rotation2d())
     private var pathFollowController = RamseteController()
-    private var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
+    var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
     var path: Trajectory = Trajectory(listOf(Trajectory.State()))
         set(value) {
             trajDuration = value.totalTimeSeconds
@@ -400,20 +400,20 @@ object Drive : Subsystem {
         val leftFeedForward: Double = if (leftMetersPerSec > 0) {
             Constants.Drive.Characterization.LEFT_KV_FORWARD * leftMetersPerSec +
                 Constants.Drive.Characterization.LEFT_KA_FORWARD * leftMetersPerSecSq +
-                Constants.Drive.Characterization.LEFT_V_INTERCEPT_FORWARD
+                Constants.Drive.Characterization.LEFT_KS_FORWARD
         } else {
             Constants.Drive.Characterization.LEFT_KV_REVERSE * leftMetersPerSec +
                 Constants.Drive.Characterization.LEFT_KA_REVERSE * leftMetersPerSecSq +
-                Constants.Drive.Characterization.LEFT_V_INTERCEPT_REVERSE
+                Constants.Drive.Characterization.LEFT_KS_REVERSE
         }
         val rightFeedForward: Double = if (rightMetersPerSec > 0) {
             Constants.Drive.Characterization.RIGHT_KV_FORWARD * rightMetersPerSec +
                 Constants.Drive.Characterization.RIGHT_KA_FORWARD * rightMetersPerSecSq +
-                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_FORWARD
+                Constants.Drive.Characterization.RIGHT_KS_FORWARD
         } else {
             Constants.Drive.Characterization.RIGHT_KV_REVERSE * rightMetersPerSec +
                 Constants.Drive.Characterization.RIGHT_KA_REVERSE * rightMetersPerSecSq +
-                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_REVERSE
+                Constants.Drive.Characterization.RIGHT_KS_REVERSE
         }
 
         leftMasterTalon.set(
