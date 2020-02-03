@@ -218,9 +218,6 @@ object Constants {
     }
 
     object BeamBreak {
-        const val IN_BEAM_BREAK_PORT = 0
-        const val OUT_BEAM_BREAK_PORT = 0
-
         // test how long it takes one ball to pass through intake and feeder
         const val IN_BEAM_BROKEN_BALL_TIME = 0.0
         const val OUT_BEAM_BROKEN_BALL_TIME = 0.0

@@ -1,14 +1,23 @@
 package com.team4099.robot2020.subsystems
 
+import com.revrobotics.CANDigitalInput
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Intake : Subsystem {
 
     private val sparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Intake.INTAKE_SPARK_MAX_ID)
+
+    // how do we do this
+    var inBeamBroken = false // CANDigitalInput.LimitSwitchPolarity
+        // what is a polarity
+        // get() = sparkMax.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+
+    private var inBeamBrokenTimestamp = -1.0
 
     // take this out after adding one ballCount in superstructure to work with feeder
     var ballCount = 0
@@ -55,7 +64,16 @@ object Intake : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
-        
+
+        if (Intake.inBeamBroken) {
+            if (inBeamBrokenTimestamp == -1.0) {
+                inBeamBrokenTimestamp = timestamp
+            }
+        } else {
+            inBeamBrokenTimestamp = -1.0
+        }
+        Feeder.ballCount += ((timestamp - inBeamBrokenTimestamp) / Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME).toInt()
+
         @SuppressWarnings("MagicNumber")
         when (intakeState) {
             IntakeState.IN -> {
