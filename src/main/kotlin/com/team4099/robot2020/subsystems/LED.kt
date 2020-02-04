@@ -1,5 +1,6 @@
 package com.team4099.robot2020.subsystems
 
+import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants.LED.Color
@@ -37,6 +38,7 @@ object LED : Subsystem {
             }
         }
         mLED.setData(mLEDBuffer)
+        HelixEvents.addEvent("LED", "LED color changed to $currentColor")
     }
 
     override fun outputTelemetry() {
