@@ -57,6 +57,7 @@ object Intake : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
+
         if (Intake.inBeamBroken) {
             if (inBeamBrokenTimestamp == -1.0) {
                 inBeamBrokenTimestamp = timestamp
