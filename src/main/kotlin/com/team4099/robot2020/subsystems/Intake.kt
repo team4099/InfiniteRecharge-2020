@@ -3,20 +3,16 @@ package com.team4099.robot2020.subsystems
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
-import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Intake : Subsystem {
 
     private val talon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Intake.INTAKE_TALON_ID)
 
-    // how do we do this
-    var inBeamBroken = false // CANDigitalInput.LimitSwitchPolarity
-        // what is a polarity
-        // get() = sparkMax.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)
+    var inBeamBroken = false
+        get() = talon.isFwdLimitSwitchClosed() > 0
 
     private var inBeamBrokenTimestamp = -1.0
 

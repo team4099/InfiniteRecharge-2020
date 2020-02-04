@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
+
     private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_OUT_ID)
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Feeder.FEEDER_IN_SLAVE_ID,
