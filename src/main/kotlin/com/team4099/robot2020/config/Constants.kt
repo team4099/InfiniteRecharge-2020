@@ -49,7 +49,7 @@ object Constants {
 
         const val CLOSED_LOOP_RAMP = 0.0
 
-        const val OUTPUT_POWER_DEADBAND = 0.04
+        const val OUTPUT_POWER_DEADBAND = 0.0
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
