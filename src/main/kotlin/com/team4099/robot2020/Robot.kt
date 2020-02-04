@@ -12,6 +12,7 @@ import com.team4099.lib.auto.AutoModeExecuter
 import com.team4099.lib.logging.CrashTracker
 import com.team4099.lib.loop.Looper
 import com.team4099.robot2020.auto.PathStore
+import com.team4099.robot2020.auto.modes.DriveForwardMode
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.ControlBoard
 import com.team4099.robot2020.config.DashboardConfigurator
@@ -103,8 +104,10 @@ object Robot : TimedRobot() {
             disabledLooper.stop() // end DisabledLooper
             enabledLooper.start() // start EnabledLooper
 
-            autoModeExecuter = AutoModeExecuter(DashboardConfigurator.getSelectedAutoMode())
+//            autoModeExecuter = AutoModeExecuter(DashboardConfigurator.getSelectedAutoMode())
+            autoModeExecuter = AutoModeExecuter(DriveForwardMode(0.0))
             autoModeExecuter.start()
+
             HelixEvents.addEvent("ROBOT", "Autonomous Enabled")
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("autonomousInit", t)

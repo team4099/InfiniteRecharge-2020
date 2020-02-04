@@ -63,7 +63,7 @@ object Drive : Subsystem {
 
     private val autoOdometry = DifferentialDriveOdometry(Rotation2d())
     private var pathFollowController = RamseteController()
-    private var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
+    var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
     var path: Trajectory = Trajectory(listOf(Trajectory.State()))
         set(value) {
             trajDuration = value.totalTimeSeconds
@@ -281,6 +281,10 @@ object Drive : Subsystem {
      */
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
+        setLeftRightPower(
+            signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
+            signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
+        )
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
             rightMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
@@ -288,16 +292,12 @@ object Drive : Subsystem {
             HelixEvents.addEvent("DRIVETRAIN", "Entered open loop control")
         }
         brakeMode = if (signal.brakeMode) NeutralMode.Brake else NeutralMode.Coast
-        setLeftRightPower(
-                signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
-                signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
-        )
     }
 
     @Synchronized
     private fun setLeftRightPower(left: Double, right: Double) {
-        leftMasterTalon.set(ControlMode.PercentOutput, left)
-        rightMasterTalon.set(ControlMode.PercentOutput, right)
+        leftMasterTalon.set(ControlMode.PercentOutput, left, DemandType.ArbitraryFeedForward, 0.0)
+        rightMasterTalon.set(ControlMode.PercentOutput, right, DemandType.ArbitraryFeedForward, 0.0)
     }
 
     /**
@@ -411,20 +411,20 @@ object Drive : Subsystem {
         val leftFeedForward: Double = if (leftMetersPerSec > 0) {
             Constants.Drive.Characterization.LEFT_KV_FORWARD * leftMetersPerSec +
                 Constants.Drive.Characterization.LEFT_KA_FORWARD * leftMetersPerSecSq +
-                Constants.Drive.Characterization.LEFT_V_INTERCEPT_FORWARD
+                Constants.Drive.Characterization.LEFT_KS_FORWARD
         } else {
             Constants.Drive.Characterization.LEFT_KV_REVERSE * leftMetersPerSec +
                 Constants.Drive.Characterization.LEFT_KA_REVERSE * leftMetersPerSecSq +
-                Constants.Drive.Characterization.LEFT_V_INTERCEPT_REVERSE
+                Constants.Drive.Characterization.LEFT_KS_REVERSE
         }
         val rightFeedForward: Double = if (rightMetersPerSec > 0) {
             Constants.Drive.Characterization.RIGHT_KV_FORWARD * rightMetersPerSec +
                 Constants.Drive.Characterization.RIGHT_KA_FORWARD * rightMetersPerSecSq +
-                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_FORWARD
+                Constants.Drive.Characterization.RIGHT_KS_FORWARD
         } else {
             Constants.Drive.Characterization.RIGHT_KV_REVERSE * rightMetersPerSec +
                 Constants.Drive.Characterization.RIGHT_KA_REVERSE * rightMetersPerSecSq +
-                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_REVERSE
+                Constants.Drive.Characterization.RIGHT_KS_REVERSE
         }
 
         leftMasterTalon.set(
@@ -458,8 +458,8 @@ object Drive : Subsystem {
             enterVelocityClosedLoop()
             currentState = DriveControlState.MOTION_MAGIC
         }
-        leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters))
-        rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters))
+        leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters), DemandType.ArbitraryFeedForward, 0.0)
+        rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters), DemandType.ArbitraryFeedForward, 0.0)
     }
 
     /**
