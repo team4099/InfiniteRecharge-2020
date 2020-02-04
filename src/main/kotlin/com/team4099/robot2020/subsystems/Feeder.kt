@@ -8,7 +8,6 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
@@ -55,7 +54,7 @@ object Feeder : Subsystem {
         }
 
     init {
-        stopperTalon.setInverted(InvertType.InvertMotorOutput)
+        stopperTalon.inverted = true
     }
 
     enum class FeederState {
@@ -98,9 +97,9 @@ object Feeder : Subsystem {
                 outBeamBrokenTimestamp = timestamp
             }
         } else {
+            ballCount -= ((timestamp - outBeamBrokenTimestamp) / Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME).toInt()
             outBeamBrokenTimestamp = -1.0
         }
-        ballCount -= ((timestamp - outBeamBrokenTimestamp) / Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME).toInt()
 
         when (feederState) {
             FeederState.INTAKE -> {

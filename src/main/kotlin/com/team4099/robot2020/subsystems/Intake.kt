@@ -58,14 +58,14 @@ object Intake : Subsystem {
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
 
-        if (Intake.inBeamBroken) {
+        if (inBeamBroken) {
             if (inBeamBrokenTimestamp == -1.0) {
                 inBeamBrokenTimestamp = timestamp
             }
         } else {
+            ballCount += ((timestamp - inBeamBrokenTimestamp) / Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME).toInt()
             inBeamBrokenTimestamp = -1.0
         }
-        Feeder.ballCount += ((timestamp - inBeamBrokenTimestamp) / Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME).toInt()
 
         @SuppressWarnings("MagicNumber")
         when (intakeState) {
