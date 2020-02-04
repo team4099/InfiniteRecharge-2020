@@ -13,31 +13,24 @@ object SparkMaxControllerFactory {
      * Represents the configuration of a Spark Max
      */
     @Suppress("MagicNumber")
-    class Configuration {
-        var idleMode = CANSparkMax.IdleMode.kCoast
-        var inverted = false
+    data class Configuration(
+        var idleMode: CANSparkMax.IdleMode = CANSparkMax.IdleMode.kCoast,
+        var inverted: Boolean = false,
 
-        var openLoopRampRate = 0.0
-        var closedLoopRampRate = 0.0
+        var openLoopRampRate: Double = 0.0,
+        var closedLoopRampRate: Double = 0.0,
 
-        var statusFrame0RateMs = 10
-        var statusFrame1RateMs = 1000
-        var statusFrame2RateMs = 1000
+        var statusFrame0RateMs: Int = 10,
+        var statusFrame1RateMs: Int = 1000,
+        var statusFrame2RateMs: Int = 1000,
 
-        var enableVoltageCompensation = false
-        var nominalVoltage = 12.0
+        var enableVoltageCompensation: Boolean = false,
+        var nominalVoltage: Double = 12.0,
 
-        var delayBeforeCreation = 0.25
-    }
+        var delayBeforeCreation: Double = 0.25
+    )
 
     private val defaultConfiguration = Configuration()
-    private val slaveConfiguration = Configuration()
-
-    init {
-        slaveConfiguration.statusFrame0RateMs = 1000
-        slaveConfiguration.statusFrame1RateMs = 1000
-        slaveConfiguration.statusFrame2RateMs = 1000
-    }
 
     /**
      * Create a Spark Max with the default [Configuration]
@@ -54,9 +47,19 @@ object SparkMaxControllerFactory {
      * @param id The CAN ID of the Spark Max to create.
      * @param master The CAN ID of the Spark Max to follow.
      */
-    fun createPermanentSlaveSparkMax(id: Int, master: CANSparkMax): LazySparkMax {
+    fun createPermanentSlaveSparkMax(
+        id: Int,
+        master: CANSparkMax,
+        config: Configuration = defaultConfiguration,
+        invertToMaster: Boolean = false
+    ): LazySparkMax {
+        val slaveConfiguration = config.copy(
+            statusFrame0RateMs = 1000,
+            statusFrame1RateMs = 1000,
+            statusFrame2RateMs = 1000
+        )
         val sparkMax: LazySparkMax = createSparkMax(id, slaveConfiguration)
-        sparkMax.follow(master)
+        sparkMax.follow(master, invertToMaster)
         return sparkMax
     }
 

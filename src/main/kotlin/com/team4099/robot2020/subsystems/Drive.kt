@@ -30,16 +30,10 @@ import com.team4099.robot2020.config.Constants
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonFX
-    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
-            Constants.Drive.RIGHT_SLAVE_1_ID,
-            Constants.Drive.RIGHT_MASTER_ID
-    )
+    private val rightSlaveTalon: TalonFX
 
     private val leftMasterTalon: TalonFX
-    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
-            Constants.Drive.LEFT_SLAVE_1_ID,
-            Constants.Drive.LEFT_MASTER_ID
-    )
+    private val leftSlaveTalon: TalonFX
 
     private val ahrs = AHRS(SPI.Port.kMXP)
     private var trajDuration = 0.0
@@ -60,6 +54,12 @@ object Drive : Subsystem {
 
     val rightVelocityMetersPerSec
         get() = nativeToMetersPerSecond(rightMasterTalon.selectedSensorVelocity)
+
+    val leftMasterOutputVoltage
+        get() = leftMasterTalon.motorOutputVoltage
+
+    val rightMasterOutputVoltage
+        get() = rightMasterTalon.motorOutputVoltage
 
     private val autoOdometry = DifferentialDriveOdometry(Rotation2d())
     private var pathFollowController = RamseteController()
@@ -124,33 +124,44 @@ object Drive : Subsystem {
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
-        val masterConfig = CTREMotorControllerFactory.Configuration()
-        masterConfig.feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS
+        val talonConfig = CTREMotorControllerFactory.Configuration(
+            feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS,
+            sensorPhase = true,
 
-        masterConfig.sensorPhase = true
-        masterConfig.enableVoltageCompensation = true
+            enableVoltageCompensation = true,
+            voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL,
 
-        masterConfig.voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL
+            neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND,
+            velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms,
 
-        masterConfig.neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND
+            voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP,
+            enableCurrentLimit = true,
+            currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT,
 
-        masterConfig.velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms
-        masterConfig.voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP
+            motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt(),
+            motionMagicAcceleration = metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
+        )
 
-        masterConfig.enableCurrentLimit = true
-        masterConfig.currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT
-
-        masterConfig.motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt()
-        masterConfig.motionMagicAcceleration =
-            metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
-
-        rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, masterConfig)
+        rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, talonConfig)
+        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, talonConfig)
+        rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
+            Constants.Drive.RIGHT_SLAVE_1_ID,
+            Constants.Drive.RIGHT_MASTER_ID,
+            talonConfig
+        )
+        leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
+            Constants.Drive.LEFT_SLAVE_1_ID,
+            Constants.Drive.LEFT_MASTER_ID,
+            talonConfig
+        )
 
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
-        leftMasterTalon.inverted = false
+        leftSlaveTalon.inverted = false
+
+        rightSlaveTalon.configNeutralDeadband(0.0)
+        leftSlaveTalon.configNeutralDeadband(0.0)
 
         rightMasterTalon.configSelectedFeedbackSensor(
             TalonFXFeedbackDevice.IntegratedSensor,
@@ -334,35 +345,35 @@ object Drive : Subsystem {
      * Uses a sinusoidal scaling function for curvature.
      *
      * @param throttle The magnitude of the output. Controlled by the triggers on the driver controller.
-     * @param wheel The curvature of the path. Controlled by the left/right axis of a joystick.
+     * @param turn The curvature of the path. Controlled by the left/right axis of a joystick.
      * @param quickTurn True if the curvature should not be scaled. Typically used when turning in place.
      */
     // thank you team 254 but i like 148 better...
     @Synchronized
-    fun setCheesyishDrive(throttle: Double, wheel: Double, quickTurn: Boolean) {
+    fun setCheesyishDrive(throttle: Double, turn: Double, quickTurn: Boolean) {
         var mThrottle = throttle
-        var mWheel = wheel
+        var mTurn = turn
         if (mThrottle.around(0.0, Constants.Joysticks.THROTTLE_DEADBAND)) {
             mThrottle = 0.0
         }
 
-        if (mWheel.around(0.0, Constants.Joysticks.TURN_DEADBAND)) {
-            mWheel = 0.0
+        if (mTurn.around(0.0, Constants.Joysticks.TURN_DEADBAND)) {
+            mTurn = 0.0
         }
 
         val denominator = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY)
         // Apply a sin function that's scaled to make it feel better.
         if (!quickTurn) {
-            mWheel = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mWheel)
-            mWheel = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mWheel)
-            mWheel = mWheel / (denominator * denominator) * abs(mThrottle)
+            mTurn = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mTurn)
+            mTurn = sin(Math.PI / 2.0 * Constants.Drive.WHEEL_NON_LINEARITY * mTurn)
+            mTurn = mTurn / (denominator * denominator) * abs(mThrottle)
         }
 
-        mWheel *= Constants.Drive.WHEEL_GAIN
-        val driveSignal = if (abs(mWheel) < Constants.Universal.EPSILON) {
+        mTurn *= Constants.Drive.WHEEL_GAIN
+        val driveSignal = if (abs(mTurn) < Constants.Universal.EPSILON) {
             DriveSignal(mThrottle, mThrottle)
         } else {
-            val deltaV = Constants.Drive.WHEEL_TRACK_WIDTH_INCHES * mWheel / (2 * Constants.Drive.TRACK_SCRUB_FACTOR)
+            val deltaV = Constants.Drive.WHEEL_TRACK_WIDTH_INCHES * mTurn / (2 * Constants.Drive.TRACK_SCRUB_FACTOR)
             DriveSignal(mThrottle - deltaV, mThrottle + deltaV)
         }
 

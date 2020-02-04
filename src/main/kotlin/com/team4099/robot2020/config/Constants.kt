@@ -4,6 +4,7 @@ import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.config.ServoMotorSubsystemMotionConstraints
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import kotlin.math.PI
 
 /**
  * Stores constants used by the robot.
@@ -48,7 +49,7 @@ object Constants {
 
         const val CLOSED_LOOP_RAMP = 0.0
 
-        const val OUTPUT_POWER_DEADBAND = 0.04
+        const val OUTPUT_POWER_DEADBAND = 0.0
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
@@ -97,12 +98,64 @@ object Constants {
             const val LEFT_KD = 0.0000
             const val LEFT_KF = 0.0000 // 1023.0 / 2220.0
 
-            // subject to change
             const val RIGHT_KP = 0.0000 // .1 * 1023 / 70
             const val RIGHT_KI = 0.0000
             const val RIGHT_KD = 0.0000
             const val RIGHT_KF = 0.0000 // 1023.0 / 4420.0
         }
+    }
+
+    object Vision {
+        const val DRIVER_PIPELINE_ID = 1
+        const val TARGETING_PIPELINE_ID = 0
+        const val TARGET_HEIGHT = 90.0
+        const val CAMERA_HEIGHT = 35.0
+        const val CAMERA_ANGLE = 25.0 * PI / 180
+        const val SHOOTING_DISTANCE = 0
+
+        const val MAX_DIST_ERROR = 0.1
+        const val MAX_ANGLE_ERROR = 0.1
+
+        val TURN_GAINS = PIDGains(0, 0.009, 0.0, 0.0, 0.0, 0)
+        val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
+        const val MIN_TURN_COMMAND = 0.0838
+        const val MIN_DIST_COMMAND = 0.0838
+    }
+
+    object Shooter {
+        const val MASTER_SPARKMAX_ID = 0
+        const val SLAVE_SPARKMAX_ID = 1
+
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0.0, 0)
+
+        const val TARGET_SPEED = 0.0
+        const val SPEED_THRESHOLD = 0.0
+    }
+
+    object Climber : ServoMotorSubsystemConfig(
+        CTREMotorControllerFactory.defaultConfiguration,
+        "CLIMBER",
+        "inches",
+        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
+        0.0,
+        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        0.0,
+        1024
+    ) {
+        const val MASTER_ID = 9
+        const val SLAVE_ID = 10
+
+        const val OPERATOR_CONTROL_VEL = 90.0
+
+        enum class ClimberPosition(val position: Double) {
+            DOWN(0.0),
+            UP(45.0)
+        }
+    }
+
+    object Intake {
+        const val INTAKE_TALON_ID = 69
     }
 
     object Looper {
@@ -150,12 +203,12 @@ object Constants {
         const val COMPRESSOR_STOP_CURRENT = 70
     }
 
-    object SampleWrist : ServoMotorSubsystemConfig(
+    object Wrist : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",
-        PIDGains(0, 1.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
         -90.0,
         ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
         0.0,
@@ -170,5 +223,15 @@ object Constants {
             HORIZONTAL(0.0),
             VERTICAL(90.0)
         }
+    }
+
+    object Feeder {
+        const val FEEDER_IN_MASTER_ID = 11
+        const val FEEDER_IN_SLAVE_ID = 12
+
+        const val FEEDER_OUT_ID = 13
+
+        const val FEEDER_MAX_POWER = 1.0
+        const val FEEDER_HOLD_POWER = 0.1
     }
 }
