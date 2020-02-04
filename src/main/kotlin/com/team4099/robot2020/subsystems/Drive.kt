@@ -55,6 +55,12 @@ object Drive : Subsystem {
     val rightVelocityMetersPerSec
         get() = nativeToMetersPerSecond(rightMasterTalon.selectedSensorVelocity)
 
+    val leftMasterOutputVoltage
+        get() = leftMasterTalon.motorOutputVoltage
+
+    val rightMasterOutputVoltage
+        get() = rightMasterTalon.motorOutputVoltage
+
     private val autoOdometry = DifferentialDriveOdometry(Rotation2d())
     private var pathFollowController = RamseteController()
     private var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)

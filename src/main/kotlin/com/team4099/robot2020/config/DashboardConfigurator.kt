@@ -8,6 +8,7 @@ import com.team4099.lib.auto.AutoMode
 import com.team4099.lib.auto.AutoModeProvider
 import com.team4099.lib.loop.Loop
 import com.team4099.lib.subsystem.ServoMotorSubsystem
+import com.team4099.robot2020.auto.modes.DriveCharacterizeMode
 import com.team4099.robot2020.auto.modes.StandStillMode
 
 /**
@@ -35,7 +36,8 @@ object DashboardConfigurator : Loop {
      * Maps the name of a mode to a function that creates an instance of it.
      */
     private val allModes = mapOf<String, AutoModeProvider>(
-            Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode
+        Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode,
+        "Drivetrain Characterization" to { _: StartingPosition, delay: Double -> DriveCharacterizeMode(delay) }
     )
 
     private val configurableSubsystems = mutableListOf<ServoMotorSubsystem>()
