@@ -4,6 +4,7 @@ import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.config.ServoMotorSubsystemMotionConstraints
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import kotlin.math.PI
 
 /**
  * Stores constants used by the robot.
@@ -104,22 +105,39 @@ object Constants {
         }
     }
 
+    object Vision {
+        const val DRIVER_PIPELINE_ID = 1
+        const val TARGETING_PIPELINE_ID = 0
+        const val TARGET_HEIGHT = 90.0
+        const val CAMERA_HEIGHT = 35.0
+        const val CAMERA_ANGLE = 25.0 * PI / 180
+        const val SHOOTING_DISTANCE = 0
+
+        const val MAX_DIST_ERROR = 0.1
+        const val MAX_ANGLE_ERROR = 0.1
+
+        val TURN_GAINS = PIDGains(0, 0.009, 0.0, 0.0, 0.0, 0)
+        val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
+        const val MIN_TURN_COMMAND = 0.0838
+        const val MIN_DIST_COMMAND = 0.0838
+    }
+
     object Shooter {
         const val MASTER_SPARKMAX_ID = 0
         const val SLAVE_SPARKMAX_ID = 1
 
-        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0)
+        val SHOOTER_PID = PIDGains(0, 1.0, 1.0, 1.0, 0.0, 0)
 
         const val TARGET_SPEED = 0.0
         const val SPEED_THRESHOLD = 0.0
     }
-      
+
     object Climber : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
         "inches",
-        PIDGains(0, 1.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
         0.0,
         ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
         0.0,
@@ -189,8 +207,8 @@ object Constants {
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",
-        PIDGains(0, 1.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0),
+        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
         -90.0,
         ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
         0.0,
