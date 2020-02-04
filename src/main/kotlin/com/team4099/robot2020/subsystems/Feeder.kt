@@ -67,9 +67,9 @@ object Feeder : Subsystem {
 
         HelixLogger.addSource("Feeder Master Motor Current") { inMasterSparkMax.outputCurrent }
         HelixLogger.addSource("Feeder Slave Motor Current") { inSlaveSparkMax.outputCurrent }
-        HelixLogger.addSource("Feeder Stopper Motor current") { stopperTalon.supplyCurrent }
+        HelixLogger.addSource("Feeder Stopper Motor Current") { stopperTalon.supplyCurrent }
 
-        HelixLogger.addSource("Feeder State") { feederState }
+        HelixLogger.addSource("Feeder State") { feederState.toString() }
     }
 
     override fun zeroSensors() {
