@@ -155,7 +155,7 @@ object Constants {
     }
 
     object Intake {
-        const val INTAKE_SPARK_MAX_ID = 69
+        const val INTAKE_TALON_ID = 69
     }
 
     object Looper {
