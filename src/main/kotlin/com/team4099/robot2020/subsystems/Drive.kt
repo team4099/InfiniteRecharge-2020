@@ -30,16 +30,10 @@ import com.team4099.robot2020.config.Constants
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonFX
-    private val rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
-            Constants.Drive.RIGHT_SLAVE_1_ID,
-            Constants.Drive.RIGHT_MASTER_ID
-    )
+    private val rightSlaveTalon: TalonFX
 
     private val leftMasterTalon: TalonFX
-    private val leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
-            Constants.Drive.LEFT_SLAVE_1_ID,
-            Constants.Drive.LEFT_MASTER_ID
-    )
+    private val leftSlaveTalon: TalonFX
 
     private val ahrs = AHRS(SPI.Port.kMXP)
     private var trajDuration = 0.0
@@ -69,7 +63,7 @@ object Drive : Subsystem {
 
     private val autoOdometry = DifferentialDriveOdometry(Rotation2d())
     private var pathFollowController = RamseteController()
-    private var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
+    var kinematics = DifferentialDriveKinematics(Constants.Drive.WHEEL_TRACK_WIDTH_METERS)
     var path: Trajectory = Trajectory(listOf(Trajectory.State()))
         set(value) {
             trajDuration = value.totalTimeSeconds
@@ -130,28 +124,37 @@ object Drive : Subsystem {
     private var currentState = DriveControlState.OPEN_LOOP
 
     init {
-        val masterConfig = CTREMotorControllerFactory.Configuration()
-        masterConfig.feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS
+        val talonConfig = CTREMotorControllerFactory.Configuration(
+            feedbackStatusFrameRateMs = Constants.Drive.STATUS_FRAME_PERIOD_MS,
+            sensorPhase = true,
 
-        masterConfig.sensorPhase = true
-        masterConfig.enableVoltageCompensation = true
+            enableVoltageCompensation = true,
+            voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL,
 
-        masterConfig.voltageCompensationLevel = Constants.Drive.VOLTAGE_COMP_LEVEL
+            neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND,
+            velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms,
 
-        masterConfig.neutralDeadband = Constants.Drive.OUTPUT_POWER_DEADBAND
+            voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP,
+            enableCurrentLimit = true,
+            currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT,
 
-        masterConfig.velocityMeasurementPeriod = VelocityMeasPeriod.Period_50Ms
-        masterConfig.voltageCompensationRampRate = Constants.Drive.CLOSED_LOOP_RAMP
+            motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt(),
+            motionMagicAcceleration = metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
+        )
 
-        masterConfig.enableCurrentLimit = true
-        masterConfig.currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT
+        rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, talonConfig)
+        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, talonConfig)
+        rightSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
+            Constants.Drive.RIGHT_SLAVE_1_ID,
+            Constants.Drive.RIGHT_MASTER_ID,
+            talonConfig
+        )
+        leftSlaveTalon = CTREMotorControllerFactory.createPermanentSlaveTalonFX(
+            Constants.Drive.LEFT_SLAVE_1_ID,
+            Constants.Drive.LEFT_MASTER_ID,
+            talonConfig
+        )
 
-        masterConfig.motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt()
-        masterConfig.motionMagicAcceleration =
-            metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
-
-        rightMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.RIGHT_MASTER_ID, masterConfig)
-        leftMasterTalon = CTREMotorControllerFactory.createTalonFX(Constants.Drive.LEFT_MASTER_ID, masterConfig)
         rightMasterTalon.inverted = true
         rightSlaveTalon.inverted = true
         leftMasterTalon.inverted = false
@@ -278,6 +281,10 @@ object Drive : Subsystem {
      */
     @Synchronized
     fun setOpenLoop(signal: DriveSignal) {
+        setLeftRightPower(
+            signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
+            signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
+        )
         if (currentState !== DriveControlState.OPEN_LOOP) {
             leftMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
             rightMasterTalon.configNominalOutputForward(0.0, Constants.Universal.CTRE_CONFIG_TIMEOUT)
@@ -285,16 +292,12 @@ object Drive : Subsystem {
             HelixEvents.addEvent("DRIVETRAIN", "Entered open loop control")
         }
         brakeMode = if (signal.brakeMode) NeutralMode.Brake else NeutralMode.Coast
-        setLeftRightPower(
-                signal.leftMotor * Constants.Drive.MAX_LEFT_OPEN_LOOP_POWER,
-                signal.rightMotor * Constants.Drive.MAX_RIGHT_OPEN_LOOP_POWER
-        )
     }
 
     @Synchronized
     private fun setLeftRightPower(left: Double, right: Double) {
-        leftMasterTalon.set(ControlMode.PercentOutput, left)
-        rightMasterTalon.set(ControlMode.PercentOutput, right)
+        leftMasterTalon.set(ControlMode.PercentOutput, left, DemandType.ArbitraryFeedForward, 0.0)
+        rightMasterTalon.set(ControlMode.PercentOutput, right, DemandType.ArbitraryFeedForward, 0.0)
     }
 
     /**
@@ -408,20 +411,20 @@ object Drive : Subsystem {
         val leftFeedForward: Double = if (leftMetersPerSec > 0) {
             Constants.Drive.Characterization.LEFT_KV_FORWARD * leftMetersPerSec +
                 Constants.Drive.Characterization.LEFT_KA_FORWARD * leftMetersPerSecSq +
-                Constants.Drive.Characterization.LEFT_V_INTERCEPT_FORWARD
+                Constants.Drive.Characterization.LEFT_KS_FORWARD
         } else {
             Constants.Drive.Characterization.LEFT_KV_REVERSE * leftMetersPerSec +
                 Constants.Drive.Characterization.LEFT_KA_REVERSE * leftMetersPerSecSq +
-                Constants.Drive.Characterization.LEFT_V_INTERCEPT_REVERSE
+                Constants.Drive.Characterization.LEFT_KS_REVERSE
         }
         val rightFeedForward: Double = if (rightMetersPerSec > 0) {
             Constants.Drive.Characterization.RIGHT_KV_FORWARD * rightMetersPerSec +
                 Constants.Drive.Characterization.RIGHT_KA_FORWARD * rightMetersPerSecSq +
-                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_FORWARD
+                Constants.Drive.Characterization.RIGHT_KS_FORWARD
         } else {
             Constants.Drive.Characterization.RIGHT_KV_REVERSE * rightMetersPerSec +
                 Constants.Drive.Characterization.RIGHT_KA_REVERSE * rightMetersPerSecSq +
-                Constants.Drive.Characterization.RIGHT_V_INTERCEPT_REVERSE
+                Constants.Drive.Characterization.RIGHT_KS_REVERSE
         }
 
         leftMasterTalon.set(
@@ -455,8 +458,8 @@ object Drive : Subsystem {
             enterVelocityClosedLoop()
             currentState = DriveControlState.MOTION_MAGIC
         }
-        leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters))
-        rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters))
+        leftMasterTalon.set(ControlMode.MotionMagic, metersToNative(leftMeters), DemandType.ArbitraryFeedForward, 0.0)
+        rightMasterTalon.set(ControlMode.MotionMagic, metersToNative(rightMeters), DemandType.ArbitraryFeedForward, 0.0)
     }
 
     /**
