@@ -1,5 +1,6 @@
 package com.team4099.lib.hardware
 
+import com.ctre.phoenix.motorcontrol.InvertType
 import com.revrobotics.CANPIDController
 import com.revrobotics.CANSparkMax
 import com.revrobotics.ControlType

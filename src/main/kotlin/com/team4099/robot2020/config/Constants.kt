@@ -34,11 +34,11 @@ object Constants {
     }
 
     object Drive {
-        const val LEFT_MASTER_ID = 10
-        const val LEFT_SLAVE_1_ID = 9
+        const val LEFT_MASTER_ID = 2
+        const val LEFT_SLAVE_1_ID = 3
 
-        const val RIGHT_MASTER_ID = 5
-        const val RIGHT_SLAVE_1_ID = 6
+        const val RIGHT_MASTER_ID = 12
+        const val RIGHT_SLAVE_1_ID = 13
 
         const val STATUS_FRAME_PERIOD_MS = 5
 
@@ -207,15 +207,14 @@ object Constants {
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",
-        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0),
         -90.0,
-        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.0,
         1024
     ) {
-        const val MASTER_ID = 4
-        const val SLAVE1_ID = 5
+        const val MASTER_ID = 15
 
         const val OPERATOR_CONTROL_VEL = 90.0
 

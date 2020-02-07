@@ -1,12 +1,19 @@
 package com.team4099.lib.hardware
 
 import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.FeedbackDevice
+import com.ctre.phoenix.motorcontrol.InvertType
+import com.ctre.phoenix.motorcontrol.SensorCollection
 import com.team4099.lib.config.PIDGains
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 
 class CTREServoMotorHardware(
     masterId: Int,
-    slaveIds: List<Int>
+    slaveIds: List<Int>,
+    invert: InvertType = InvertType.None,
+    invertSlaves: InvertType = InvertType.None,
+    sensorPhase: Boolean = false,
+    feedbackDevice: FeedbackDevice = FeedbackDevice.CTRE_MagEncoder_Absolute
 ) : ServoMotorHardware {
     override var pidSlot: Int = 0
         set(value) {
@@ -15,6 +22,13 @@ class CTREServoMotorHardware(
         }
     val masterMotorController = CTREMotorControllerFactory.createDefaultTalonSRX(masterId)
     val slaveMotorControllers = slaveIds.map { CTREMotorControllerFactory.createPermanentSlaveVictorSPX(it, masterId) }
+
+    init {
+        masterMotorController.setInverted(invert)
+        slaveMotorControllers.forEach { it.setInverted(invertSlaves) }
+        masterMotorController.setSensorPhase(sensorPhase)
+        masterMotorController.configSelectedFeedbackSensor(feedbackDevice, 0, 0)
+    }
 
     override var timeout = 0
     override val positionTicks

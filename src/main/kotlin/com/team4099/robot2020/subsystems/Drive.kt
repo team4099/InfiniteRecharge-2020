@@ -91,13 +91,13 @@ object Drive : Subsystem {
     var yaw: Double = 0.0
         get() {
             if (ahrs.isConnected) field = ahrs.yaw.toDouble()
-            else HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
+//            else HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
             return field
         }
     var angle: Double = 0.0
         get() {
             if (ahrs.isConnected) field = ahrs.angle
-            else HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
+//            else HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
             return field
         }
 
