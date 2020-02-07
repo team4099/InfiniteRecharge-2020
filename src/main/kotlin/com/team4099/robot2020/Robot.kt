@@ -59,13 +59,13 @@ object Robot : TimedRobot() {
 
             // Register all subsystems
             SubsystemManager.register(Drive)
-            SubsystemManager.register(Climber)
-            SubsystemManager.register(Intake)
-            SubsystemManager.register(Wrist)
-            SubsystemManager.register(Vision)
+//            SubsystemManager.register(Climber)
+//            SubsystemManager.register(Intake)
+//            SubsystemManager.register(Wrist)
+//            SubsystemManager.register(Vision)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
-            enabledLooper.register(BrownoutDefender)
+//            enabledLooper.register(BrownoutDefender)
             enabledLooper.register(FaultDetector)
 
             disabledLooper.register(SubsystemManager.disabledLoop)

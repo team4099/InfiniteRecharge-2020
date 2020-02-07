@@ -9,7 +9,7 @@ import com.team4099.lib.limit
 
 abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,
-    private val hardware: ServoMotorHardware
+    protected val hardware: ServoMotorHardware
 ) : Subsystem {
     enum class ControlState(val usesPositionControl: Boolean, val usesVelocityControl: Boolean) {
         OPEN_LOOP(false, false),

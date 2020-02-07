@@ -1,12 +1,17 @@
 package com.team4099.robot2020.subsystems
 
-import com.team4099.lib.hardware.SparkMaxServoMotorHardware
+import com.ctre.phoenix.motorcontrol.FeedbackDevice
+import com.team4099.lib.hardware.CTREServoMotorHardware
 import com.team4099.lib.subsystem.ServoMotorSubsystem
 import com.team4099.robot2020.config.Constants
 
 object Wrist : ServoMotorSubsystem(
     Constants.Wrist,
-    SparkMaxServoMotorHardware(Constants.Wrist.MASTER_ID, listOf(Constants.Wrist.SLAVE1_ID))
+    CTREServoMotorHardware(
+        Constants.Wrist.MASTER_ID,
+        listOf(),
+        feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Absolute
+    )
 ) {
     var positionSetpoint: Constants.Wrist.WristPosition = Constants.Wrist.WristPosition.HORIZONTAL
         set(value) {
