@@ -45,7 +45,7 @@ object Robot : TimedRobot() {
 
         PathStore // Invoke path store to initialize it and generate the contained trajectories
 
-        HelixEvents.addEvent("ROBOT", "Robot Construction")
+        HelixEvents.addEvent("ROBOT", "Robot Construction (running on $robotName)")
         HelixLogger.addSource("Battery Voltage", RobotController::getBatteryVoltage)
 
         HelixLogger.addSource("Enabled Looper dT") { enabledLooper.dt }
@@ -61,11 +61,10 @@ object Robot : TimedRobot() {
             SubsystemManager.register(Drive)
 //            SubsystemManager.register(Climber)
 //            SubsystemManager.register(Intake)
-//            SubsystemManager.register(Wrist)
+            SubsystemManager.register(Wrist)
 //            SubsystemManager.register(Vision)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
-//            enabledLooper.register(BrownoutDefender)
             enabledLooper.register(FaultDetector)
 
             disabledLooper.register(SubsystemManager.disabledLoop)
