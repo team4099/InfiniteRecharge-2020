@@ -11,11 +11,11 @@ import com.team4099.robot2020.config.Constants
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
-    private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_OUT_ID)
+    private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_IN_MASTER_ID)
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Feeder.FEEDER_IN_SLAVE_ID,
             inMasterSparkMax,
-            true
+            false
     )
 
     private val inEncoder = inMasterSparkMax.encoder
@@ -45,7 +45,10 @@ object Feeder : Subsystem {
         }
 
     init {
+        inMasterSparkMax.inverted = true
+        inMasterSparkMax.setSmartCurrentLimit(30)
         stopperTalon.setInverted(InvertType.InvertMotorOutput)
+
     }
 
     enum class FeederState {
