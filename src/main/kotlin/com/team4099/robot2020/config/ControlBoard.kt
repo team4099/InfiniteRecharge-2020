@@ -36,14 +36,20 @@ object ControlBoard {
         get() = operator.yButton
 
     val climberUp: Boolean
-        get() = operator.dPadUp
+        get() = driver.dPadUp
 
     val climberDown: Boolean
-        get() = operator.dPadDown
+        get() = driver.dPadDown
 
     val runIntakeIn: Boolean
         get() = operator.aButton
 
     val runIntakeOut: Boolean
         get() = operator.bButton
+
+    val runFeederIn: Boolean
+        get() = operator.dPadUp
+
+    val runFeederOut: Boolean
+        get() = operator.dPadDown
 }
