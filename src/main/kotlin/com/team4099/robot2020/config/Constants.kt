@@ -209,9 +209,9 @@ object Constants {
         "degrees",
         PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0),
         PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0),
-        -90.0,
-        ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.0,
+        ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
+        360.0,
         1024
     ) {
         const val MASTER_ID = 15
