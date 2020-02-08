@@ -130,8 +130,8 @@ object Constants {
         const val SHOOTER_KV = 0.126 / 60
         val SHOOTER_PID = PIDGains(0, 1.21 / 6000, 0.0, 1.0, 0.0, 0)
 
-        const val TARGET_SPEED = 4500.0
-        const val SPEED_THRESHOLD = 50.0
+        const val TARGET_VELOCITY = 4500.0
+        const val VELOCITY_ERROR_THRESHOLD = 50.0
     }
 
     object Climber : ServoMotorSubsystemConfig(

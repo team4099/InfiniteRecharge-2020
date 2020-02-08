@@ -3,9 +3,9 @@ import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import java.lang.Math.abs
+import kotlin.math.abs
+import kotlin.math.sign
 
 object Shooter : Subsystem {
     private val masterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(
@@ -14,28 +14,37 @@ object Shooter : Subsystem {
     private val slaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax, invertToMaster = true)
 
-    private val feedForward = SimpleMotorFeedforward(Constants.Shooter.SHOOTER_KS, Constants.Shooter.SHOOTER_KV)
+    private val encoder = masterSparkMax.encoder
 
     var idleTime = 0.0
-    var spinTime = 0.0
+    var spinupTime = 0.0
 
-    var openLoopPower: Double = 0.0
+    private var openLoopPowerTarget: Double = 0.0
         set(value) {
             masterSparkMax.set(value)
+            field = value
         }
-    var velocityPower: Double = 0.0
+    private var velocitySetpoint: Double = 0.0
         set(value) {
-            masterSparkMax.set(ControlType.kVelocity, value)
+            // Feedforward constants comes from characterizing using WPILib frc-characterization.
+            // kS represents the static friction in the shooter system and kV represents the percent output
+            // needed to increase velocity by 1 unit if no other loads are applied.
+            masterSparkMax.set(
+                ControlType.kVelocity,
+                value,
+                0,
+                Constants.Shooter.SHOOTER_KS * sign(value) + Constants.Shooter.SHOOTER_KV * value
+            )
+            field = value
         }
-    fun setOpenLoop() {
-        masterSparkMax.set(openLoopPower)
-    }
 
     enum class State {
         SHOOTING, IDLE
     }
 
-    private var currentSpeed = 0.0
+    private val currentVelocity
+        get() = encoder.velocity
+
     var shooterState = State.IDLE
 
     var shooterReady = false
@@ -54,57 +63,53 @@ object Shooter : Subsystem {
         masterSparkMax.inverted = true
     }
 
-    fun setOpenLoop(power: Double) {
-        masterSparkMax.set(power)
-    }
-    fun setVelocity(velocity: Double, ff: Double) {
-//        println("vel: $velocity, actual: ${masterSparkMax.encoder.velocity} ff: $ff")
-        masterSparkMax.set(ControlType.kVelocity, velocity, 0, ff)
-    }
-
     @Synchronized
     override fun onStart(timestamp: Double) {
-        setOpenLoop(0.0)
+        openLoopPowerTarget = 0.0
     }
 
     @Synchronized
     override fun onStop(timestamp: Double) {
-       setOpenLoop(0.0)
+        openLoopPowerTarget = 0.0
     }
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
-        currentSpeed = masterSparkMax.encoder.velocity
-
         when (shooterState) {
             State.IDLE -> {
-                setOpenLoop(0.0)
+                openLoopPowerTarget = 0.0
+                spinupTime = 0.0
                 idleTime = timestamp
             }
             State.SHOOTING -> {
-                setVelocity(Constants.Shooter.TARGET_SPEED, feedForward.calculate(Constants.Shooter.TARGET_SPEED))
-                shooterReady = abs(currentSpeed - Constants.Shooter.TARGET_SPEED) <= Constants.Shooter.SPEED_THRESHOLD
-                if (shooterReady && spinTime == 0.0) {
-                    spinTime = idleTime - timestamp
+                velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
+
+                shooterReady = abs(currentVelocity - Constants.Shooter.TARGET_VELOCITY) <= Constants.Shooter.VELOCITY_ERROR_THRESHOLD
+                if (shooterReady && spinupTime == 0.0) {
+                    spinupTime = idleTime - timestamp
                 }
-                println(spinTime)
             }
         }
-
-//        println(currentSpeed)
     }
 
     override fun checkSystem() {}
 
     override fun registerLogging() {
-        // not sure if this should go here
-        HelixLogger.addSource("Shooter Master Motor Power") { masterSparkMax.outputCurrent }
-        HelixLogger.addSource("Shooter Slave Motor Power") { slaveSparkMax.outputCurrent }
+        HelixLogger.addSource("Shooter State") { shooterState.toString() }
+        HelixLogger.addSource("Shooter Velocity Setpoint") { velocitySetpoint }
+        HelixLogger.addSource("Shooter Current Velocity") { currentVelocity }
+        HelixLogger.addSource("Shooter Spin-up Time") { spinupTime }
+        HelixLogger.addSource("Shooter Master Output Current") { masterSparkMax.outputCurrent }
+        HelixLogger.addSource("Shooter Slave Output Current") { slaveSparkMax.outputCurrent }
+        HelixLogger.addSource("Shooter Master Percent Output") { masterSparkMax.appliedOutput }
+        HelixLogger.addSource("Shooter Slave Percent Output") { slaveSparkMax.appliedOutput }
     }
 
     override fun outputTelemetry() {
         SmartDashboard.putString("shooter/shooterState", shooterState.toString())
-        SmartDashboard.putNumber("shooter/currentSpeed", currentSpeed)
+        SmartDashboard.putNumber("shooter/spinupTime", spinupTime)
+        SmartDashboard.putNumber("shooter/velocitySetpoint", velocitySetpoint)
+        SmartDashboard.putNumber("shooter/currentVelocity", currentVelocity)
     }
 
     override fun zeroSensors() {}
