@@ -20,7 +20,7 @@ object Feeder : Subsystem {
 
     private val inEncoder = inMasterSparkMax.encoder
 
-    private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.FEEDER_OUT_ID)
+    private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.STOPPER_ID)
 
     var feederState = FeederState.IDLE
         set(value) {
