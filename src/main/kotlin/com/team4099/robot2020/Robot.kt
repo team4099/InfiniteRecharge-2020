@@ -1,7 +1,5 @@
 package com.team4099.robot2020
 
-import Shooter
-import com.sun.jdi.ShortType
 import com.team4099.lib.around
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
@@ -18,10 +16,15 @@ import com.team4099.robot2020.auto.modes.DriveForwardMode
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.ControlBoard
 import com.team4099.robot2020.config.DashboardConfigurator
-import com.team4099.robot2020.loops.BrownoutDefender
 import com.team4099.robot2020.loops.FaultDetector
 import com.team4099.robot2020.loops.VoltageEstimator
-import com.team4099.robot2020.subsystems.*
+import com.team4099.robot2020.subsystems.Climber
+import com.team4099.robot2020.subsystems.Drive
+import com.team4099.robot2020.subsystems.Feeder
+import com.team4099.robot2020.subsystems.Intake
+import com.team4099.robot2020.subsystems.Shooter
+import com.team4099.robot2020.subsystems.Vision
+import com.team4099.robot2020.subsystems.Wrist
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -185,23 +188,17 @@ object Robot : TimedRobot() {
             when {
                 ControlBoard.runFeederIn -> {
                     Feeder.feederState = Feeder.FeederState.INTAKE
-//                    println("Feeder intaking")
                 }
                 ControlBoard.runFeederOut -> {
-//                    println("Feeder outtaking")
                     Feeder.feederState = Feeder.FeederState.EXHAUST
                 }
                 else -> {
                     Feeder.feederState = Feeder.FeederState.IDLE
-//                    println("Feeder idle")
                 }
             }
             when {
                 ControlBoard.startShooter -> {
-//                    Shooter.setOpenLoop(1.0)
                     Shooter.shooterState = Shooter.State.SHOOTING
-//                    println("shot")
-//                    Feeder.feederState = Feeder.FeederState.SHOOT
                 }
                 else -> {
                     Shooter.shooterState = Shooter.State.IDLE
