@@ -48,7 +48,6 @@ object Feeder : Subsystem {
         inMasterSparkMax.inverted = true
         inMasterSparkMax.setSmartCurrentLimit(30)
         stopperTalon.setInverted(InvertType.InvertMotorOutput)
-
     }
 
     enum class FeederState {

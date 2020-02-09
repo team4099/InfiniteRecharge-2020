@@ -1,3 +1,5 @@
+package com.team4099.robot2020.subsystems
+
 import com.revrobotics.ControlType
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
@@ -33,7 +35,7 @@ object Shooter : Subsystem {
                 ControlType.kVelocity,
                 value,
                 0,
-                Constants.Shooter.SHOOTER_KS * sign(value) + Constants.Shooter.SHOOTER_KV * value
+                Constants.Shooter.SHOOTER_KS * sign(value) + Constants.Shooter.SHOOTER_KV * value // Volts
             )
             field = value
         }
@@ -84,7 +86,8 @@ object Shooter : Subsystem {
             State.SHOOTING -> {
                 velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
 
-                shooterReady = abs(currentVelocity - Constants.Shooter.TARGET_VELOCITY) <= Constants.Shooter.VELOCITY_ERROR_THRESHOLD
+                shooterReady = abs(currentVelocity - Constants.Shooter.TARGET_VELOCITY) <=
+                    Constants.Shooter.VELOCITY_ERROR_THRESHOLD
                 if (shooterReady && spinupTime == 0.0) {
                     spinupTime = idleTime - timestamp
                 }
@@ -95,14 +98,22 @@ object Shooter : Subsystem {
     override fun checkSystem() {}
 
     override fun registerLogging() {
-        HelixLogger.addSource("Shooter State") { shooterState.toString() }
-        HelixLogger.addSource("Shooter Velocity Setpoint") { velocitySetpoint }
-        HelixLogger.addSource("Shooter Current Velocity") { currentVelocity }
-        HelixLogger.addSource("Shooter Spin-up Time") { spinupTime }
-        HelixLogger.addSource("Shooter Master Output Current") { masterSparkMax.outputCurrent }
-        HelixLogger.addSource("Shooter Slave Output Current") { slaveSparkMax.outputCurrent }
-        HelixLogger.addSource("Shooter Master Percent Output") { masterSparkMax.appliedOutput }
-        HelixLogger.addSource("Shooter Slave Percent Output") { slaveSparkMax.appliedOutput }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter State") { shooterState.toString() }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter Velocity Setpoint") { velocitySetpoint }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter Current Velocity") { currentVelocity }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter Spin-up Time") { spinupTime }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter Master Output Current") {
+            masterSparkMax.outputCurrent
+        }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter Slave Output Current") {
+            slaveSparkMax.outputCurrent
+        }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter Master Percent Output") {
+            masterSparkMax.appliedOutput
+        }
+        HelixLogger.addSource("com.team4099.robot2020.subsystems.Shooter Slave Percent Output") {
+            slaveSparkMax.appliedOutput
+        }
     }
 
     override fun outputTelemetry() {

@@ -3,7 +3,6 @@ package com.team4099.lib.hardware
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.InvertType
-import com.ctre.phoenix.motorcontrol.SensorCollection
 import com.team4099.lib.config.PIDGains
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 

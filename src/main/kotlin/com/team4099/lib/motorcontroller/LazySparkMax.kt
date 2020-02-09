@@ -1,6 +1,5 @@
 package com.team4099.lib.motorcontroller
 
-import com.ctre.phoenix.motorcontrol.DemandType
 import com.revrobotics.CANSparkMax
 import com.revrobotics.ControlType
 
