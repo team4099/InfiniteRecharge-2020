@@ -68,6 +68,8 @@ object Shooter : Subsystem {
     @Synchronized
     override fun onStart(timestamp: Double) {
         openLoopPowerTarget = 0.0
+//        velocitySetpoint = SmartDashboard.getNumber("shooter/velocityTarget", 0.0)
+        SmartDashboard.putNumber("shooter/velocityTarget", velocitySetpoint)
     }
 
     @Synchronized
@@ -84,10 +86,10 @@ object Shooter : Subsystem {
                 idleTime = timestamp
             }
             State.SHOOTING -> {
-                velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
+                velocitySetpoint = SmartDashboard.getNumber("shooter/velocityTarget", 0.0)
 
-                shooterReady = abs(currentVelocity - Constants.Shooter.TARGET_VELOCITY) <=
-                    Constants.Shooter.VELOCITY_ERROR_THRESHOLD
+//                shooterReady = abs(currentVelocity - Constants.Shooter.TARGET_VELOCITY) <=
+//                    Constants.Shooter.VELOCITY_ERROR_THRESHOLD
                 if (shooterReady && spinupTime == 0.0) {
                     spinupTime = idleTime - timestamp
                 }

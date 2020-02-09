@@ -63,7 +63,7 @@ object Robot : TimedRobot() {
 //            SubsystemManager.register(Climber)
 //            SubsystemManager.register(Intake)
             SubsystemManager.register(Wrist)
-//            SubsystemManager.register(Vision)
+            SubsystemManager.register(Vision)
             SubsystemManager.register(Feeder)
             SubsystemManager.register(Shooter)
 
@@ -153,6 +153,7 @@ object Robot : TimedRobot() {
                     Vision.steeringAdjust,
                     true
                 )
+                println("steering: ${Vision.steeringAdjust}")
             } else {
                 Vision.state = Vision.VisionState.IDLE
                 Drive.setCheesyishDrive(
@@ -189,13 +190,14 @@ object Robot : TimedRobot() {
                 ControlBoard.runFeederOut -> {
                     Feeder.feederState = Feeder.FeederState.EXHAUST
                 }
-                else -> {
-                    Feeder.feederState = Feeder.FeederState.IDLE
-                }
+//                else -> {
+//                    Feeder.feederState = Feeder.FeederState.IDLE
+//                }
             }
             when {
                 ControlBoard.startShooter -> {
                     Shooter.shooterState = Shooter.State.SHOOTING
+                    Feeder.feederState = Feeder.FeederState.SHOOT
                 }
                 else -> {
                     Shooter.shooterState = Shooter.State.IDLE

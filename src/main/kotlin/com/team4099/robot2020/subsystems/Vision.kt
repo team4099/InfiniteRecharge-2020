@@ -50,8 +50,8 @@ object Vision : Subsystem {
     private val turnController = PIDController(
         Constants.Vision.TURN_GAINS.kP,
         Constants.Vision.TURN_GAINS.kI,
-        Constants.Vision.TURN_GAINS.kD,
-        Constants.Vision.TURN_GAINS.kF
+        Constants.Vision.TURN_GAINS.kD
+//        Constants.Vision.TURN_GAINS.kF
     )
     private val distanceController = PIDController(
         Constants.Vision.DISTANCE_GAINS.kP,
@@ -69,21 +69,26 @@ object Vision : Subsystem {
     @Synchronized
     override fun onStart(timestamp: Double) {
         state = VisionState.IDLE
+        turnController.setpoint = 0.0
     }
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
         distance = (Constants.Vision.TARGET_HEIGHT - Constants.Vision.CAMERA_HEIGHT) /
-            tan(Constants.Vision.CAMERA_ANGLE + ty)
+            tan(Constants.Vision.CAMERA_ANGLE + Math.toRadians(ty))
         distanceError = distance - Constants.Vision.SHOOTING_DISTANCE
+//        println("distance: $distance")
         when (state) {
             VisionState.IDLE -> {}
             VisionState.AIMING -> {
+//                println("tx: $tx tv: $tv")
                 if (tv != 0.0) {
                     onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
-
-                    steeringAdjust = turnController.calculate(tx)
-                    steeringAdjust += -sign(tx) * Constants.Vision.MIN_TURN_COMMAND
+                    turnController.setpoint = 0.0
+                    steeringAdjust = turnController.calculate(tx, 0.0)
+//                    println("pid error: ${turnController.positionError} ${turnController.velocityError}")
+//                    println("pid calc: $steeringAdjust")
+                    steeringAdjust += sign(tx) * Constants.Vision.MIN_TURN_COMMAND
                     distanceAdjust = distanceController.calculate(distanceError)
                     distanceAdjust += sign(distanceError) * Constants.Vision.MIN_DIST_COMMAND
                 }

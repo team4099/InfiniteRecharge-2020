@@ -108,17 +108,17 @@ object Constants {
     object Vision {
         const val DRIVER_PIPELINE_ID = 1
         const val TARGETING_PIPELINE_ID = 0
-        const val TARGET_HEIGHT = 90.0
+        const val TARGET_HEIGHT = 98.25
         const val CAMERA_HEIGHT = 35.0
-        const val CAMERA_ANGLE = 25.0 * PI / 180
+        const val CAMERA_ANGLE = 24.0 * PI / 180
         const val SHOOTING_DISTANCE = 0
 
         const val MAX_DIST_ERROR = 0.1
         const val MAX_ANGLE_ERROR = 0.1
 
-        val TURN_GAINS = PIDGains(0, 0.009, 0.0, 0.0, 0.0, 0)
+        val TURN_GAINS = PIDGains(0, 0.025, 0.0, 0.0, 0.0, 0)
         val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
-        const val MIN_TURN_COMMAND = 0.0838
+        const val MIN_TURN_COMMAND = 0.2
         const val MIN_DIST_COMMAND = 0.0838
     }
 
@@ -234,5 +234,7 @@ object Constants {
 
         const val FEEDER_MAX_POWER = 1.0
         const val FEEDER_HOLD_POWER = 0.1
+        const val STOPPER_MAX_POWER = 0.4
+        const val STOPPER_HOLD_POWER = 0.1
     }
 }
