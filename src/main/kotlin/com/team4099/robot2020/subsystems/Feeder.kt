@@ -47,7 +47,7 @@ object Feeder : Subsystem {
     init {
         inMasterSparkMax.inverted = true
         inMasterSparkMax.setSmartCurrentLimit(30)
-        stopperTalon.setInverted(InvertType.InvertMotorOutput)
+        stopperTalon.setInverted(InvertType.None)
     }
 
     enum class FeederState {
@@ -86,19 +86,19 @@ object Feeder : Subsystem {
     override fun onLoop(timestamp: Double, dT: Double) {
         when (feederState) {
             FeederState.INTAKE -> {
-                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.HOLD -> {
-                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_HOLD_POWER
             }
             FeederState.SHOOT -> {
-                stopperPower = Constants.Feeder.FEEDER_MAX_POWER
+                stopperPower = Constants.Feeder.STOPPER_MAX_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.EXHAUST -> {
-                stopperPower = -Constants.Feeder.FEEDER_MAX_POWER
+                stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
                 inPower = -Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.IDLE -> {
