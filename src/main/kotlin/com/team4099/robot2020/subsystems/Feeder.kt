@@ -25,6 +25,7 @@ object Feeder : Subsystem {
 
     private var outBeamBroken = false
         get() = stopperTalon.isFwdLimitSwitchClosed() > 0
+    private var beamNeverBroken = true
 
     private var outBeamBrokenTimestamp = -1.0
 
@@ -96,26 +97,33 @@ object Feeder : Subsystem {
             if (outBeamBrokenTimestamp == -1.0) {
                 outBeamBrokenTimestamp = timestamp
             }
+            beamNeverBroken = false
         } else {
-            ballCount -= ((timestamp - outBeamBrokenTimestamp) / Constants.BeamBreak.OUT_BEAM_BROKEN_BALL_TIME).toInt()
+            ballCount -= ((timestamp - outBeamBrokenTimestamp) / Constants.Feeder.OUT_BEAM_BROKEN_BALL_TIME).toInt()
             outBeamBrokenTimestamp = -1.0
+        }
+
+        if (Intake.currentSensed && Shooter.shooterState != Shooter.State.SHOOTING) {
+            feederState = FeederState.INTAKE
+        } else {
+            feederState = FeederState.HOLD
+        }
+
+        if (timestamp - Intake.currentSensedTimestamp > Constants.Intake.CURRENT_TO_IN_BEAM_BREAK_TIME) {
+            feederState = FeederState.HOLD
         }
 
         when (feederState) {
             FeederState.INTAKE -> {
-                if (Intake.inBeamBroken) {
-                    stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                    inPower = Constants.Feeder.FEEDER_MAX_POWER
-                } else {
-                    feederState = FeederState.HOLD
-                }
+                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
+                inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.HOLD -> {
                 stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_HOLD_POWER
             }
             FeederState.SHOOT -> {
-                if (outBeamBroken) {
+                if (beamNeverBroken || outBeamBroken) {
                     stopperPower = Constants.Feeder.FEEDER_MAX_POWER
                     inPower = Constants.Feeder.FEEDER_MAX_POWER
                 } else {

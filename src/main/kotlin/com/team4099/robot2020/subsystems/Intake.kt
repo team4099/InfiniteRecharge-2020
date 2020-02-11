@@ -11,6 +11,11 @@ object Intake : Subsystem {
 
     private val talon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Intake.INTAKE_TALON_ID)
 
+    var currentSensed = false
+        get() = talon.supplyCurrent > Constants.Intake.CURRENT_TO_SENSE
+
+    var currentSensedTimestamp = -1.0
+
     var inBeamBroken = false
         get() = talon.isFwdLimitSwitchClosed() > 0
 
@@ -63,14 +68,19 @@ object Intake : Subsystem {
                 inBeamBrokenTimestamp = timestamp
             }
         } else {
-            ballCount += ((timestamp - inBeamBrokenTimestamp) / Constants.BeamBreak.IN_BEAM_BROKEN_BALL_TIME).toInt()
+            ballCount += ((timestamp - inBeamBrokenTimestamp) / Constants.Intake.IN_BEAM_BROKEN_BALL_TIME).toInt()
             inBeamBrokenTimestamp = -1.0
         }
 
-        @SuppressWarnings("MagicNumber")
+        if (currentSensed) {
+            currentSensedTimestamp = timestamp
+        } else {
+            currentSensedTimestamp = -1.0
+        }
+
         when (intakeState) {
             IntakeState.IN -> {
-                if (ballCount >= 5) {
+                if (ballCount >= Constants.Intake.MAX_BALL_COUNT) {
                     intakePower = 0.0
                 } else {
                     intakePower = -1.0
