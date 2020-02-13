@@ -62,11 +62,7 @@ object Robot : TimedRobot() {
 //            // Register all subsystems
             SubsystemManager.register(Drive)
 //            SubsystemManager.register(Climber)
-<<<<<<< HEAD
             SubsystemManager.register(Intake)
-=======
-//            SubsystemManager.register(Intake)
->>>>>>> 1aa1f1f5f40cc76c49b1e87e7d0737154985559c
             SubsystemManager.register(Wrist)
             SubsystemManager.register(Vision)
             SubsystemManager.register(Feeder)
