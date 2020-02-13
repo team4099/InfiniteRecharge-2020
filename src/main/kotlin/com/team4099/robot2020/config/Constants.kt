@@ -214,7 +214,7 @@ object Constants {
         0.0,
         ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         360.0,
-        1024
+        4096
     ) {
         const val MASTER_ID = 15
 
