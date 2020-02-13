@@ -193,9 +193,9 @@ object Robot : TimedRobot() {
                 ControlBoard.runFeederOut -> {
                     Feeder.feederState = Feeder.FeederState.EXHAUST
                 }
-//                else -> {
-//                    Feeder.feederState = Feeder.FeederState.IDLE
-//                }
+                else -> {
+                    Feeder.feederState = Feeder.FeederState.IDLE
+                }
             }
             when {
                 ControlBoard.startShooter -> {

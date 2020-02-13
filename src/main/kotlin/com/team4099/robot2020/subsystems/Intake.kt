@@ -52,8 +52,8 @@ object Intake : Subsystem {
     override fun onLoop(timestamp: Double, dt: Double) {
         synchronized(this) {
             when (intakeState) {
-                IntakeState.IN -> intakePower = -1.0
-                IntakeState.OUT -> intakePower = 1.0
+                IntakeState.IN -> intakePower = 1.0
+                IntakeState.OUT -> intakePower = -1.0
                 IntakeState.IDLE -> intakePower = 0.0
             }
         }

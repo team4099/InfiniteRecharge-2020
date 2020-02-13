@@ -6,10 +6,11 @@ import kotlin.math.roundToInt
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.hardware.ServoMotorHardware
 import com.team4099.lib.limit
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,
-    protected val hardware: ServoMotorHardware
+    private val hardware: ServoMotorHardware
 ) : Subsystem {
     enum class ControlState(val usesPositionControl: Boolean, val usesVelocityControl: Boolean) {
         OPEN_LOOP(false, false),
@@ -120,7 +121,10 @@ abstract class ServoMotorSubsystem(
         openLoopPower = 0.0
     }
 
-    override fun outputTelemetry() {}
+    override fun outputTelemetry() {
+        SmartDashboard.putNumber("${config.name}/position", position)
+        SmartDashboard.putNumber("${config.name}/velocity", velocity)
+    }
 
     override fun zeroSensors() {
         hardware.zeroSensors()
