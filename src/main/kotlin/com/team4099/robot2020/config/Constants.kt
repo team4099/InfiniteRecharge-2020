@@ -123,7 +123,7 @@ object Constants {
     }
 
     object Shooter {
-        const val MASTER_SPARKMAX_ID = 2
+        const val MASTER_SPARKMAX_ID = 1
         const val SLAVE_SPARKMAX_ID = 14
 
         const val SHOOTER_KS = 0.196 / 60
@@ -145,8 +145,8 @@ object Constants {
         0.0,
         1024
     ) {
-        const val MASTER_ID = 9
-        const val SLAVE_ID = 10
+        const val MASTER_ID = 20
+        const val SLAVE_ID = 15
 
         const val OPERATOR_CONTROL_VEL = 90.0
 
@@ -216,7 +216,7 @@ object Constants {
         360.0,
         4096
     ) {
-        const val MASTER_ID = 15
+        const val MASTER_ID = 9
 
         const val OPERATOR_CONTROL_VEL = 90.0
 
