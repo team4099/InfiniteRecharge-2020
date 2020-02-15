@@ -26,10 +26,32 @@ object Shooter : Subsystem {
             Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax)
 
     enum class State {
-        SHOOTING, IDLE, EXHAUST
+        SHOOTING, DECELERATING, IDLE, EXHAUST
+    }
+
+    enum class WantedState {
+        IDLE, SHOOT
     }
 
     private var currentSpeed = 0.0
+
+    var wantedShooterState = WantedState.IDLE
+        set(value) {
+            when (value) {
+                WantedState.IDLE -> {
+                    setOpenLoop(0.0)
+                    while (currentSpeed != 0.0) {
+                        shooterState = State.DECELERATING
+                    }
+                    shooterState = State.IDLE
+                }
+                WantedState.SHOOT -> {
+
+                }
+            }
+            field = value
+        }
+
     var shooterState = State.IDLE
         set(value) {
             when (value) {
@@ -40,7 +62,10 @@ object Shooter : Subsystem {
                     setVelocity(Constants.Shooter.TARGET_SPEED)
                 }
                 State.EXHAUST -> {
-                    setVelocity(-Constants.Shooter.TARGET_SPEED/8)
+                    setVelocity(-Constants.Shooter.TARGET_SPEED/4)
+                }
+                State.DECELERATING -> {
+
                 }
             }
             field = value
