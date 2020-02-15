@@ -194,17 +194,20 @@ object Robot : TimedRobot() {
                     Feeder.feederState = Feeder.FeederState.EXHAUST
                 }
                 else -> {
-                    Feeder.feederState = Feeder.FeederState.IDLE
+//                    Feeder.feederState = Feeder.FeederState.IDLE
                 }
             }
             when {
                 ControlBoard.startShooter -> {
                     Shooter.shooterState = Shooter.State.SHOOTING
-                    Feeder.feederState = Feeder.FeederState.SHOOT
+//                    Feeder.feederState = Feeder.FeederState.AUTO_SHOOT
                 }
                 else -> {
                     Shooter.shooterState = Shooter.State.IDLE
                 }
+            }
+            if(!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn){
+                Feeder.feederState = Feeder.FeederState.IDLE
             }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)

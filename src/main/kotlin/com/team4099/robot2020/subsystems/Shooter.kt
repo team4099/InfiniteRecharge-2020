@@ -63,6 +63,12 @@ object Shooter : Subsystem {
         masterSparkMax.setSmartCurrentLimit(0)
 
         masterSparkMax.inverted = true
+
+        masterSparkMax.enableVoltageCompensation(12.0)
+        slaveSparkMax.enableVoltageCompensation(12.0)
+
+        masterSparkMax.burnFlash()
+        slaveSparkMax.burnFlash()
     }
 
     @Synchronized
@@ -86,13 +92,14 @@ object Shooter : Subsystem {
                 idleTime = timestamp
             }
             State.SHOOTING -> {
-                velocitySetpoint = SmartDashboard.getNumber("shooter/velocityTarget", 0.0)
-
-//                shooterReady = abs(currentVelocity - Constants.Shooter.TARGET_VELOCITY) <=
-//                    Constants.Shooter.VELOCITY_ERROR_THRESHOLD
+//                velocitySetpoint = SmartDashboard.getNumber("shooter/velocityTarget", Constants.Shooter.TARGET_VELOCITY)
+                velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
+                shooterReady = abs(currentVelocity - velocitySetpoint) <=
+                    Constants.Shooter.VELOCITY_ERROR_THRESHOLD
                 if (shooterReady && spinupTime == 0.0) {
                     spinupTime = idleTime - timestamp
                 }
+                println("Current Velocity: $currentVelocity with target $velocitySetpoint")
             }
         }
     }

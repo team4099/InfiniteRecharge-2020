@@ -48,10 +48,12 @@ object Feeder : Subsystem {
         inMasterSparkMax.inverted = true
         inMasterSparkMax.setSmartCurrentLimit(30)
         stopperTalon.setInverted(InvertType.None)
+        inMasterSparkMax.burnFlash()
+        inSlaveSparkMax.burnFlash()
     }
 
     enum class FeederState {
-        HOLD, INTAKE, SHOOT, EXHAUST, IDLE
+        HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_INTAKE, AUTO_SHOOT
     }
 
     override fun outputTelemetry() {
@@ -96,6 +98,16 @@ object Feeder : Subsystem {
             FeederState.SHOOT -> {
                 stopperPower = Constants.Feeder.STOPPER_MAX_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
+            }
+            FeederState.AUTO_SHOOT -> {
+                if(Shooter.shooterReady){
+                    stopperPower = Constants.Feeder.STOPPER_MAX_POWER
+                    inPower = Constants.Feeder.FEEDER_MAX_POWER
+                }
+                else{
+                    stopperPower = 0.0
+                    inPower = 0.0
+                }
             }
             FeederState.EXHAUST -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER

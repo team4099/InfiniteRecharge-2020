@@ -126,12 +126,12 @@ object Constants {
         const val MASTER_SPARKMAX_ID = 1
         const val SLAVE_SPARKMAX_ID = 14
 
-        const val SHOOTER_KS = 0.196 / 60
-        const val SHOOTER_KV = 0.126 / 60
-        val SHOOTER_PID = PIDGains(0, 1.21 / 6000, 0.0, 1.0, 0.0, 0)
+        const val SHOOTER_KS = 0.192 / 60
+        const val SHOOTER_KV = 0.12545 / 60
+        val SHOOTER_PID = PIDGains(0, 0 * 1.2 / 6000, 0.0, 0.0, 0.0, 0)
 
-        const val TARGET_VELOCITY = 4500.0
-        const val VELOCITY_ERROR_THRESHOLD = 50.0
+        const val TARGET_VELOCITY = 4000.0
+        const val VELOCITY_ERROR_THRESHOLD = 15.0
     }
 
     object Climber : ServoMotorSubsystemConfig(
