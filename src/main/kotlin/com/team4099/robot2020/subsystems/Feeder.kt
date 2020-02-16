@@ -100,11 +100,10 @@ object Feeder : Subsystem {
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.AUTO_SHOOT -> {
-                if(Shooter.shooterReady){
+                if (Shooter.shooterReady) {
                     stopperPower = Constants.Feeder.STOPPER_MAX_POWER
                     inPower = Constants.Feeder.FEEDER_MAX_POWER
-                }
-                else{
+                } else {
                     stopperPower = 0.0
                     inPower = 0.0
                 }

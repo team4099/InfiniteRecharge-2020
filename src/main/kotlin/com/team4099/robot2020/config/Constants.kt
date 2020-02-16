@@ -116,9 +116,9 @@ object Constants {
         const val MAX_DIST_ERROR = 0.1
         const val MAX_ANGLE_ERROR = 0.1
 
-        val TURN_GAINS = PIDGains(0, 0.025, 0.0, 0.0, 0.0, 0)
+        val TURN_GAINS = PIDGains(0, 0.028, 0.0, 0.0, 0.0, 0)
         val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
-        const val MIN_TURN_COMMAND = 0.2
+        const val MIN_TURN_COMMAND = 0.0 // 0.35
         const val MIN_DIST_COMMAND = 0.0838
     }
 
@@ -126,12 +126,12 @@ object Constants {
         const val MASTER_SPARKMAX_ID = 1
         const val SLAVE_SPARKMAX_ID = 14
 
-        const val SHOOTER_KS = 0.192 / 60
-        const val SHOOTER_KV = 0.12545 / 60
-        val SHOOTER_PID = PIDGains(0, 0 * 1.2 / 6000, 0.0, 0.0, 0.0, 0)
+        const val SHOOTER_KS = 0.149 / 60 // .192
+        const val SHOOTER_KV = 0.126 / 60 // .12545
+        val SHOOTER_PID = PIDGains(0, 1.7 / 6000, 0.0, 5.5, 0.0, 0)
 
-        const val TARGET_VELOCITY = 4000.0
-        const val VELOCITY_ERROR_THRESHOLD = 15.0
+        const val TARGET_VELOCITY = 4500.0
+        const val VELOCITY_ERROR_THRESHOLD = 20.0
     }
 
     object Climber : ServoMotorSubsystemConfig(
@@ -158,6 +158,8 @@ object Constants {
 
     object Intake {
         const val INTAKE_TALON_ID = 5
+        const val STALL_LIMIT_AMPS = 13.0
+        const val STALL_LIMIT_SECONDS = 0.5 // seconds
     }
 
     object Looper {
@@ -232,9 +234,9 @@ object Constants {
 
         const val STOPPER_ID = 6
 
-        const val FEEDER_MAX_POWER = 1.0
+        const val FEEDER_MAX_POWER = 0.65
         const val FEEDER_HOLD_POWER = 0.1
-        const val STOPPER_MAX_POWER = 0.4
+        const val STOPPER_MAX_POWER = 0.45
         const val STOPPER_HOLD_POWER = 0.1
     }
 }

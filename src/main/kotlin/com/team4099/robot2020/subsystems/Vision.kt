@@ -81,16 +81,19 @@ object Vision : Subsystem {
         when (state) {
             VisionState.IDLE -> {}
             VisionState.AIMING -> {
-//                println("tx: $tx tv: $tv")
+                println("tx: $tx tv: $tv")
                 if (tv != 0.0) {
                     onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
-                    turnController.setpoint = 0.0
+//                    turnController.setpoint = 0.0
                     steeringAdjust = turnController.calculate(tx, 0.0)
-//                    println("pid error: ${turnController.positionError} ${turnController.velocityError}")
-//                    println("pid calc: $steeringAdjust")
+                    println("pid error: ${turnController.positionError} ${turnController.velocityError}")
+                    println("pid calc: $steeringAdjust")
                     steeringAdjust += sign(tx) * Constants.Vision.MIN_TURN_COMMAND
                     distanceAdjust = distanceController.calculate(distanceError)
                     distanceAdjust += sign(distanceError) * Constants.Vision.MIN_DIST_COMMAND
+                }
+                else {
+                    steeringAdjust = 0.0
                 }
             }
         }

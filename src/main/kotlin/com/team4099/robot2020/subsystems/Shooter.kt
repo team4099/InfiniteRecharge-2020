@@ -33,7 +33,7 @@ object Shooter : Subsystem {
             // needed to increase velocity by 1 unit if no other loads are applied.
             masterSparkMax.set(
                 ControlType.kVelocity,
-                value,
+                value + 41,
                 0,
                 Constants.Shooter.SHOOTER_KS * sign(value) + Constants.Shooter.SHOOTER_KV * value // Volts
             )
@@ -64,8 +64,13 @@ object Shooter : Subsystem {
 
         masterSparkMax.inverted = true
 
-        masterSparkMax.enableVoltageCompensation(12.0)
-        slaveSparkMax.enableVoltageCompensation(12.0)
+//        masterSparkMax.enableVoltageCompensation(12.0)
+//        slaveSparkMax.enableVoltageCompensation(12.0)
+
+        masterSparkMax.disableVoltageCompensation()
+        slaveSparkMax.disableVoltageCompensation()
+
+        masterSparkMax.closedLoopRampRate = 1.0
 
         masterSparkMax.burnFlash()
         slaveSparkMax.burnFlash()
@@ -75,7 +80,7 @@ object Shooter : Subsystem {
     override fun onStart(timestamp: Double) {
         openLoopPowerTarget = 0.0
 //        velocitySetpoint = SmartDashboard.getNumber("shooter/velocityTarget", 0.0)
-        SmartDashboard.putNumber("shooter/velocityTarget", velocitySetpoint)
+//        SmartDashboard.putNumber("shooter/velocityTarget", velocitySetpoint)
     }
 
     @Synchronized
@@ -92,7 +97,10 @@ object Shooter : Subsystem {
                 idleTime = timestamp
             }
             State.SHOOTING -> {
-//                velocitySetpoint = SmartDashboard.getNumber("shooter/velocityTarget", Constants.Shooter.TARGET_VELOCITY)
+//                velocitySetpoint = SmartDashboard.getNumber(
+//                  "shooter/velocityTarget",
+//                  Constants.Shooter.TARGET_VELOCITY
+//                  )
                 velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
                 shooterReady = abs(currentVelocity - velocitySetpoint) <=
                     Constants.Shooter.VELOCITY_ERROR_THRESHOLD
