@@ -21,8 +21,8 @@ object SparkMaxControllerFactory {
         var closedLoopRampRate: Double = 0.0,
 
         var statusFrame0RateMs: Int = 10,
-        var statusFrame1RateMs: Int = 1000,
-        var statusFrame2RateMs: Int = 1000,
+        var statusFrame1RateMs: Int = 10,
+        var statusFrame2RateMs: Int = 20,
 
         var enableVoltageCompensation: Boolean = false,
         var nominalVoltage: Double = 12.0,

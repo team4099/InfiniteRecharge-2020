@@ -25,6 +25,7 @@ import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Shooter
 import com.team4099.robot2020.subsystems.Vision
 import com.team4099.robot2020.subsystems.Wrist
+import javax.naming.ldap.Control
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -159,11 +160,11 @@ object Robot : TimedRobot() {
                 println("steering: ${Vision.steeringAdjust}")
             } else {
                 Vision.state = Vision.VisionState.IDLE
-                Drive.setCheesyishDrive(
-                    ControlBoard.throttle,
-                    ControlBoard.turn,
-                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-                )
+//                Drive.setCheesyishDrive(
+//                    ControlBoard.throttle,
+//                    ControlBoard.turn,
+//                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+//                )
             }
 
 //            when {
@@ -192,23 +193,29 @@ object Robot : TimedRobot() {
             }
             when {
                 ControlBoard.runFeederIn -> {
-                    Feeder.feederState = Feeder.FeederState.INTAKE
+                    Feeder.feederState = Feeder.FeederState.SHOOT
                 }
                 ControlBoard.runFeederOut -> {
                     Feeder.feederState = Feeder.FeederState.EXHAUST
                 }
                 else -> {
-                    Feeder.feederState = Feeder.FeederState.IDLE
+//                    Feeder.feederState = Feeder.FeederState.IDLE
                 }
             }
             when {
                 ControlBoard.startShooter -> {
                     Shooter.shooterState = Shooter.State.SHOOTING
-                    Feeder.feederState = Feeder.FeederState.SHOOT
+//                    Feeder.feederState = Feeder.FeederState.AUTO_SHOOT
                 }
                 else -> {
                     Shooter.shooterState = Shooter.State.IDLE
                 }
+            }
+            if (!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn) {
+                Feeder.feederState = Feeder.FeederState.IDLE
+            }
+            if (Intake.hasPowerCell) {
+                Feeder.feederState = Feeder.FeederState.INTAKE
             }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)

@@ -21,14 +21,18 @@ object Intake : Subsystem {
         }
     var intakeState = IntakeState.IDLE
 
+    var hasPowerCell = false
+    var timerStart = 0.0
+    var holdTimer = 0.0
+
     enum class IntakeState {
         IN, IDLE, OUT
     }
 
     init {
         talon.inverted = false
-    }
-
+        talon.configClosedloopRamp(0.9)
+}
     override fun outputTelemetry() {
         SmartDashboard.putString("intake/intakeState", intakeState.toString())
         SmartDashboard.putNumber("intake/intakePower", intakePower)
@@ -52,9 +56,42 @@ object Intake : Subsystem {
     override fun onLoop(timestamp: Double, dt: Double) {
         synchronized(this) {
             when (intakeState) {
-                IntakeState.IN -> intakePower = 1.0
-                IntakeState.OUT -> intakePower = -1.0
-                IntakeState.IDLE -> intakePower = 0.0
+                IntakeState.IN -> {
+                    intakePower = 0.8
+                    if (talon.supplyCurrent > Constants.Intake.STALL_LIMIT_AMPS) {
+                        holdTimer = timestamp
+                        if ((holdTimer - timerStart) > Constants.Intake.STALL_LIMIT_SECONDS) {
+                            hasPowerCell = true
+                        }
+                    } else {
+                        hasPowerCell = false
+                    }
+                }
+                IntakeState.OUT -> {
+                    intakePower = -0.8
+                    if (talon.supplyCurrent > Constants.Intake.STALL_LIMIT_AMPS) {
+                        holdTimer = timestamp
+                        if ((holdTimer - timerStart) > Constants.Intake.STALL_LIMIT_SECONDS) {
+                            hasPowerCell = true
+                        }
+                    } else {
+                        hasPowerCell = false
+                    }
+                }
+                IntakeState.IDLE -> {
+                    intakePower = 0.0
+                    timerStart = timestamp
+                }
+            }
+//            println("Talon current: ${talon.supplyCurrent}")
+            if (talon.supplyCurrent > Constants.Intake.STALL_LIMIT_AMPS) {
+                timerStart = timestamp
+                holdTimer = 0.0
+                if ((holdTimer) > Constants.Intake.STALL_LIMIT_SECONDS) {
+                    hasPowerCell = true
+                }
+            } else {
+                hasPowerCell = false
             }
         }
     }
