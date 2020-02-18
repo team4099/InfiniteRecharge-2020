@@ -27,6 +27,7 @@ abstract class ServoMotorSubsystem(
     init {
         updateMotionConstraints()
         updatePIDGains()
+        zeroSensors()
     }
 
     /**
@@ -88,6 +89,7 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainVelocityUnitsPerSecond(value)
+            println("field:$field")
             hardware.setVelocity(field)
         }
 
@@ -113,6 +115,7 @@ abstract class ServoMotorSubsystem(
 
     override fun onStart(timestamp: Double) {
         openLoopPower = 0.0
+        zeroSensors()
     }
 
     override fun onLoop(timestamp: Double, dT: Double) {}
@@ -124,6 +127,9 @@ abstract class ServoMotorSubsystem(
     override fun outputTelemetry() {
         SmartDashboard.putNumber("${config.name}/position", position)
         SmartDashboard.putNumber("${config.name}/velocity", velocity)
+        SmartDashboard.putNumber("${config.name}/velocitySetpoint", velocitySetpoint)
+        SmartDashboard.putNumber("${config.name}/positionSetpointMP", positionSetpointMotionProfile)
+        SmartDashboard.putNumber("${config.name}/positionSetpoint", positionSetpointPositionPID)
     }
 
     override fun zeroSensors() {

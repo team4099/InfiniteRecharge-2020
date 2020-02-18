@@ -82,11 +82,13 @@ object DashboardConfigurator : Loop {
             SmartDashboard.putNumber("${it.config.name}/velocityPID/kP", it.config.velocityPIDGains.kP)
             SmartDashboard.putNumber("${it.config.name}/velocityPID/kI", it.config.velocityPIDGains.kI)
             SmartDashboard.putNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kD)
+            SmartDashboard.putNumber("${it.config.name}/velocityPID/kF", it.config.velocityPIDGains.kF)
             SmartDashboard.putNumber("${it.config.name}/velocityPID/iZone", it.config.velocityPIDGains.iZone.toDouble())
 
             SmartDashboard.putNumber("${it.config.name}/positionPID/kP", it.config.positionPIDGains.kP)
             SmartDashboard.putNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kI)
             SmartDashboard.putNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kD)
+            SmartDashboard.putNumber("${it.config.name}/positionPID/kF", it.config.positionPIDGains.kF)
             SmartDashboard.putNumber("${it.config.name}/positionPID/iZone", it.config.positionPIDGains.iZone.toDouble())
 
             SmartDashboard.putNumber("${it.config.name}/motion/maxAccel", it.config.motionConstraints.maxAccel)
@@ -152,6 +154,8 @@ object DashboardConfigurator : Loop {
                 SmartDashboard.getNumber("${it.config.name}/velocityPID/kI", it.config.velocityPIDGains.kI)
             it.config.velocityPIDGains.kD =
                 SmartDashboard.getNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kD)
+            it.config.velocityPIDGains.kF =
+                SmartDashboard.getNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kF)
             it.config.velocityPIDGains.iZone = SmartDashboard.getNumber("" +
                 "${it.config.name}/velocityPID/iZone",
                 it.config.velocityPIDGains.iZone.toDouble()
@@ -163,6 +167,8 @@ object DashboardConfigurator : Loop {
                 SmartDashboard.getNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kI)
             it.config.positionPIDGains.kD =
                 SmartDashboard.getNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kD)
+            it.config.positionPIDGains.kF =
+                SmartDashboard.getNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kF)
             it.config.positionPIDGains.iZone = SmartDashboard.getNumber(
                     "${it.config.name}/positionPID/iZone",
                     it.config.positionPIDGains.iZone.toDouble()

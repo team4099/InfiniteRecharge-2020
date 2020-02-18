@@ -209,10 +209,10 @@ object Constants {
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",
-        PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0),
         PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0),
-        0.0,
-        ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
+        -157.5,
+        ServoMotorSubsystemMotionConstraints(-92.0, 1.0, 90.0, 90.0, 0),
         360.0,
         4096
     ) {
@@ -221,8 +221,8 @@ object Constants {
         const val OPERATOR_CONTROL_VEL = 90.0
 
         enum class WristPosition(val position: Double) {
-            HORIZONTAL(0.0),
-            VERTICAL(90.0)
+            HORIZONTAL(-10.0),
+            VERTICAL(-90.0)
         }
     }
 

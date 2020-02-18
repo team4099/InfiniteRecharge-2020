@@ -12,7 +12,7 @@ class CTREServoMotorHardware(
     invert: InvertType = InvertType.None,
     invertSlaves: InvertType = InvertType.None,
     sensorPhase: Boolean = false,
-    feedbackDevice: FeedbackDevice = FeedbackDevice.CTRE_MagEncoder_Absolute
+    val feedbackDevice: FeedbackDevice = FeedbackDevice.CTRE_MagEncoder_Relative
 ) : ServoMotorHardware {
     override var pidSlot: Int = 0
         set(value) {
@@ -44,6 +44,7 @@ class CTREServoMotorHardware(
     }
 
     override fun setVelocity(setpoint: Double) {
+        println("setpoint:$setpoint")
         masterMotorController.set(ControlMode.Velocity, setpoint)
     }
 
@@ -52,7 +53,10 @@ class CTREServoMotorHardware(
     }
 
     override fun zeroSensors() {
-        masterMotorController.selectedSensorPosition = 0
+        if (feedbackDevice == FeedbackDevice.CTRE_MagEncoder_Relative ||
+            feedbackDevice == FeedbackDevice.CTRE_MagEncoder_Absolute) {
+            masterMotorController.selectedSensorPosition = masterMotorController.sensorCollection.pulseWidthPosition
+        }
     }
 
     override fun applyPIDGains(gains: PIDGains) {

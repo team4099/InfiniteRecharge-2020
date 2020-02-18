@@ -34,7 +34,7 @@ object Robot : TimedRobot() {
 
     private val tuningTogglePin = DigitalInput(Constants.Tuning.TUNING_TOGGLE_PIN)
     val tuningEnabled: Boolean
-        get() = tuningTogglePin.get()
+        get() = true
 
     val robotName: Constants.Tuning.RobotName
 
@@ -166,20 +166,24 @@ object Robot : TimedRobot() {
                 )
             }
 
-            when {
-                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
-                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
-                else -> Climber.velocitySetpoint = 0.0
-            }
+//            when {
+//                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
+//                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+//                else -> Climber.velocitySetpoint = 0.0
+//            }
 
-            when {
-                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
-                    Constants.Wrist.WristPosition.HORIZONTAL
-                ControlBoard.wristVertical -> Wrist.positionSetpoint =
-                    Constants.Wrist.WristPosition.VERTICAL
-                else -> Wrist.velocitySetpoint =
-                    ControlBoard.sampleWristVelocity * Constants.Wrist.OPERATOR_CONTROL_VEL
-            }
+//            when {
+//                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
+//                    Constants.Wrist.WristPosition.HORIZONTAL
+//                ControlBoard.wristVertical -> Wrist.positionSetpoint =
+//                    Constants.Wrist.WristPosition.VERTICAL
+//                else -> {
+//                    println(ControlBoard.sampleWristVelocity)
+//                    Wrist.openLoopPower =
+//                        ControlBoard.sampleWristVelocity// * Constants.Wrist.OPERATOR_CONTROL_VEL
+//                }
+//            }
+//            Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
 
             when {
                 ControlBoard.runIntakeIn -> Intake.intakeState = Intake.IntakeState.IN
