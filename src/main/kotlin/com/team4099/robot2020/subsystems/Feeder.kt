@@ -1,7 +1,6 @@
 package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.InvertType
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
@@ -59,7 +58,7 @@ object Feeder : Subsystem {
     }
 
     enum class FeederState {
-        HOLD, INTAKE, SHOOT, EXHAUST, IDLE
+        INTAKE, SHOOT, EXHAUST, IDLE
     }
 
     override fun outputTelemetry() {
@@ -106,11 +105,11 @@ object Feeder : Subsystem {
         if (Intake.currentSensed && Shooter.shooterState != Shooter.State.SHOOTING) {
             feederState = FeederState.INTAKE
         } else {
-            feederState = FeederState.HOLD
+            feederState = FeederState.IDLE
         }
 
         if (timestamp - Intake.currentSensedTimestamp > Constants.Intake.CURRENT_TO_IN_BEAM_BREAK_TIME) {
-            feederState = FeederState.HOLD
+            feederState = FeederState.IDLE
         }
 
         when (feederState) {
@@ -118,16 +117,12 @@ object Feeder : Subsystem {
                 stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
-            FeederState.HOLD -> {
-                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                inPower = Constants.Feeder.FEEDER_HOLD_POWER
-            }
             FeederState.SHOOT -> {
                 if (beamNeverBroken || outBeamBroken) {
                     stopperPower = Constants.Feeder.FEEDER_MAX_POWER
                     inPower = Constants.Feeder.FEEDER_MAX_POWER
                 } else {
-                    feederState = FeederState.HOLD
+                    feederState = FeederState.IDLE
                 }
             }
             FeederState.EXHAUST -> {
