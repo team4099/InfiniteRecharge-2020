@@ -152,11 +152,11 @@ object Robot : TimedRobot() {
         try {
             if (ControlBoard.enableVisionAlignment) {
                 Vision.state = Vision.VisionState.AIMING
-                Drive.setCheesyishDrive(
-                    0.0,
-                    Vision.steeringAdjust,
-                    true
-                )
+//                Drive.setCheesyishDrive(
+//                    0.0,
+//                    Vision.steeringAdjust,
+//                    true
+//                )
                 println("steering: ${Vision.steeringAdjust}")
             } else {
                 Vision.state = Vision.VisionState.IDLE
@@ -173,17 +173,18 @@ object Robot : TimedRobot() {
 //                else -> Climber.velocitySetpoint = 0.0
 //            }
 
-//            when {
-//                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
-//                    Constants.Wrist.WristPosition.HORIZONTAL
-//                ControlBoard.wristVertical -> Wrist.positionSetpoint =
-//                    Constants.Wrist.WristPosition.VERTICAL
-//                else -> {
-//                    println(ControlBoard.sampleWristVelocity)
-//                    Wrist.openLoopPower =
-//                        ControlBoard.sampleWristVelocity// * Constants.Wrist.OPERATOR_CONTROL_VEL
-//                }
-//            }
+            when {
+                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
+                    Constants.Wrist.WristPosition.HORIZONTAL
+                ControlBoard.wristVertical -> Wrist.positionSetpoint =
+                    Constants.Wrist.WristPosition.VERTICAL
+                else -> {
+                    println(ControlBoard.sampleWristVelocity)
+                    Wrist.openLoopPower =
+                        ControlBoard.sampleWristVelocity// * Constants.Wrist.OPERATOR_CONTROL_VEL
+                }
+            }
+            println(Wrist.position)
 //            Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
 
             when {
