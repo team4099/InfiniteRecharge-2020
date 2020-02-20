@@ -214,7 +214,7 @@ object Constants {
         PIDGains(0, 1.3, 0.0, 0.0, 3.5, 0),
         PIDGains(1, 0.8, 0.0, 0.0, 0.15, 0),
         -154.5,
-        ServoMotorSubsystemMotionConstraints(-91.0, 1.0, 540.0, 420.0, 1),
+        ServoMotorSubsystemMotionConstraints(-130.0, 1.0, 1500.0, 3072.0, 1),
         360.0,
         4096
     ) {
@@ -223,8 +223,8 @@ object Constants {
         const val OPERATOR_CONTROL_VEL = 90.0
 
         enum class WristPosition(val position: Double) {
-            HORIZONTAL(0.0),
-            VERTICAL(-90.0)
+            HORIZONTAL(-3.0),
+            VERTICAL(-126.0)
         }
     }
 

@@ -178,11 +178,6 @@ object Robot : TimedRobot() {
                     Constants.Wrist.WristPosition.HORIZONTAL
                 ControlBoard.wristVertical -> Wrist.positionSetpoint =
                     Constants.Wrist.WristPosition.VERTICAL
-                else -> {
-                    println(ControlBoard.sampleWristVelocity)
-                    Wrist.openLoopPower =
-                        ControlBoard.sampleWristVelocity// * Constants.Wrist.OPERATOR_CONTROL_VEL
-                }
             }
             println(Wrist.position)
 //            Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
