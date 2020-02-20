@@ -141,14 +141,12 @@ object Constants {
         PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
         PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
         0.0,
-        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.0,
-        1024
+
     ) {
         const val MASTER_ID = 20
         const val SLAVE_ID = 15
-
-        const val OPERATOR_CONTROL_VEL = 90.0
 
         enum class ClimberPosition(val position: Double) {
             DOWN(0.0),

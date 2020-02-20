@@ -25,7 +25,6 @@ import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Shooter
 import com.team4099.robot2020.subsystems.Vision
 import com.team4099.robot2020.subsystems.Wrist
-import javax.naming.ldap.Control
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -62,7 +61,7 @@ object Robot : TimedRobot() {
 
 //            // Register all subsystems
             SubsystemManager.register(Drive)
-//            SubsystemManager.register(Climber)
+            SubsystemManager.register(Climber)
             SubsystemManager.register(Intake)
             SubsystemManager.register(Wrist)
             SubsystemManager.register(Vision)
@@ -167,14 +166,15 @@ object Robot : TimedRobot() {
 //                )
             }
 
-//            when {
-//                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
-//                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
-//                else -> Climber.velocitySetpoint = 0.0
-//            }
+            when {
+                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
+                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+                else -> Climber.openLoopPower = ControlBoard.sampleWristVelocity
+            }
 
             when {
                 ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
+
                     Constants.Wrist.WristPosition.HORIZONTAL
                 ControlBoard.wristVertical -> Wrist.positionSetpoint =
                     Constants.Wrist.WristPosition.VERTICAL

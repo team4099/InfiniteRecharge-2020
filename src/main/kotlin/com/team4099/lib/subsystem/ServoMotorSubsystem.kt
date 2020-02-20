@@ -89,7 +89,6 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainVelocityUnitsPerSecond(value)
-            println("field:$field")
             hardware.setVelocity(field)
         }
 

@@ -44,7 +44,6 @@ class CTREServoMotorHardware(
     }
 
     override fun setVelocity(setpoint: Double) {
-        println("setpoint:$setpoint")
         masterMotorController.set(ControlMode.Velocity, setpoint)
     }
 
