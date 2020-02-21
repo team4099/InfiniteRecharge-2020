@@ -142,8 +142,8 @@ object Constants {
         PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
         0.0,
         ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
-        0.0,
-        1024
+        0.562345085,
+        42
     ) {
         const val MASTER_ID = 20
         const val SLAVE_ID = 15
