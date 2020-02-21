@@ -18,11 +18,13 @@ class SparkMaxServoMotorHardware(
         SparkMaxControllerFactory.createPermanentSlaveSparkMax(it, masterMotorController)
     }
 
+    val encoder = masterMotorController.encoder
+
     override var timeout = 0
     override val positionTicks
-        get() = masterMotorController.encoder.position.roundToInt()
+        get() = encoder.position.roundToInt()
     override val velocityTicksPer100Ms
-        get() = masterMotorController.encoder.velocity.roundToInt()
+        get() = encoder.velocity.roundToInt()
 
     override fun setMotionProfile(setpoint: Double) {
         masterMotorController.set(ControlType.kSmartMotion, setpoint, pidSlot)
@@ -41,7 +43,7 @@ class SparkMaxServoMotorHardware(
     }
 
     override fun zeroSensors() {
-        masterMotorController.encoder.position = 0.0
+        encoder.position = 0.0
     }
 
     override fun applyPIDGains(gains: PIDGains) {

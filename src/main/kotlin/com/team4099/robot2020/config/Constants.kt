@@ -143,7 +143,7 @@ object Constants {
         0.0,
         ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.562345085,
-        42
+        1 // Spark MAX API gives position in rotations
     ) {
         const val MASTER_ID = 20
         const val SLAVE_ID = 15
