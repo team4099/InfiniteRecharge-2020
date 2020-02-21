@@ -49,7 +49,7 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainPositionUnits(value)
-            hardware.setMotionProfile(field)
+            hardware.setMotionProfile(homeAwareUnitsToTicks(field).toDouble())
         }
 
     /**
@@ -64,7 +64,7 @@ abstract class ServoMotorSubsystem(
                 enterPositionClosedLoop()
             }
             field = constrainPositionUnits(value)
-            hardware.setPosition(field)
+            hardware.setPosition(homeAwareUnitsToTicks(field).toDouble())
         }
 
     private val velocityTicksPer100Ms: Int
@@ -89,7 +89,6 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainVelocityUnitsPerSecond(value)
-            println("field:$field")
             hardware.setVelocity(field)
         }
 

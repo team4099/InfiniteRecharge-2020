@@ -16,7 +16,7 @@ class CTREServoMotorHardware(
 ) : ServoMotorHardware {
     override var pidSlot: Int = 0
         set(value) {
-            masterMotorController.selectProfileSlot(value, 0)
+            masterMotorController.selectProfileSlot(0, 0)
             field = value
         }
     val masterMotorController = CTREMotorControllerFactory.createDefaultTalonSRX(masterId)
@@ -44,7 +44,6 @@ class CTREServoMotorHardware(
     }
 
     override fun setVelocity(setpoint: Double) {
-        println("setpoint:$setpoint")
         masterMotorController.set(ControlMode.Velocity, setpoint)
     }
 

@@ -13,6 +13,7 @@ object Wrist : ServoMotorSubsystem(
         feedbackDevice = FeedbackDevice.CTRE_MagEncoder_Absolute
     )
 ) {
+
     var positionSetpoint: Constants.Wrist.WristPosition = Constants.Wrist.WristPosition.HORIZONTAL
         set(value) {
             positionSetpointMotionProfile = value.position

@@ -141,14 +141,12 @@ object Constants {
         PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
         PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
         0.0,
-        ServoMotorSubsystemMotionConstraints(-20.0, 90.0, 90.0, 90.0, 0),
+        ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.562345085,
         42
     ) {
         const val MASTER_ID = 20
         const val SLAVE_ID = 15
-
-        const val OPERATOR_CONTROL_VEL = 90.0
 
         enum class ClimberPosition(val position: Double) {
             DOWN(0.0),
@@ -211,10 +209,10 @@ object Constants {
         CTREMotorControllerFactory.defaultConfiguration,
         "WRIST",
         "degrees",
-        PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0),
-        PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0),
-        -157.5,
-        ServoMotorSubsystemMotionConstraints(-92.0, 1.0, 90.0, 90.0, 0),
+        PIDGains(0, 1.3, 0.0, 0.0, 3.5, 0),
+        PIDGains(1, 0.8, 0.0, 0.0, 0.15, 0),
+        -154.5,
+        ServoMotorSubsystemMotionConstraints(-130.0, 1.0, 1500.0, 3072.0, 1),
         360.0,
         4096
     ) {
@@ -223,8 +221,8 @@ object Constants {
         const val OPERATOR_CONTROL_VEL = 90.0
 
         enum class WristPosition(val position: Double) {
-            HORIZONTAL(-10.0),
-            VERTICAL(-90.0)
+            HORIZONTAL(-3.0),
+            VERTICAL(-126.0)
         }
     }
 

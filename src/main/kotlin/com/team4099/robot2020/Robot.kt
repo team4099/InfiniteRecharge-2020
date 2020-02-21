@@ -25,7 +25,6 @@ import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Shooter
 import com.team4099.robot2020.subsystems.Vision
 import com.team4099.robot2020.subsystems.Wrist
-import javax.naming.ldap.Control
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -62,7 +61,7 @@ object Robot : TimedRobot() {
 
 //            // Register all subsystems
             SubsystemManager.register(Drive)
-//            SubsystemManager.register(Climber)
+            SubsystemManager.register(Climber)
             SubsystemManager.register(Intake)
             SubsystemManager.register(Wrist)
             SubsystemManager.register(Vision)
@@ -152,11 +151,11 @@ object Robot : TimedRobot() {
         try {
             if (ControlBoard.enableVisionAlignment) {
                 Vision.state = Vision.VisionState.AIMING
-                Drive.setCheesyishDrive(
-                    0.0,
-                    Vision.steeringAdjust,
-                    true
-                )
+//                Drive.setCheesyishDrive(
+//                    0.0,
+//                    Vision.steeringAdjust,
+//                    true
+//                )
                 println("steering: ${Vision.steeringAdjust}")
             } else {
                 Vision.state = Vision.VisionState.IDLE
@@ -167,23 +166,20 @@ object Robot : TimedRobot() {
 //                )
             }
 
-//            when {
-//                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
-//                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
-//                else -> Climber.velocitySetpoint = 0.0
-//            }
+            when {
+                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
+                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+                else -> Climber.openLoopPower = ControlBoard.sampleWristVelocity
+            }
 
-//            when {
-//                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
-//                    Constants.Wrist.WristPosition.HORIZONTAL
-//                ControlBoard.wristVertical -> Wrist.positionSetpoint =
-//                    Constants.Wrist.WristPosition.VERTICAL
-//                else -> {
-//                    println(ControlBoard.sampleWristVelocity)
-//                    Wrist.openLoopPower =
-//                        ControlBoard.sampleWristVelocity// * Constants.Wrist.OPERATOR_CONTROL_VEL
-//                }
-//            }
+            when {
+                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
+
+                    Constants.Wrist.WristPosition.HORIZONTAL
+                ControlBoard.wristVertical -> Wrist.positionSetpoint =
+                    Constants.Wrist.WristPosition.VERTICAL
+            }
+            println(Wrist.position)
 //            Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
 
             when {
