@@ -3,7 +3,6 @@ package com.team4099.robot2020.subsystems
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
-import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -11,6 +10,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 object Intake : Subsystem {
 
     private val talon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Intake.INTAKE_TALON_ID)
+
+    var currentSensed = false
+        get() = talon.supplyCurrent > Constants.Intake.CURRENT_TO_SENSE
+
+    var currentSensedTimestamp = -1.0
+
+    var inBeamBroken = false
+        get() = talon.isFwdLimitSwitchClosed() > 0
+
+    private var inBeamBrokenTimestamp = -1.0
+
+    // take this out after adding one ballCount in superstructure to work with feeder
+    var ballCount = 0
 
     private var intakePower = 0.0
         set(value) {
@@ -49,13 +61,33 @@ object Intake : Subsystem {
     }
 
     @Synchronized
-    override fun onLoop(timestamp: Double, dt: Double) {
-        synchronized(this) {
-            when (intakeState) {
-                IntakeState.IN -> intakePower = -1.0
-                IntakeState.OUT -> intakePower = 1.0
-                IntakeState.IDLE -> intakePower = 0.0
+    override fun onLoop(timestamp: Double, dT: Double) {
+
+        if (inBeamBroken) {
+            if (inBeamBrokenTimestamp == -1.0) {
+                inBeamBrokenTimestamp = timestamp
             }
+        } else {
+            ballCount += ((timestamp - inBeamBrokenTimestamp) / Constants.Intake.IN_BEAM_BROKEN_BALL_TIME).toInt()
+            inBeamBrokenTimestamp = -1.0
+        }
+
+        if (currentSensed) {
+            currentSensedTimestamp = timestamp
+        } else {
+            currentSensedTimestamp = -1.0
+        }
+
+        when (intakeState) {
+            IntakeState.IN -> {
+                if (ballCount >= Constants.Intake.MAX_BALL_COUNT) {
+                    intakePower = 0.0
+                } else {
+                    intakePower = -1.0
+                }
+            }
+            IntakeState.OUT -> intakePower = 1.0
+            IntakeState.IDLE -> intakePower = 0.0
         }
     }
 

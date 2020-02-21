@@ -156,6 +156,15 @@ object Constants {
 
     object Intake {
         const val INTAKE_TALON_ID = 69
+
+        const val CURRENT_TO_SENSE = 0.0
+
+        const val MAX_BALL_COUNT = 5
+
+        // test how long it takes one ball to pass through intake
+        const val IN_BEAM_BROKEN_BALL_TIME = 0.0
+        // test time between current sense and beambreak
+        const val CURRENT_TO_IN_BEAM_BREAK_TIME = 2.0
     }
 
     object Looper {
@@ -233,5 +242,8 @@ object Constants {
 
         const val FEEDER_MAX_POWER = 1.0
         const val FEEDER_HOLD_POWER = 0.1
+
+        // test how long it takes one ball to pass through feeder
+        const val OUT_BEAM_BROKEN_BALL_TIME = 0.0
     }
 }

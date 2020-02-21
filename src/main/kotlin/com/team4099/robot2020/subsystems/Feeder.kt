@@ -1,7 +1,6 @@
 package com.team4099.robot2020.subsystems
 
 import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.InvertType
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
@@ -11,6 +10,7 @@ import com.team4099.robot2020.config.Constants
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
+
     private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_OUT_ID)
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Feeder.FEEDER_IN_SLAVE_ID,
@@ -21,6 +21,15 @@ object Feeder : Subsystem {
     private val inEncoder = inMasterSparkMax.encoder
 
     private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.FEEDER_OUT_ID)
+
+    private var outBeamBroken = false
+        get() = stopperTalon.isFwdLimitSwitchClosed() > 0
+    private var beamNeverBroken = true
+
+    private var outBeamBrokenTimestamp = -1.0
+
+    // take this out after adding one ballCount in superstructure to work with intake
+    var ballCount = 0
 
     var feederState = FeederState.IDLE
         set(value) {
@@ -45,11 +54,11 @@ object Feeder : Subsystem {
         }
 
     init {
-        stopperTalon.setInverted(InvertType.InvertMotorOutput)
+        stopperTalon.inverted = true
     }
 
     enum class FeederState {
-        HOLD, INTAKE, SHOOT, EXHAUST, IDLE
+        INTAKE, SHOOT, EXHAUST, IDLE
     }
 
     override fun outputTelemetry() {
@@ -82,18 +91,39 @@ object Feeder : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
+
+        if (outBeamBroken) {
+            if (outBeamBrokenTimestamp == -1.0) {
+                outBeamBrokenTimestamp = timestamp
+            }
+            beamNeverBroken = false
+        } else {
+            ballCount -= ((timestamp - outBeamBrokenTimestamp) / Constants.Feeder.OUT_BEAM_BROKEN_BALL_TIME).toInt()
+            outBeamBrokenTimestamp = -1.0
+        }
+
+        if (Intake.currentSensed && Shooter.shooterState != Shooter.State.SHOOTING) {
+            feederState = FeederState.INTAKE
+        } else {
+            feederState = FeederState.IDLE
+        }
+
+        if (timestamp - Intake.currentSensedTimestamp > Constants.Intake.CURRENT_TO_IN_BEAM_BREAK_TIME) {
+            feederState = FeederState.IDLE
+        }
+
         when (feederState) {
             FeederState.INTAKE -> {
                 stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
-            FeederState.HOLD -> {
-                stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
-                inPower = Constants.Feeder.FEEDER_HOLD_POWER
-            }
             FeederState.SHOOT -> {
-                stopperPower = Constants.Feeder.FEEDER_MAX_POWER
-                inPower = Constants.Feeder.FEEDER_MAX_POWER
+                if (beamNeverBroken || outBeamBroken) {
+                    stopperPower = Constants.Feeder.FEEDER_MAX_POWER
+                    inPower = Constants.Feeder.FEEDER_MAX_POWER
+                } else {
+                    feederState = FeederState.IDLE
+                }
             }
             FeederState.EXHAUST -> {
                 stopperPower = -Constants.Feeder.FEEDER_MAX_POWER
