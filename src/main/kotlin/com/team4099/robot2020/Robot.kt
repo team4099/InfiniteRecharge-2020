@@ -13,6 +13,8 @@ import com.team4099.lib.logging.CrashTracker
 import com.team4099.lib.loop.Looper
 import com.team4099.robot2020.auto.PathStore
 import com.team4099.robot2020.auto.modes.DriveForwardMode
+import com.team4099.robot2020.auto.modes.Shoot3Mode
+import com.team4099.robot2020.auto.modes.StandStillMode
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.ControlBoard
 import com.team4099.robot2020.config.DashboardConfigurator
@@ -36,18 +38,18 @@ object Robot : TimedRobot() {
     val tuningEnabled: Boolean
         get() = true
 
-    val robotName: Constants.Tuning.RobotName
+//    val robotName: Constants.Tuning.RobotName
 
     init {
         // Determine what robot we're running on.
-        val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
-            (i, pin) -> if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
-        }.sum()
-        robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(robotId, Constants.Tuning.RobotName.COMPETITION)
+//        val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
+//            (i, pin) -> if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
+//        }.sum()
+//        robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(robotId, Constants.Tuning.RobotName.COMPETITION)
 
         PathStore // Invoke path store to initialize it and generate the contained trajectories
 
-        HelixEvents.addEvent("ROBOT", "Robot Construction (running on $robotName)")
+//        HelixEvents.addEvent("ROBOT", "Robot Construction (running on $robotName)")
         HelixLogger.addSource("Battery Voltage", RobotController::getBatteryVoltage)
 
         HelixLogger.addSource("Enabled Looper dT") { enabledLooper.dt }
@@ -107,7 +109,7 @@ object Robot : TimedRobot() {
             enabledLooper.start() // start EnabledLooper
 
 //            autoModeExecuter = AutoModeExecuter(DashboardConfigurator.getSelectedAutoMode())
-            autoModeExecuter = AutoModeExecuter(DriveForwardMode(0.0))
+            autoModeExecuter = AutoModeExecuter(Shoot3Mode(0.0))
             autoModeExecuter.start()
 
             HelixEvents.addEvent("ROBOT", "Autonomous Enabled")
@@ -165,10 +167,24 @@ object Robot : TimedRobot() {
                 )
             }
 
+            if (ControlBoard.slowMode) {
+                Drive.setCheesyishDrive(
+                    ControlBoard.throttle * Constants.Drive.SLOW_MODE_SCALE,
+                    ControlBoard.turn * Constants.Drive.SLOW_MODE_SCALE,
+                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+                )
+            } else {
+                Drive.setCheesyishDrive(
+                    ControlBoard.throttle,
+                    ControlBoard.turn,
+                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+                )
+            }
+
             when {
-                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
-                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
-                else -> Climber.openLoopPower = ControlBoard.sampleWristVelocity
+//                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
+//                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+                else -> Climber.openLoopPower = (ControlBoard.sampleClimberVelocity).pow(3) * 0.65
             }
 
             when {
@@ -197,7 +213,7 @@ object Robot : TimedRobot() {
             when {
                 ControlBoard.startShooter -> {
                     Shooter.shooterState = Shooter.State.SHOOTING
-//                    Feeder.feederState = Feeder.FeederState.AUTO_SHOOT
+                    Feeder.feederState = Feeder.FeederState.AUTO_SHOOT
                 }
                 else -> {
                     Shooter.shooterState = Shooter.State.IDLE
@@ -209,7 +225,7 @@ object Robot : TimedRobot() {
             }
 
             if (Intake.hasPowerCell) {
-                Feeder.feederState = Feeder.FeederState.INTAKE
+                Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
             }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)

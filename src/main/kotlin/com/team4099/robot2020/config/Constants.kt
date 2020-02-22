@@ -51,6 +51,8 @@ object Constants {
 
         const val OUTPUT_POWER_DEADBAND = 0.0
 
+        const val SLOW_MODE_SCALE = 0.5
+
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
         const val ENCODER_RESOLUTION = 4096
@@ -114,9 +116,9 @@ object Constants {
         const val SHOOTING_DISTANCE = 0
 
         const val MAX_DIST_ERROR = 0.1
-        const val MAX_ANGLE_ERROR = 0.1
+        const val MAX_ANGLE_ERROR = 2.0
 
-        val TURN_GAINS = PIDGains(0, 0.028, 0.0, 0.0, 0.0, 0)
+        val TURN_GAINS = PIDGains(0, 0.019, 0.0, 0.0, 0.0, 0)
         val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
         const val MIN_TURN_COMMAND = 0.0 // 0.35
         const val MIN_DIST_COMMAND = 0.0838
@@ -143,7 +145,8 @@ object Constants {
         0.0,
         ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.562345085,
-        1 // Spark MAX API gives position in rotations
+        1, // Spark MAX API gives position in rotations
+        brakeMode = true
     ) {
         const val MASTER_ID = 20
         const val SLAVE_ID = 15
@@ -158,7 +161,7 @@ object Constants {
         const val INTAKE_TALON_ID = 5
         const val INTAKE_POWER = 0.8
         const val STALL_LIMIT_AMPS = 13.0
-        const val STALL_LIMIT_SECONDS = 0.5 // seconds
+        const val STALL_LIMIT_SECONDS = 0.25 // seconds
     }
 
     object Looper {
@@ -176,6 +179,7 @@ object Constants {
         const val FORWARD_POWER = 1.0
         const val SLOW_FORWARD_POWER = 0.6
         const val FORWARD_MAX_TIME_SECONDS = 3
+        const val SHOOT_MAX_TIME_SECONDS = 7.0
         const val FORWARD_CORRECTION_KP = 0.01
         const val FORWARD_GIVE_UP_ANGLE = 30.0
     }
@@ -235,6 +239,7 @@ object Constants {
 
         const val FEEDER_MAX_POWER = 0.65
         const val FEEDER_HOLD_POWER = 0.1
+        const val FEEDER_INTAKE_POWER = 0.35
         const val STOPPER_MAX_POWER = 0.45
         const val STOPPER_HOLD_POWER = 0.1
     }

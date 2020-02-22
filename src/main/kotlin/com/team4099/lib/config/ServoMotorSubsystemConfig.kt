@@ -14,7 +14,8 @@ open class ServoMotorSubsystemConfig(
     val homePosition: Double,
     val motionConstraints: ServoMotorSubsystemMotionConstraints,
     unitsPerEncoderRev: Double,
-    encoderResolution: Int
+    encoderResolution: Int,
+    val brakeMode: Boolean = false
 ) {
     val ticksPerUnitDistance = encoderResolution / unitsPerEncoderRev
 }

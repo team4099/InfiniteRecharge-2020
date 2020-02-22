@@ -3,6 +3,7 @@ package com.team4099.lib.hardware
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.FeedbackDevice
 import com.ctre.phoenix.motorcontrol.InvertType
+import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.team4099.lib.config.PIDGains
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 
@@ -73,7 +74,8 @@ class CTREServoMotorHardware(
         cruiseVel: Int,
         maxAccel: Int,
         motionProfileCurveStrength: Int,
-        velocityPIDSlot: Int
+        velocityPIDSlot: Int,
+        brakeMode: Boolean
     ) {
         masterMotorController.configReverseSoftLimitEnable(enableReverseSoftLimit, timeout)
         masterMotorController.configReverseSoftLimitThreshold(reverseSoftLimit, timeout)
@@ -82,5 +84,13 @@ class CTREServoMotorHardware(
         masterMotorController.configMotionCruiseVelocity(cruiseVel, timeout)
         masterMotorController.configMotionAcceleration(maxAccel, timeout)
         masterMotorController.configMotionSCurveStrength(motionProfileCurveStrength, timeout)
+
+        if (brakeMode) {
+            masterMotorController.setNeutralMode(NeutralMode.Brake)
+            slaveMotorControllers.forEach { it.setNeutralMode(NeutralMode.Brake) }
+        } else {
+            masterMotorController.setNeutralMode(NeutralMode.Coast)
+            slaveMotorControllers.forEach { it.setNeutralMode(NeutralMode.Coast) }
+        }
     }
 }

@@ -15,7 +15,7 @@ class SparkMaxServoMotorHardware(
 
     val masterMotorController = SparkMaxControllerFactory.createDefaultSparkMax(masterId)
     val slaveMotorControllers = slaveIds.map {
-        SparkMaxControllerFactory.createPermanentSlaveSparkMax(it, masterMotorController)
+        SparkMaxControllerFactory.createPermanentSlaveSparkMax(it, masterMotorController, invertToMaster = true)
     }
 
     val encoder = masterMotorController.encoder
@@ -61,7 +61,8 @@ class SparkMaxServoMotorHardware(
         cruiseVel: Int,
         maxAccel: Int,
         motionProfileCurveStrength: Int,
-        velocityPIDSlot: Int
+        velocityPIDSlot: Int,
+        brakeMode: Boolean
     ) {
         masterMotorController.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, reverseSoftLimit.toFloat())
         masterMotorController.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, forwardSoftLimit.toFloat())
@@ -72,5 +73,15 @@ class SparkMaxServoMotorHardware(
             else CANPIDController.AccelStrategy.kTrapezoidal,
             velocityPIDSlot
         )
+        if (brakeMode) {
+            masterMotorController.idleMode = CANSparkMax.IdleMode.kBrake
+            slaveMotorControllers.forEach { it.idleMode = CANSparkMax.IdleMode.kBrake }
+        } else {
+            masterMotorController.idleMode = CANSparkMax.IdleMode.kCoast
+            slaveMotorControllers.forEach { it.idleMode = CANSparkMax.IdleMode.kCoast }
+        }
+
+        masterMotorController.burnFlash()
+        slaveMotorControllers.forEach { it.burnFlash() }
     }
 }
