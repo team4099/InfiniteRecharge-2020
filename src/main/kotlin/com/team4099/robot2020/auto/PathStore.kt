@@ -40,7 +40,10 @@ object PathStore {
         10.0
     )
 
-    val config: TrajectoryConfig = TrajectoryConfig(Constants.Drive.MAX_VEL_METERS_PER_SEC, Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ)
+    val config: TrajectoryConfig = TrajectoryConfig(
+        Constants.Drive.MAX_VEL_METERS_PER_SEC,
+        Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
+    )
         .setKinematics(Drive.kinematics)
         .addConstraint(voltageConstraint)
 

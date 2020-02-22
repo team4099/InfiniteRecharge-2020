@@ -156,6 +156,7 @@ object Constants {
 
     object Intake {
         const val INTAKE_TALON_ID = 5
+        const val INTAKE_POWER = 0.8
         const val STALL_LIMIT_AMPS = 13.0
         const val STALL_LIMIT_SECONDS = 0.5 // seconds
     }

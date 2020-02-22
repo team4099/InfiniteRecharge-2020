@@ -151,19 +151,18 @@ object Robot : TimedRobot() {
         try {
             if (ControlBoard.enableVisionAlignment) {
                 Vision.state = Vision.VisionState.AIMING
-//                Drive.setCheesyishDrive(
-//                    0.0,
-//                    Vision.steeringAdjust,
-//                    true
-//                )
-                println("steering: ${Vision.steeringAdjust}")
+                Drive.setCheesyishDrive(
+                    0.0,
+                    Vision.steeringAdjust,
+                    true
+                )
             } else {
                 Vision.state = Vision.VisionState.IDLE
-//                Drive.setCheesyishDrive(
-//                    ControlBoard.throttle,
-//                    ControlBoard.turn,
-//                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-//                )
+                Drive.setCheesyishDrive(
+                    ControlBoard.throttle,
+                    ControlBoard.turn,
+                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+                )
             }
 
             when {
@@ -173,29 +172,26 @@ object Robot : TimedRobot() {
             }
 
             when {
-                ControlBoard.wristHorizontal -> Wrist.positionSetpoint =
-
-                    Constants.Wrist.WristPosition.HORIZONTAL
-                ControlBoard.wristVertical -> Wrist.positionSetpoint =
-                    Constants.Wrist.WristPosition.VERTICAL
+                ControlBoard.runIntakeIn -> {
+                    Intake.intakeState = Intake.IntakeState.IN
+                    Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
+                }
+                ControlBoard.runIntakeOut -> {
+                    Intake.intakeState = Intake.IntakeState.OUT
+                    Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
+                }
+                else -> {
+                    Intake.intakeState = Intake.IntakeState.IDLE
+                    Wrist.positionSetpoint = Constants.Wrist.WristPosition.VERTICAL
+                }
             }
-            println(Wrist.position)
-//            Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
-
-            when {
-                ControlBoard.runIntakeIn -> Intake.intakeState = Intake.IntakeState.IN
-                ControlBoard.runIntakeOut -> Intake.intakeState = Intake.IntakeState.OUT
-                else -> Intake.intakeState = Intake.IntakeState.IDLE
-            }
+            
             when {
                 ControlBoard.runFeederIn -> {
                     Feeder.feederState = Feeder.FeederState.SHOOT
                 }
                 ControlBoard.runFeederOut -> {
                     Feeder.feederState = Feeder.FeederState.EXHAUST
-                }
-                else -> {
-//                    Feeder.feederState = Feeder.FeederState.IDLE
                 }
             }
             when {
@@ -207,9 +203,11 @@ object Robot : TimedRobot() {
                     Shooter.shooterState = Shooter.State.IDLE
                 }
             }
+
             if (!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn) {
                 Feeder.feederState = Feeder.FeederState.IDLE
             }
+
             if (Intake.hasPowerCell) {
                 Feeder.feederState = Feeder.FeederState.INTAKE
             }

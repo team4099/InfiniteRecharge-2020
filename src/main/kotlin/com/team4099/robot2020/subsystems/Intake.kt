@@ -3,13 +3,11 @@ package com.team4099.robot2020.subsystems
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
-import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Intake : Subsystem {
-
     private val talon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Intake.INTAKE_TALON_ID)
 
     private var intakePower = 0.0
@@ -31,8 +29,10 @@ object Intake : Subsystem {
 
     init {
         talon.inverted = false
+        @Suppress("MagicNumber")
         talon.configClosedloopRamp(0.9)
-}
+    }
+
     override fun outputTelemetry() {
         SmartDashboard.putString("intake/intakeState", intakeState.toString())
         SmartDashboard.putNumber("intake/intakePower", intakePower)
@@ -53,11 +53,11 @@ object Intake : Subsystem {
     }
 
     @Synchronized
-    override fun onLoop(timestamp: Double, dt: Double) {
+    override fun onLoop(timestamp: Double, dT: Double) {
         synchronized(this) {
             when (intakeState) {
                 IntakeState.IN -> {
-                    intakePower = 0.8
+                    intakePower = Constants.Intake.INTAKE_POWER
                     if (talon.supplyCurrent > Constants.Intake.STALL_LIMIT_AMPS) {
                         holdTimer = timestamp
                         if ((holdTimer - timerStart) > Constants.Intake.STALL_LIMIT_SECONDS) {
@@ -68,7 +68,7 @@ object Intake : Subsystem {
                     }
                 }
                 IntakeState.OUT -> {
-                    intakePower = -0.8
+                    intakePower = -Constants.Intake.INTAKE_POWER
                     if (talon.supplyCurrent > Constants.Intake.STALL_LIMIT_AMPS) {
                         holdTimer = timestamp
                         if ((holdTimer - timerStart) > Constants.Intake.STALL_LIMIT_SECONDS) {
