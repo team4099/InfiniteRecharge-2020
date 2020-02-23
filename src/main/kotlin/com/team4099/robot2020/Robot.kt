@@ -59,7 +59,7 @@ object Robot : TimedRobot() {
     override fun robotInit() {
         try {
             HelixEvents.startLogging()
-            CameraServer.getInstance().startAutomaticCapture()
+//            CameraServer.getInstance().startAutomaticCapture()
 
 //            // Register all subsystems
             SubsystemManager.register(Drive)
@@ -224,7 +224,7 @@ object Robot : TimedRobot() {
                 Feeder.feederState = Feeder.FeederState.IDLE
             }
 
-            if (Intake.hasPowerCell) {
+            if (Intake.hasPowerCell || Feeder.ballIn) {
                 Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
             }
         } catch (t: Throwable) {

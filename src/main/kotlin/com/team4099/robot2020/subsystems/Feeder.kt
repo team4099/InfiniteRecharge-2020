@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 object Feeder : Subsystem {
     private val frontLimitSwitch = DigitalInput(2)
 
+    var ballIn : Boolean = false
+
     private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_IN_MASTER_ID)
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Feeder.FEEDER_IN_SLAVE_ID,
@@ -90,9 +92,10 @@ object Feeder : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
-        println(frontLimitSwitch.get())
+
         when (feederState) {
             FeederState.AUTO_INTAKE -> {
+                ballIn = !frontLimitSwitch.get()
                 stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_INTAKE_POWER
             }

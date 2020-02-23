@@ -27,6 +27,8 @@ import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.I2C
+import edu.wpi.first.wpilibj.SerialPort
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonFX
@@ -35,7 +37,7 @@ object Drive : Subsystem {
     private val leftMasterTalon: TalonFX
     private val leftSlaveTalon: TalonFX
 
-    private val ahrs = AHRS(SPI.Port.kMXP)
+    private val ahrs = AHRS(SerialPort.Port.kMXP)
     private var trajDuration = 0.0
     private var trajCurTime = 0.0
     private var trajStartTime = 0.0
@@ -486,6 +488,8 @@ object Drive : Subsystem {
     private fun updatePathFollowing(timestamp: Double, dT: Double) {
         trajCurTime = timestamp - trajStartTime
         autoOdometry.update(Rotation2d.fromDegrees(-angle), leftDistanceMeters, rightDistanceMeters)
+
+        println(autoOdometry.poseMeters)
 
         val sample = path.sample(trajCurTime)
         val wheelSpeeds = kinematics.toWheelSpeeds(pathFollowController.calculate(autoOdometry.poseMeters, sample))
