@@ -36,14 +36,14 @@ object Robot : TimedRobot() {
     val tuningEnabled: Boolean
         get() = true
 
-    val robotName: Constants.Tuning.RobotName
+    var robotName: Constants.Tuning.RobotName
 
     init {
         // Determine what robot we're running on.
         val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
-            (i, pin) -> if (DigitalInput(pin).get()) 2.0.pow(i).toInt() else 0
+            (i, pin) -> if (DigitalInput(pin).get()) 0 else 2.0.pow(i).toInt()
         }.sum()
-        robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(robotId, Constants.Tuning.RobotName.COMPETITION)
+        robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(0, Constants.Tuning.RobotName.COMPETITION)
 
         PathStore // Invoke path store to initialize it and generate the contained trajectories
 
@@ -59,14 +59,14 @@ object Robot : TimedRobot() {
             HelixEvents.startLogging()
             CameraServer.getInstance().startAutomaticCapture()
 
-//            // Register all subsystems
-            SubsystemManager.register(Drive)
-            SubsystemManager.register(Climber)
-            SubsystemManager.register(Intake)
-            SubsystemManager.register(Wrist)
-            SubsystemManager.register(Vision)
-            SubsystemManager.register(Feeder)
-            SubsystemManager.register(Shooter)
+            // Register all subsystems
+//            SubsystemManager.register(Drive)
+//            SubsystemManager.register(Climber)
+//            SubsystemManager.register(Intake)
+//            SubsystemManager.register(Wrist)
+//            SubsystemManager.register(Vision)
+//            SubsystemManager.register(Feeder)
+//            SubsystemManager.register(Shooter)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
             enabledLooper.register(FaultDetector)
