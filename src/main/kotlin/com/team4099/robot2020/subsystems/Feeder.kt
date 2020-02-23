@@ -57,7 +57,7 @@ object Feeder : Subsystem {
     }
 
     enum class FeederState {
-        HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_SHOOT, AUTO_INTAKE
+        HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_INTAKE
     }
 
     override fun outputTelemetry() {
@@ -107,15 +107,6 @@ object Feeder : Subsystem {
             FeederState.SHOOT -> {
                 stopperPower = Constants.Feeder.STOPPER_MAX_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
-            }
-            FeederState.AUTO_SHOOT -> {
-                if (Shooter.shooterReady) {
-                    stopperPower = Constants.Feeder.STOPPER_MAX_POWER
-                    inPower = Constants.Feeder.FEEDER_MAX_POWER
-                } else {
-                    stopperPower = 0.0
-                    inPower = 0.0
-                }
             }
             FeederState.EXHAUST -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER

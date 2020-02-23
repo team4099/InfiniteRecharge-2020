@@ -134,6 +134,10 @@ object Constants {
 
         const val TARGET_VELOCITY = 4500.0
         const val VELOCITY_ERROR_THRESHOLD = 20.0
+
+        const val DIST_POLY_A = 0.06941564572
+        const val DIST_POLY_B = -16.39049315
+        const val DIST_POLY_C = 5055.150762
     }
 
     object Climber : ServoMotorSubsystemConfig(

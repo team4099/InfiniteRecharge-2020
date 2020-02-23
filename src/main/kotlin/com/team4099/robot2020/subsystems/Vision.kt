@@ -34,7 +34,7 @@ object Vision : Subsystem {
                 field = value
             }
         }
-    private var distance = 0.0
+    var distance = 0.0
     private var distanceError = 0.0
     var steeringAdjust = 0.0
     var distanceAdjust = 0.0

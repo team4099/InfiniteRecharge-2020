@@ -33,7 +33,7 @@ object Shooter : Subsystem {
             // needed to increase velocity by 1 unit if no other loads are applied.
             masterSparkMax.set(
                 ControlType.kVelocity,
-                value + 41,
+                value,
                 0,
                 Constants.Shooter.SHOOTER_KS * sign(value) + Constants.Shooter.SHOOTER_KV * value // Volts
             )
@@ -50,6 +50,7 @@ object Shooter : Subsystem {
     var shooterState = State.IDLE
 
     var shooterReady = false
+    var velocityTarget = Constants.Shooter.TARGET_VELOCITY
 
     init {
         masterSparkMax.pidController.setP(Constants.Shooter.SHOOTER_PID.kP)
@@ -95,7 +96,7 @@ object Shooter : Subsystem {
                 idleTime = timestamp
             }
             State.SHOOTING -> {
-                velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
+                velocitySetpoint = velocityTarget
                 shooterReady = abs(currentVelocity - velocitySetpoint) <=
                     Constants.Shooter.VELOCITY_ERROR_THRESHOLD
                 if (shooterReady && spinupTime == 0.0) {
