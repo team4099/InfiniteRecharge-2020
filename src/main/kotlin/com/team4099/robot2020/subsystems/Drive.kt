@@ -136,6 +136,8 @@ object Drive : Subsystem {
             enableCurrentLimit = true,
             currentLimit = Constants.Drive.CONTINUOUS_CURRENT_LIMIT,
 
+            voltageRampRate = 0.5,
+
             motionMagicCruiseVelocity = metersPerSecondToNative(Constants.Drive.MAX_VEL_METERS_PER_SEC).toInt(),
             motionMagicAcceleration = metersPerSecondToNative(Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ).toInt()
         )

@@ -8,9 +8,12 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
+    private val frontLimitSwitch = DigitalInput(2)
+
     private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_IN_MASTER_ID)
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Feeder.FEEDER_IN_SLAVE_ID,
@@ -54,7 +57,7 @@ object Feeder : Subsystem {
     }
 
     enum class FeederState {
-        HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_SHOOT
+        HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_SHOOT, AUTO_INTAKE
     }
 
     override fun outputTelemetry() {
@@ -87,7 +90,12 @@ object Feeder : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
+        println(frontLimitSwitch.get())
         when (feederState) {
+            FeederState.AUTO_INTAKE -> {
+                stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
+                inPower = Constants.Feeder.FEEDER_INTAKE_POWER
+            }
             FeederState.INTAKE -> {
                 stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER

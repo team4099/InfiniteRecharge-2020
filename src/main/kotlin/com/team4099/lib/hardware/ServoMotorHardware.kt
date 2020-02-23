@@ -27,6 +27,7 @@ interface ServoMotorHardware {
         cruiseVel: Int,
         maxAccel: Int,
         motionProfileCurveStrength: Int,
-        velocityPIDSlot: Int
+        velocityPIDSlot: Int,
+        brakeMode: Boolean = false
     )
 }

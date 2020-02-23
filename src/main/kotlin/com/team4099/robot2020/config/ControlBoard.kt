@@ -17,8 +17,8 @@ object ControlBoard {
     val turn: Double
         get() = -driver.leftXAxis
 
-    val sampleWristVelocity: Double
-        get() = operator.leftYAxis
+    val sampleClimberVelocity: Double
+        get() = operator.leftTriggerAxis - operator.rightTriggerAxis
 
     val wristVertical: Boolean
         get() = operator.leftShoulderButton
@@ -48,8 +48,11 @@ object ControlBoard {
         get() = operator.bButton
 
     val runFeederIn: Boolean
-        get() = operator.dPadUp
+        get() = operator.dPadDown
 
     val runFeederOut: Boolean
-        get() = operator.dPadDown
+        get() = operator.dPadUp
+
+    val slowMode: Boolean
+        get() = driver.dPadDown
 }

@@ -151,7 +151,8 @@ abstract class ServoMotorSubsystem(
             unitsPerSecondToTicksPer100ms(config.motionConstraints.cruiseVelocity),
             unitsPerSecondToTicksPer100ms(config.motionConstraints.maxAccel),
             config.motionConstraints.motionProfileCurveStrength,
-            config.velocityPIDGains.slotNumber
+            config.velocityPIDGains.slotNumber,
+            brakeMode = config.brakeMode
         )
 
         HelixEvents.addEvent(config.name, "Updated motion constraints")
