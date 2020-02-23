@@ -15,6 +15,7 @@ object Superstructure : Subsystem {
         INTAKE_AND_SHOOT
     }
 
+    var alignWithVision = false
     var state = SuperstructureState.IDLE
 
     private fun shoot() {
@@ -44,6 +45,7 @@ object Superstructure : Subsystem {
             SuperstructureState.IDLE -> {
                 Shooter.shooterState = Shooter.State.IDLE
                 Feeder.feederState = Feeder.FeederState.IDLE
+                Intake.intakeState = Intake.IntakeState.IDLE
             }
             SuperstructureState.SHOOTING -> {
                 shoot()
@@ -69,6 +71,14 @@ object Superstructure : Subsystem {
                 Constants.Wrist.WristPosition.HORIZONTAL
             else -> Constants.Wrist.WristPosition.VERTICAL
         }
+
+        if (alignWithVision && Vision.state == Vision.VisionState.AIMING) {
+            Drive.setCheesyishDrive(
+                0.0,
+                Vision.steeringAdjust,
+                true
+            )
+        }
     }
 
     override fun onStop(timestamp: Double) {
@@ -77,9 +87,7 @@ object Superstructure : Subsystem {
 
     override fun outputTelemetry() {}
 
-    override fun checkSystem() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun checkSystem() {}
 
     override fun registerLogging() {
         HelixLogger.addSource("SUPERSTRUCTURE State") { state.toString() }
