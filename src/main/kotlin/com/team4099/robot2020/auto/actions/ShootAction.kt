@@ -5,12 +5,10 @@ import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.subsystems.Feeder
 import com.team4099.robot2020.subsystems.Shooter
 import com.team4099.robot2020.subsystems.Vision
-import edu.wpi.first.wpilibj.Timer
-import kotlin.concurrent.timerTask
-
-private var startTime = 0.0
 
 class ShootAction : Action {
+    private var startTime = 0.0
+
     override fun isFinished(timestamp: Double): Boolean {
         return timestamp - startTime > Constants.Autonomous.SHOOT_MAX_TIME_SECONDS
     }

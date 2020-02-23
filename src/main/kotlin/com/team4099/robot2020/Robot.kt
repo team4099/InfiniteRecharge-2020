@@ -1,20 +1,13 @@
 package com.team4099.robot2020
 
 import com.team4099.lib.around
-import com.team4099.lib.logging.HelixEvents
-import com.team4099.lib.logging.HelixLogger
-import edu.wpi.first.cameraserver.CameraServer
-import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj.RobotController
-import edu.wpi.first.wpilibj.TimedRobot
-import kotlin.math.pow
 import com.team4099.lib.auto.AutoModeExecuter
 import com.team4099.lib.logging.CrashTracker
+import com.team4099.lib.logging.HelixEvents
+import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.loop.Looper
 import com.team4099.robot2020.auto.PathStore
-import com.team4099.robot2020.auto.modes.DriveForwardMode
 import com.team4099.robot2020.auto.modes.Shoot3Mode
-import com.team4099.robot2020.auto.modes.StandStillMode
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.ControlBoard
 import com.team4099.robot2020.config.DashboardConfigurator
@@ -27,6 +20,11 @@ import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Shooter
 import com.team4099.robot2020.subsystems.Vision
 import com.team4099.robot2020.subsystems.Wrist
+import edu.wpi.first.cameraserver.CameraServer
+import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.RobotController
+import edu.wpi.first.wpilibj.TimedRobot
+import kotlin.math.pow
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -42,15 +40,14 @@ object Robot : TimedRobot() {
 
     init {
         // Determine what robot we're running on.
-        val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
-            (i, pin) -> if (DigitalInput(pin).get()) 0 else 2.0.pow(i).toInt()
+        val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map { (i, pin) ->
+            if (DigitalInput(pin).get()) 0 else 2.0.pow(i).toInt()
         }.sum()
-        robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(0, Constants.Tuning.RobotName.COMPETITION)
-
+        robotName = Constants.Tuning.ROBOT_ID_MAP.getOrDefault(robotId, Constants.Tuning.RobotName.COMPETITION)
 
         PathStore // Invoke path store to initialize it and generate the contained trajectories
 
-//        HelixEvents.addEvent("ROBOT", "Robot Construction (running on $robotName)")
+        HelixEvents.addEvent("ROBOT", "Robot Construction (running on $robotName)")
         HelixLogger.addSource("Battery Voltage", RobotController::getBatteryVoltage)
 
         HelixLogger.addSource("Enabled Looper dT") { enabledLooper.dt }
@@ -161,27 +158,22 @@ object Robot : TimedRobot() {
                 )
             } else {
                 Vision.state = Vision.VisionState.IDLE
-                Drive.setCheesyishDrive(
-                    ControlBoard.throttle,
-                    ControlBoard.turn,
-                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-                )
+                if (ControlBoard.slowMode) {
+                    Drive.setCheesyishDrive(
+                        ControlBoard.throttle * Constants.Drive.SLOW_MODE_SCALE,
+                        ControlBoard.turn * Constants.Drive.SLOW_MODE_SCALE,
+                        ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+                    )
+                } else {
+                    Drive.setCheesyishDrive(
+                        ControlBoard.throttle,
+                        ControlBoard.turn,
+                        ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
+                    )
+                }
             }
 
-            if (ControlBoard.slowMode) {
-                Drive.setCheesyishDrive(
-                    ControlBoard.throttle * Constants.Drive.SLOW_MODE_SCALE,
-                    ControlBoard.turn * Constants.Drive.SLOW_MODE_SCALE,
-                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-                )
-            } else {
-                Drive.setCheesyishDrive(
-                    ControlBoard.throttle,
-                    ControlBoard.turn,
-                    ControlBoard.throttle.around(0.0, Constants.Joysticks.QUICK_TURN_THROTTLE_TOLERANCE)
-                )
-            }
-
+            @Suppress("MagicNumber")
             when {
 //                ControlBoard.climberUp -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.UP
 //                ControlBoard.climberDown -> Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
@@ -202,7 +194,7 @@ object Robot : TimedRobot() {
                     Wrist.positionSetpoint = Constants.Wrist.WristPosition.VERTICAL
                 }
             }
-            
+
             when {
                 ControlBoard.runFeederIn -> {
                     Feeder.feederState = Feeder.FeederState.SHOOT

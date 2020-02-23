@@ -13,9 +13,8 @@ object Climber : ServoMotorSubsystem(
         )
     )
 ) {
-
     var positionSetpoint = Constants.Climber.ClimberPosition.DOWN
-        set(value)  {
+        set(value) {
             Climber.positionSetpointMotionProfile = value.position
             field = value
         }
@@ -24,9 +23,7 @@ object Climber : ServoMotorSubsystem(
         velocitySetpoint = 0.0
     }
 
-    override fun onLoop(timestamp: Double, dT: Double) {
-//        println(Climber.position)
-    }
+    override fun onLoop(timestamp: Double, dT: Double) {}
 
     override fun onStop(timestamp: Double) {
         velocitySetpoint = 0.0
