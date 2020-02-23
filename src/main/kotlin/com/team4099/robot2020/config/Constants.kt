@@ -11,6 +11,30 @@ import kotlin.math.PI
  */
 @SuppressWarnings("MagicNumber")
 object Constants {
+    object LED {
+        const val PWMPORT = 0
+        enum class Color(var h: Int, var s: Int, var v: Int) {
+            // Pink is for firing
+            PINK(227, 117, 128),
+            // Turquoise is for getting ready to fire
+            TURQUOISE(124, 255, 118),
+            // Orange is for when the intake is empty
+            ORANGE(18, 184, 128),
+            // Magenta is 1 ball
+            MAGENTA(209, 242, 128),
+            // Sky blue is 2 ball
+            SKY_BLUE(145, 242, 128),
+            // Tan is for 3 balls
+            TAN(17, 122, 128),
+            // Green is for 4 balls
+            GREEN(74, 207, 128),
+            // Brown is final state of climb
+            BROWN(34, 255, 45),
+            // Rainbow is for climbing and when 5 balls and to appease the team
+            RAINBOW(0, 255, 128),
+        }
+    }
+
     object Universal {
         const val CTRE_CONFIG_TIMEOUT = 0
         const val EPSILON = 1E-9
