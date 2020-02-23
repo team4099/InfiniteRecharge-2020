@@ -83,7 +83,7 @@ object Intake : Subsystem {
                     timerStart = timestamp
                 }
             }
-//            println("Talon current: ${talon.supplyCurrent}")
+
             if (talon.supplyCurrent > Constants.Intake.STALL_LIMIT_AMPS) {
                 timerStart = timestamp
                 holdTimer = 0.0
