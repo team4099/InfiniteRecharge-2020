@@ -8,8 +8,7 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 object Feeder : Subsystem {
 //    private val frontLimitSwitch = DigitalInput(2)
@@ -62,11 +61,7 @@ object Feeder : Subsystem {
         HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_SHOOT, AUTO_INTAKE
     }
 
-    override fun outputTelemetry() {
-        SmartDashboard.putString("feeder/feederState", feederState.toString())
-        SmartDashboard.putNumber("feeder/inPower", inPower)
-        SmartDashboard.putNumber("feeder/stopperPower", stopperPower)
-    }
+    override fun outputTelemetry() {}
 
     override fun checkSystem() {}
 
@@ -80,6 +75,11 @@ object Feeder : Subsystem {
         HelixLogger.addSource("Feeder Stopper Motor Current") { stopperTalon.supplyCurrent }
 
         HelixLogger.addSource("Feeder State") { feederState.toString() }
+
+        val shuffleboardTab = Shuffleboard.getTab("Feeder")
+        shuffleboardTab.addString("State") { feederState.toString()}
+        shuffleboardTab.addNumber("In Power") { inPower }
+        shuffleboardTab.addNumber("Stopper Power") { stopperPower }
     }
 
     override fun zeroSensors() {

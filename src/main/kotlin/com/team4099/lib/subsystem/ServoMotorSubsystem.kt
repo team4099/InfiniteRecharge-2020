@@ -108,8 +108,13 @@ abstract class ServoMotorSubsystem(
     }
 
     override fun registerLogging() {
+        HelixLogger.addSource("${config.name} State") { state.toString() }
         HelixLogger.addSource("${config.name} Position (${config.unitsName})") { position }
         HelixLogger.addSource("${config.name} Velocity (${config.unitsName}/s)") { velocity }
+        val shuffleboardTab = Shuffleboard.getTab(config.name)
+        shuffleboardTab.addString("State") { state.toString() }
+        shuffleboardTab.addNumber("Position (${config.unitsName})") { position }
+        shuffleboardTab.addNumber("Velocity (${config.unitsName} per s)") { velocity }
     }
 
     override fun onStart(timestamp: Double) {

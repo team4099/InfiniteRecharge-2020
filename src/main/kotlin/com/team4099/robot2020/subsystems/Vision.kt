@@ -7,7 +7,7 @@ import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.wpilibj.controller.PIDController
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import kotlin.math.abs
 import kotlin.math.sign
 import kotlin.math.tan
@@ -99,17 +99,7 @@ object Vision : Subsystem {
         state = VisionState.IDLE
     }
 
-    override fun outputTelemetry() {
-        SmartDashboard.putString("vision/state", state.toString())
-        SmartDashboard.putNumber("vision/pipeline", pipeline.toDouble())
-
-        SmartDashboard.putNumber("vision/steeringAdjust", steeringAdjust)
-        SmartDashboard.putNumber("vision/distanceAdjust", steeringAdjust)
-        SmartDashboard.putBoolean("vision/onTarget", onTarget)
-
-        SmartDashboard.putNumber("vision/distance", distance)
-        SmartDashboard.putNumber("vision/distanceError", distanceError)
-    }
+    override fun outputTelemetry() {}
 
     override fun checkSystem() {}
 
@@ -123,6 +113,17 @@ object Vision : Subsystem {
 
         HelixLogger.addSource("VISION Distance") { distance }
         HelixLogger.addSource("VISION Distance Error") { distanceError }
+
+        val shuffleboardTab = Shuffleboard.getTab("Vision")
+        shuffleboardTab.addString("State") { state.toString()}
+        shuffleboardTab.addNumber("Pipeline") { pipeline.toDouble() }
+
+        shuffleboardTab.addNumber("Steering Adjust") { steeringAdjust }
+        shuffleboardTab.addNumber("Distance Adjust") { distanceAdjust }
+        shuffleboardTab.addBoolean("On Target") { onTarget }
+
+        shuffleboardTab.addNumber("Distance") { distance }
+        shuffleboardTab.addNumber("Distance Error") { distanceError }
     }
 
     override fun zeroSensors() {

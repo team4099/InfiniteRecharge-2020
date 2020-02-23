@@ -2,7 +2,6 @@ package com.team4099.robot2020.config
 
 import com.team4099.lib.logging.HelixEvents
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import kotlin.math.roundToInt
 import com.team4099.lib.auto.AutoMode
 import com.team4099.lib.auto.AutoModeProvider
@@ -10,6 +9,10 @@ import com.team4099.lib.loop.Loop
 import com.team4099.lib.subsystem.ServoMotorSubsystem
 import com.team4099.robot2020.auto.modes.DriveCharacterizeMode
 import com.team4099.robot2020.auto.modes.StandStillMode
+import edu.wpi.first.cameraserver.CameraServer
+import edu.wpi.first.networktables.NetworkTableEntry
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 
 /**
  * Controls the interactive elements of SmartDashboard.
@@ -42,6 +45,14 @@ object DashboardConfigurator : Loop {
 
     private val configurableSubsystems = mutableListOf<ServoMotorSubsystem>()
 
+    private val driveTab = Shuffleboard.getTab("Drive")
+    private val autoModeChooser = SendableChooser<String>()
+    private val startingPositionChooser = SendableChooser<String>()
+    private val autoDelayEntry = driveTab.add("Auto Delay", Constants.Autonomous.DEFAULT_DELAY)
+        .entry
+
+    private val subsystemConfigEntries = mutableMapOf<String, Map<String, NetworkTableEntry>>()
+
     /**
      * Add a subsystem configuration to be manipulated through SmartDashboard. Also
      * enforces the contract that when gains change, the subsystem will reconfigure.
@@ -64,47 +75,56 @@ object DashboardConfigurator : Loop {
         var color = ""
         while (color == "")
             color = DriverStation.getInstance().alliance.name
-        SmartDashboard.putString(Constants.Dashboard.ALLIANCE_COLOR_KEY, color)
+        driveTab.add("Alliance Color", color)
 
         // Set up autonomous selector
-        val autoModesString = "[ ${allModes.keys.joinToString(",")} ]"
-        SmartDashboard.putString(Constants.Dashboard.AUTO_OPTIONS_KEY, autoModesString)
-        SmartDashboard.putString(Constants.Dashboard.SELECTED_AUTO_MODE_KEY, Constants.Autonomous.DEFAULT_MODE_NAME)
+        allModes.forEach {
+            autoModeChooser.addOption(it.key, it.key)
+        }
+        autoModeChooser.setDefaultOption(Constants.Autonomous.DEFAULT_MODE_NAME, Constants.Autonomous.DEFAULT_MODE_NAME)
+        driveTab.add("Auto Mode", autoModeChooser)
 
-        val autoStartsString = "[ ${StartingPosition.values().joinToString(",") { it.dashboardName }} ]"
-        SmartDashboard.putString(Constants.Dashboard.AUTO_STARTS_KEY, autoStartsString)
-        SmartDashboard.putString(Constants.Dashboard.SELECTED_AUTO_START_POS_KEY, defaultStart.dashboardName)
-
-        SmartDashboard.putNumber(Constants.Dashboard.SELECTED_AUTO_START_DELAY_KEY, Constants.Autonomous.DEFAULT_DELAY)
+        StartingPosition.values().forEach {
+            startingPositionChooser.addOption(it.dashboardName, it.toString())
+        }
+        startingPositionChooser.setDefaultOption(defaultStart.toString(), defaultStart.toString())
+        driveTab.add("Auto Starting Position", startingPositionChooser)
 
         // Add keys for subsystem configs
         configurableSubsystems.forEach {
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/kP", it.config.velocityPIDGains.kP)
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/kI", it.config.velocityPIDGains.kI)
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kD)
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/kF", it.config.velocityPIDGains.kF)
-            SmartDashboard.putNumber("${it.config.name}/velocityPID/iZone", it.config.velocityPIDGains.iZone.toDouble())
+            val tab = Shuffleboard.getTab(it.config.name)
+            val propertyMap = mapOf(
+                "velocityPID/kP" to tab.add("Velocity PID/kP", it.config.velocityPIDGains.kP).entry,
+                "velocityPID/kI" to tab.add("Velocity PID/kI", it.config.velocityPIDGains.kI).entry,
+                "velocityPID/kD" to tab.add("Velocity PID/kD", it.config.velocityPIDGains.kD).entry,
+                "velocityPID/kF" to tab.add("Velocity PID/kF", it.config.velocityPIDGains.kF).entry,
+                "velocityPID/iZone" to tab.add("Velocity PID/iZone", it.config.velocityPIDGains.iZone).entry,
+                "positionPID/kP" to tab.add("Position PID/kP", it.config.positionPIDGains.kP).entry,
+                "positionPID/kI" to tab.add("Position PID/kI", it.config.positionPIDGains.kI).entry,
+                "positionPID/kD" to tab.add("Position PID/kD", it.config.positionPIDGains.kD).entry,
+                "positionPID/kF" to tab.add("Position PID/kF", it.config.positionPIDGains.kF).entry,
+                "positionPID/iZone" to tab.add("Position PID/iZone", it.config.positionPIDGains.iZone).entry,
+                "motion/maxAccel" to tab.add("Max Accel", it.config.motionConstraints.maxAccel).entry,
+                "motion/cruiseVel" to tab.add("Cruise Vel", it.config.motionConstraints.cruiseVelocity).entry,
+                "motion/forwardSoftLimit" to tab.add(
+                    "Forward Soft Limit",
+                    it.config.motionConstraints.forwardSoftLimit
+                ).entry,
+                "motion/reverseSoftLimit" to tab.add(
+                    "Reverse Soft Limit",
+                    it.config.motionConstraints.reverseSoftLimit
+                ).entry,
+                "motion/motionProfileCurveStrength" to tab.add(
+                    "Motion Profile Curve Strength",
+                    it.config.motionConstraints.motionProfileCurveStrength
+                ).entry
+            )
+            subsystemConfigEntries[it.config.name] = propertyMap
 
-            SmartDashboard.putNumber("${it.config.name}/positionPID/kP", it.config.positionPIDGains.kP)
-            SmartDashboard.putNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kI)
-            SmartDashboard.putNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kD)
-            SmartDashboard.putNumber("${it.config.name}/positionPID/kF", it.config.positionPIDGains.kF)
-            SmartDashboard.putNumber("${it.config.name}/positionPID/iZone", it.config.positionPIDGains.iZone.toDouble())
-
-            SmartDashboard.putNumber("${it.config.name}/motion/maxAccel", it.config.motionConstraints.maxAccel)
-            SmartDashboard.putNumber("${it.config.name}/motion/cruiseVel", it.config.motionConstraints.cruiseVelocity)
-            SmartDashboard.putNumber(
-                "${it.config.name}/motion/forwardSoftLimit",
-                it.config.motionConstraints.forwardSoftLimit
-            )
-            SmartDashboard.putNumber(
-                "${it.config.name}/motion/reverseSoftLimit",
-                it.config.motionConstraints.reverseSoftLimit
-            )
-            SmartDashboard.putNumber(
-                "${it.config.name}/motion/motionProfileCurveStrength",
-                it.config.motionConstraints.motionProfileCurveStrength.toDouble()
-            )
+            val limelightServer = CameraServer.getInstance().getServer("limelight")
+            if (limelightServer == null)
+                HelixEvents.addEvent("DASHBOARD", "Could not get limelight camera feed")
+            else driveTab.add(limelightServer.source)
         }
     }
 
@@ -114,27 +134,10 @@ object DashboardConfigurator : Loop {
      * @return An instance of the selected [AutoMode].
      */
     fun getSelectedAutoMode(): AutoMode {
-        val selectedModeName = SmartDashboard.getString(
-                Constants.Dashboard.SELECTED_AUTO_MODE_KEY,
-                Constants.Autonomous.DEFAULT_MODE_NAME
-        )
-        val selectedStartingPosition = SmartDashboard.getString(
-                Constants.Dashboard.SELECTED_AUTO_START_POS_KEY,
-                defaultStart.dashboardName
-        )
-        val selectedStartingDelay = SmartDashboard.getNumber(
-                Constants.Dashboard.SELECTED_AUTO_START_DELAY_KEY,
-                Constants.Autonomous.DEFAULT_DELAY
-        )
-
-        var selectedStartEnum = defaultStart
-
-        for (start in StartingPosition.values()) {
-            if (start.dashboardName == selectedStartingPosition) {
-                selectedStartEnum = start
-                break
-            }
-        }
+        val selectedModeName = autoModeChooser.selected
+        val selectedStartingPosition = startingPositionChooser.selected
+        val selectedStartingDelay = autoDelayEntry.getDouble(Constants.Autonomous.DEFAULT_DELAY)
+        val selectedStartEnum = StartingPosition.valueOf(selectedStartingPosition)
 
         val mode = allModes.getOrDefault(selectedModeName, defaultMode)
 
@@ -148,51 +151,41 @@ object DashboardConfigurator : Loop {
     override fun onLoop(timestamp: Double, dT: Double) {
         // Read new PID gains and motion constraints.
         configurableSubsystems.forEach {
-            it.config.velocityPIDGains.kP =
-                SmartDashboard.getNumber("${it.config.name}/velocityPID/kP", it.config.velocityPIDGains.kP)
-            it.config.velocityPIDGains.kI =
-                SmartDashboard.getNumber("${it.config.name}/velocityPID/kI", it.config.velocityPIDGains.kI)
-            it.config.velocityPIDGains.kD =
-                SmartDashboard.getNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kD)
-            it.config.velocityPIDGains.kF =
-                SmartDashboard.getNumber("${it.config.name}/velocityPID/kD", it.config.velocityPIDGains.kF)
-            it.config.velocityPIDGains.iZone = SmartDashboard.getNumber("" +
-                "${it.config.name}/velocityPID/iZone",
-                it.config.velocityPIDGains.iZone.toDouble()
-            ).roundToInt()
+            val propertyMap = subsystemConfigEntries.getOrDefault(it.config.name, mapOf())
+            val velocityPID = it.config.velocityPIDGains
+            velocityPID.kP = propertyMap["velocityPID/kP"]?.getDouble(velocityPID.kP) ?: velocityPID.kP
+            velocityPID.kI = propertyMap["velocityPID/kI"]?.getDouble(velocityPID.kI) ?: velocityPID.kI
+            velocityPID.kD = propertyMap["velocityPID/kD"]?.getDouble(velocityPID.kD) ?: velocityPID.kD
+            velocityPID.kF = propertyMap["velocityPID/kF"]?.getDouble(velocityPID.kF) ?: velocityPID.kF
+            velocityPID.iZone = 
+                propertyMap["velocityPID/iZone"]?.getDouble(velocityPID.iZone.toDouble())?.roundToInt() ?: 
+                    velocityPID.iZone
 
-            it.config.positionPIDGains.kP =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kP", it.config.positionPIDGains.kP)
-            it.config.positionPIDGains.kI =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kI", it.config.positionPIDGains.kI)
-            it.config.positionPIDGains.kD =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kD)
-            it.config.positionPIDGains.kF =
-                SmartDashboard.getNumber("${it.config.name}/positionPID/kD", it.config.positionPIDGains.kF)
-            it.config.positionPIDGains.iZone = SmartDashboard.getNumber(
-                    "${it.config.name}/positionPID/iZone",
-                    it.config.positionPIDGains.iZone.toDouble()
-            ).roundToInt()
+            val positionPID = it.config.positionPIDGains
+            positionPID.kP = propertyMap["positionPID/kP"]?.getDouble(positionPID.kP) ?: positionPID.kP
+            positionPID.kI = propertyMap["positionPID/kI"]?.getDouble(positionPID.kI) ?: positionPID.kI
+            positionPID.kD = propertyMap["positionPID/kD"]?.getDouble(positionPID.kD) ?: positionPID.kD
+            positionPID.kF = propertyMap["positionPID/kF"]?.getDouble(positionPID.kF) ?: positionPID.kF
+            positionPID.iZone =
+                propertyMap["positionPID/iZone"]?.getDouble(positionPID.iZone.toDouble())?.roundToInt()
+                ?: positionPID.iZone
 
-            it.config.motionConstraints.maxAccel =
-                SmartDashboard.getNumber("${it.config.name}/motion/maxAccel", it.config.motionConstraints.maxAccel)
-            it.config.motionConstraints.cruiseVelocity =
-                SmartDashboard.getNumber("" +
-                    "${it.config.name}/motion/cruiseVel",
-                    it.config.motionConstraints.cruiseVelocity
-                )
-            it.config.motionConstraints.forwardSoftLimit = SmartDashboard.getNumber(
-                "${it.config.name}/motion/forwardSoftLimit",
-                it.config.motionConstraints.forwardSoftLimit
-            )
-            it.config.motionConstraints.reverseSoftLimit = SmartDashboard.getNumber(
-                "${it.config.name}/motion/reverseSoftLimit",
-                it.config.motionConstraints.reverseSoftLimit
-            )
-            it.config.motionConstraints.motionProfileCurveStrength = SmartDashboard.getNumber(
-                "${it.config.name}/motion/motionProfileCurveStrength",
-                it.config.motionConstraints.motionProfileCurveStrength.toDouble()
-            ).roundToInt()
+            val motionConstraints = it.config.motionConstraints
+            motionConstraints.maxAccel = propertyMap["motion/maxAccel"]?.getDouble(motionConstraints.maxAccel)
+                    ?: motionConstraints.maxAccel
+            motionConstraints.cruiseVelocity =
+                propertyMap["motion/cruiseVelocity"]?.getDouble(motionConstraints.cruiseVelocity)
+                    ?: motionConstraints.cruiseVelocity
+            motionConstraints.forwardSoftLimit =
+                propertyMap["motion/forwardSoftLimit"]?.getDouble(motionConstraints.cruiseVelocity)
+                    ?: motionConstraints.forwardSoftLimit
+            motionConstraints.reverseSoftLimit =
+                propertyMap["motion/reverseSoftLimit"]?.getDouble(motionConstraints.cruiseVelocity)
+                    ?: motionConstraints.reverseSoftLimit
+            motionConstraints.motionProfileCurveStrength =
+                propertyMap["motion/motionProfileCurveStrength"]
+                    ?.getDouble(motionConstraints.motionProfileCurveStrength.toDouble())?.roundToInt()
+                    ?: motionConstraints.motionProfileCurveStrength
         }
     }
 

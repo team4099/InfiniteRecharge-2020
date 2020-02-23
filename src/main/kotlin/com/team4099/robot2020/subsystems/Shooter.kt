@@ -5,9 +5,9 @@ import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import kotlin.math.abs
 import kotlin.math.sign
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 object Shooter : Subsystem {
     private val masterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(
@@ -124,14 +124,13 @@ object Shooter : Subsystem {
         HelixLogger.addSource("Shooter Slave Percent Output") {
             slaveSparkMax.appliedOutput
         }
+
+        val shuffleboardTab = Shuffleboard.getTab("Shooter")
+        shuffleboardTab.addString("State") { shooterState.toString() }
+        shuffleboardTab.addNumber("Current Speed") { currentVelocity }
     }
 
-    override fun outputTelemetry() {
-        SmartDashboard.putString("shooter/shooterState", shooterState.toString())
-        SmartDashboard.putNumber("shooter/spinupTime", spinupTime)
-        SmartDashboard.putNumber("shooter/velocitySetpoint", velocitySetpoint)
-        SmartDashboard.putNumber("shooter/currentVelocity", currentVelocity)
-    }
+    override fun outputTelemetry() {}
 
     override fun zeroSensors() {}
 }
