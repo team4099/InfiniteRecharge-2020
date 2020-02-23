@@ -60,13 +60,13 @@ object Robot : TimedRobot() {
             CameraServer.getInstance().startAutomaticCapture()
 
             // Register all subsystems
-//            SubsystemManager.register(Drive)
-//            SubsystemManager.register(Climber)
-//            SubsystemManager.register(Intake)
-//            SubsystemManager.register(Wrist)
-//            SubsystemManager.register(Vision)
-//            SubsystemManager.register(Feeder)
-//            SubsystemManager.register(Shooter)
+            SubsystemManager.register(Drive)
+            SubsystemManager.register(Climber)
+            SubsystemManager.register(Intake)
+            SubsystemManager.register(Wrist)
+            SubsystemManager.register(Vision)
+            SubsystemManager.register(Feeder)
+            SubsystemManager.register(Shooter)
 
             enabledLooper.register(SubsystemManager.enabledLoop)
             enabledLooper.register(FaultDetector)
