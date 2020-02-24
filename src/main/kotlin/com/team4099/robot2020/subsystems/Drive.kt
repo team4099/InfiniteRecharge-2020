@@ -483,7 +483,7 @@ object Drive : Subsystem {
      */
     private fun updatePathFollowing(timestamp: Double, dT: Double) {
         trajCurTime = timestamp - trajStartTime
-        autoOdometry.update(Rotation2d.fromDegrees(-angle), leftDistanceMeters, rightDistanceMeters)
+        autoOdometry.update(Rotation2d.fromDegrees(angle), leftDistanceMeters, rightDistanceMeters)
 
         val sample = path.sample(trajCurTime)
         val wheelSpeeds = kinematics.toWheelSpeeds(pathFollowController.calculate(autoOdometry.poseMeters, sample))
