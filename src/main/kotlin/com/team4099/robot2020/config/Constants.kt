@@ -55,7 +55,7 @@ object Constants {
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
-        const val ENCODER_RESOLUTION = 4096
+        const val ENCODER_RESOLUTION = 2048
         const val NATIVE_UNITS_PER_REV = ENCODER_RESOLUTION / 0.08665966387
 
         const val WHEEL_DIAMETER_METERS = 0.1524
@@ -68,8 +68,8 @@ object Constants {
 
         const val GYRO_BAD_VALUE = -31337.0
 
-        const val MAX_VEL_METERS_PER_SEC = 3.5
-        const val MAX_ACCEL_METERS_PER_SEC_SQ = 3.5
+        const val MAX_VEL_METERS_PER_SEC = 0.5
+        const val MAX_ACCEL_METERS_PER_SEC_SQ = 0.1
 
         object Characterization {
             const val LEFT_KV_FORWARD = 2.67
