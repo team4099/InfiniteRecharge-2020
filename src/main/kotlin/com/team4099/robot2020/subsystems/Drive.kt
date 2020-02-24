@@ -260,6 +260,13 @@ object Drive : Subsystem {
         } else {
             SmartDashboard.putNumber("drive/gyro", Constants.Drive.GYRO_BAD_VALUE)
         }
+        SmartDashboard.putNumber("drive/leftDistanceMeters", leftDistanceMeters)
+        SmartDashboard.putNumber("drive/rightDistanceMeters", rightDistanceMeters)
+        SmartDashboard.putNumber("drive/leftVelocity", leftVelocityMetersPerSec)
+        SmartDashboard.putNumber("drive/rightVelocity", rightVelocityMetersPerSec)
+        SmartDashboard.putNumber("drive/leftTargetVel", nativeToMetersPerSecond(leftTargetVel.toInt()).toDouble())
+        SmartDashboard.putNumber("drive/rightTargetVel", nativeToMetersPerSecond(rightTargetVel.toInt()).toDouble())
+
     }
 
     override fun zeroSensors() {

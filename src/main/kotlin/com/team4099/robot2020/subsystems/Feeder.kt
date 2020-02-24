@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
-    private val frontLimitSwitch = DigitalInput(2)
+//    private val frontLimitSwitch = DigitalInput(2)
 
     var ballIn : Boolean = false
 
@@ -95,7 +95,7 @@ object Feeder : Subsystem {
 
         when (feederState) {
             FeederState.AUTO_INTAKE -> {
-                ballIn = !frontLimitSwitch.get()
+//                ballIn = !frontLimitSwitch.get()
                 stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_INTAKE_POWER
             }

@@ -2,6 +2,7 @@ package com.team4099.robot2020.auto
 
 import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpilibj.geometry.Translation2d
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
@@ -37,7 +38,7 @@ object PathStore {
             ).min() ?: 0.0
         ),
         Drive.kinematics,
-        10.0
+        8.0
     )
 
     val config: TrajectoryConfig = TrajectoryConfig(
@@ -48,7 +49,9 @@ object PathStore {
         .addConstraint(voltageConstraint)
 
     val driveForward: Trajectory = TrajectoryGenerator.generateTrajectory(
-        listOf(Pose2d(0.0, 0.0, Rotation2d(0.0)), Pose2d(1.0, 0.0, Rotation2d(0.0))),
+            Pose2d(0.0, 0.0, Rotation2d(0.0)),
+        listOf(Translation2d(0.5, 0.0), Translation2d(0.75, 0.0)),
+            Pose2d(1.0, 0.0, Rotation2d(0.0)),
         config
     )
 }

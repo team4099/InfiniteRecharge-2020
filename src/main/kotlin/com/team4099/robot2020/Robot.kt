@@ -8,6 +8,7 @@ import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.loop.Looper
 import com.team4099.robot2020.auto.PathStore
 import com.team4099.robot2020.auto.modes.Shoot3Mode
+import com.team4099.robot2020.auto.modes.DriveForwardMode
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.config.ControlBoard
 import com.team4099.robot2020.config.DashboardConfigurator
@@ -107,7 +108,7 @@ object Robot : TimedRobot() {
             enabledLooper.start() // start EnabledLooper
 
 //            autoModeExecuter = AutoModeExecuter(DashboardConfigurator.getSelectedAutoMode())
-            autoModeExecuter = AutoModeExecuter(Shoot3Mode(0.0))
+            autoModeExecuter = AutoModeExecuter(DriveForwardMode(0.0))
             autoModeExecuter.start()
 
             HelixEvents.addEvent("ROBOT", "Autonomous Enabled")
