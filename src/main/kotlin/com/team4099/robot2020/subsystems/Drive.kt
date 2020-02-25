@@ -251,9 +251,10 @@ object Drive : Subsystem {
 
         HelixLogger.addSource("DT Pathfollow Timestamp") { trajCurTime }
 
-        val tab = Shuffleboard.getTab("Drive")
-        tab.addBoolean("Gyro Good") {ahrs.isConnected}
-        tab.add(ahrs)
+        Shuffleboard.getTab("Drive").addBoolean("Gyro Good") {ahrs.isConnected}
+        Shuffleboard.getTab("Drive").add(ahrs)
+        
+        val tab = Shuffleboard.getTab("Drivetrain")
         tab.addNumber("Left Position (in)") { leftDistanceMeters }
         tab.addNumber("Right Position (in)") { rightDistanceMeters }
         tab.addNumber("Left Velocity (in per s)") { leftVelocityMetersPerSec }
