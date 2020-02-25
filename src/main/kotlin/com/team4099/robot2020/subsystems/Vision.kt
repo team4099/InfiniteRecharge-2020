@@ -115,7 +115,7 @@ object Vision : Subsystem {
         HelixLogger.addSource("VISION Distance Error") { distanceError }
 
         val shuffleboardTab = Shuffleboard.getTab("Vision")
-        shuffleboardTab.addString("State") { state.toString()}
+        shuffleboardTab.addString("State") { state.toString() }
         shuffleboardTab.addNumber("Pipeline") { pipeline.toDouble() }
 
         shuffleboardTab.addNumber("Steering Adjust") { steeringAdjust }

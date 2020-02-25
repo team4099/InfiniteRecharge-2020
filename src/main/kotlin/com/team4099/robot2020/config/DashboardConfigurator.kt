@@ -1,18 +1,18 @@
 package com.team4099.robot2020.config
 
-import com.team4099.lib.logging.HelixEvents
-import edu.wpi.first.wpilibj.DriverStation
-import kotlin.math.roundToInt
 import com.team4099.lib.auto.AutoMode
 import com.team4099.lib.auto.AutoModeProvider
+import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.loop.Loop
 import com.team4099.lib.subsystem.ServoMotorSubsystem
 import com.team4099.robot2020.auto.modes.DriveCharacterizeMode
 import com.team4099.robot2020.auto.modes.StandStillMode
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.networktables.NetworkTableEntry
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
+import kotlin.math.roundToInt
 
 /**
  * Controls the interactive elements of SmartDashboard.
@@ -122,9 +122,9 @@ object DashboardConfigurator : Loop {
             subsystemConfigEntries[it.config.name] = propertyMap
 
             val limelightServer = CameraServer.getInstance().getServer("limelight")
-            if (limelightServer == null)
+            if (limelightServer == null) {
                 HelixEvents.addEvent("DASHBOARD", "Could not get limelight camera feed")
-            else driveTab.add(limelightServer.source)
+            } else driveTab.add(limelightServer.source)
         }
     }
 
@@ -142,7 +142,7 @@ object DashboardConfigurator : Loop {
         val mode = allModes.getOrDefault(selectedModeName, defaultMode)
 
         HelixEvents.addEvent("AUTONOMOUS",
-                "Selected autonomous: $selectedModeName from ${selectedStartEnum.dashboardName}")
+            "Selected autonomous: $selectedModeName from ${selectedStartEnum.dashboardName}")
         return mode(selectedStartEnum, selectedStartingDelay)
     }
 
@@ -157,9 +157,9 @@ object DashboardConfigurator : Loop {
             velocityPID.kI = propertyMap["velocityPID/kI"]?.getDouble(velocityPID.kI) ?: velocityPID.kI
             velocityPID.kD = propertyMap["velocityPID/kD"]?.getDouble(velocityPID.kD) ?: velocityPID.kD
             velocityPID.kF = propertyMap["velocityPID/kF"]?.getDouble(velocityPID.kF) ?: velocityPID.kF
-            velocityPID.iZone = 
-                propertyMap["velocityPID/iZone"]?.getDouble(velocityPID.iZone.toDouble())?.roundToInt() ?: 
-                    velocityPID.iZone
+            velocityPID.iZone =
+                propertyMap["velocityPID/iZone"]?.getDouble(velocityPID.iZone.toDouble())?.roundToInt()
+                    ?: velocityPID.iZone
 
             val positionPID = it.config.positionPIDGains
             positionPID.kP = propertyMap["positionPID/kP"]?.getDouble(positionPID.kP) ?: positionPID.kP
@@ -168,11 +168,11 @@ object DashboardConfigurator : Loop {
             positionPID.kF = propertyMap["positionPID/kF"]?.getDouble(positionPID.kF) ?: positionPID.kF
             positionPID.iZone =
                 propertyMap["positionPID/iZone"]?.getDouble(positionPID.iZone.toDouble())?.roundToInt()
-                ?: positionPID.iZone
+                    ?: positionPID.iZone
 
             val motionConstraints = it.config.motionConstraints
             motionConstraints.maxAccel = propertyMap["motion/maxAccel"]?.getDouble(motionConstraints.maxAccel)
-                    ?: motionConstraints.maxAccel
+                ?: motionConstraints.maxAccel
             motionConstraints.cruiseVelocity =
                 propertyMap["motion/cruiseVelocity"]?.getDouble(motionConstraints.cruiseVelocity)
                     ?: motionConstraints.cruiseVelocity

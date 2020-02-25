@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 object Feeder : Subsystem {
 //    private val frontLimitSwitch = DigitalInput(2)
 
-    var ballIn : Boolean = false
+    var ballIn = false
 
     private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_IN_MASTER_ID)
     private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
@@ -77,7 +77,7 @@ object Feeder : Subsystem {
         HelixLogger.addSource("Feeder State") { feederState.toString() }
 
         val shuffleboardTab = Shuffleboard.getTab("Feeder")
-        shuffleboardTab.addString("State") { feederState.toString()}
+        shuffleboardTab.addString("State") { feederState.toString() }
         shuffleboardTab.addNumber("In Power") { inPower }
         shuffleboardTab.addNumber("Stopper Power") { stopperPower }
     }

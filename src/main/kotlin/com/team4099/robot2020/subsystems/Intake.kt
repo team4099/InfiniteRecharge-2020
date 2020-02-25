@@ -6,7 +6,6 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Intake : Subsystem {
     private val talon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Intake.INTAKE_TALON_ID)
@@ -44,7 +43,7 @@ object Intake : Subsystem {
         HelixLogger.addSource("Intake State") { intakeState.toString() }
 
         val shuffleboardTab = Shuffleboard.getTab("Intake")
-        shuffleboardTab.addString("State") { intakeState.toString()}
+        shuffleboardTab.addString("State") { intakeState.toString() }
         shuffleboardTab.addNumber("Power") { intakePower }
     }
 

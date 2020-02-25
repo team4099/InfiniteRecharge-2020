@@ -242,7 +242,9 @@ object Drive : Subsystem {
         HelixLogger.addSource("DT Left Velocity (in/s)") { leftVelocityMetersPerSec }
         HelixLogger.addSource("DT Right Velocity (in/s)") { rightVelocityMetersPerSec }
         HelixLogger.addSource("DT Left Target Velocity (in/s)") { nativeToMetersPerSecond(leftTargetVel.toInt()) }
-        HelixLogger.addSource("DT Left Target Velocity (in/s)") { nativeToMetersPerSecond(rightTargetVel.toInt()) }
+        HelixLogger.addSource("DT Right Target Velocity (in/s)") {
+            nativeToMetersPerSecond(rightTargetVel.toInt())
+        }
 
         HelixLogger.addSource("DT Left Position (in)") { leftDistanceMeters }
         HelixLogger.addSource("DT Right Position (in)") { rightDistanceMeters }
@@ -251,9 +253,9 @@ object Drive : Subsystem {
 
         HelixLogger.addSource("DT Pathfollow Timestamp") { trajCurTime }
 
-        Shuffleboard.getTab("Drive").addBoolean("Gyro Good") {ahrs.isConnected}
+        Shuffleboard.getTab("Drive").addBoolean("Gyro Good") { ahrs.isConnected }
         Shuffleboard.getTab("Drive").add(ahrs)
-        
+
         val tab = Shuffleboard.getTab("Drivetrain")
         tab.addNumber("Left Position (in)") { leftDistanceMeters }
         tab.addNumber("Right Position (in)") { rightDistanceMeters }
