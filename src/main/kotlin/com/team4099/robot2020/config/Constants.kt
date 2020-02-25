@@ -185,8 +185,6 @@ object Constants {
     }
 
     object Dashboard {
-        const val ALLIANCE_COLOR_KEY = "dashboard/allianceColor"
-
         const val AUTO_OPTIONS_KEY = "autonomous/autoOptions"
         const val SELECTED_AUTO_MODE_KEY = "autonomous/selectedMode"
 

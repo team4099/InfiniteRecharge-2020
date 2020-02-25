@@ -9,14 +9,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.kauailabs.navx.frc.AHRS
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
-import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.controller.RamseteController
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import kotlin.math.abs
 import kotlin.math.ln
@@ -243,8 +241,10 @@ object Drive : Subsystem {
 
         HelixLogger.addSource("DT Left Velocity (in/s)") { leftVelocityMetersPerSec }
         HelixLogger.addSource("DT Right Velocity (in/s)") { rightVelocityMetersPerSec }
-        HelixLogger.addSource("DT Left Target Velocity (in/s)") { leftTargetVel }
-        HelixLogger.addSource("DT Left Target Velocity (in/s)") { rightTargetVel }
+        HelixLogger.addSource("DT Left Target Velocity (in/s)") { nativeToMetersPerSecond(leftTargetVel.toInt()) }
+        HelixLogger.addSource("DT Right Target Velocity (in/s)") {
+            nativeToMetersPerSecond(rightTargetVel.toInt())
+        }
 
         HelixLogger.addSource("DT Left Position (in)") { leftDistanceMeters }
         HelixLogger.addSource("DT Right Position (in)") { rightDistanceMeters }
@@ -252,22 +252,20 @@ object Drive : Subsystem {
         HelixLogger.addSource("DT Gyro Angle") { angle }
 
         HelixLogger.addSource("DT Pathfollow Timestamp") { trajCurTime }
+
+        Shuffleboard.getTab("Drive").addBoolean("Gyro Good") { ahrs.isConnected }
+        Shuffleboard.getTab("Drive").add(ahrs)
+
+        val tab = Shuffleboard.getTab("Drivetrain")
+        tab.addNumber("Left Position (in)") { leftDistanceMeters }
+        tab.addNumber("Right Position (in)") { rightDistanceMeters }
+        tab.addNumber("Left Velocity (in per s)") { leftVelocityMetersPerSec }
+        tab.addNumber("Right Velocity (in per s)") { rightVelocityMetersPerSec }
+        tab.addNumber("Left Target Velocity (in/s)") { nativeToMetersPerSecond(leftTargetVel.toInt()) }
+        tab.addNumber("Right Target Velocity (in/s)") { nativeToMetersPerSecond(rightTargetVel.toInt()) }
     }
 
-    override fun outputTelemetry() {
-        if (ahrs.isConnected) {
-            SmartDashboard.putNumber("drive/gyro", yaw)
-        } else {
-            SmartDashboard.putNumber("drive/gyro", Constants.Drive.GYRO_BAD_VALUE)
-        }
-        SmartDashboard.putNumber("drive/leftDistanceMeters", leftDistanceMeters)
-        SmartDashboard.putNumber("drive/rightDistanceMeters", rightDistanceMeters)
-        SmartDashboard.putNumber("drive/leftVelocity", leftVelocityMetersPerSec)
-        SmartDashboard.putNumber("drive/rightVelocity", rightVelocityMetersPerSec)
-        SmartDashboard.putNumber("drive/leftTargetVel", nativeToMetersPerSecond(leftTargetVel.toInt()).toDouble())
-        SmartDashboard.putNumber("drive/rightTargetVel", nativeToMetersPerSecond(rightTargetVel.toInt()).toDouble())
-
-    }
+    override fun outputTelemetry() {}
 
     override fun zeroSensors() {
         if (ahrs.isConnected) {

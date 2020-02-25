@@ -6,7 +6,7 @@ import kotlin.math.roundToInt
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.hardware.ServoMotorHardware
 import com.team4099.lib.limit
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,
@@ -108,8 +108,13 @@ abstract class ServoMotorSubsystem(
     }
 
     override fun registerLogging() {
+        HelixLogger.addSource("${config.name} State") { state.toString() }
         HelixLogger.addSource("${config.name} Position (${config.unitsName})") { position }
         HelixLogger.addSource("${config.name} Velocity (${config.unitsName}/s)") { velocity }
+        val shuffleboardTab = Shuffleboard.getTab(config.name)
+        shuffleboardTab.addString("State") { state.toString() }
+        shuffleboardTab.addNumber("Position (${config.unitsName})") { position }
+        shuffleboardTab.addNumber("Velocity (${config.unitsName} per s)") { velocity }
     }
 
     override fun onStart(timestamp: Double) {
@@ -123,13 +128,7 @@ abstract class ServoMotorSubsystem(
         openLoopPower = 0.0
     }
 
-    override fun outputTelemetry() {
-        SmartDashboard.putNumber("${config.name}/position", position)
-        SmartDashboard.putNumber("${config.name}/velocity", velocity)
-        SmartDashboard.putNumber("${config.name}/velocitySetpoint", velocitySetpoint)
-        SmartDashboard.putNumber("${config.name}/positionSetpointMP", positionSetpointMotionProfile)
-        SmartDashboard.putNumber("${config.name}/positionSetpoint", positionSetpointPositionPID)
-    }
+    override fun outputTelemetry() {}
 
     override fun zeroSensors() {
         hardware.zeroSensors()
