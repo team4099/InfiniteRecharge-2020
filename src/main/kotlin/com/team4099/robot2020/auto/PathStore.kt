@@ -46,12 +46,12 @@ object PathStore {
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
     )
         .setKinematics(Drive.kinematics)
-        .addConstraint(voltageConstraint)
+        //.addConstraint(voltageConstraint)
 
     val driveForward: Trajectory = TrajectoryGenerator.generateTrajectory(
-            Pose2d(0.0, 0.0, Rotation2d(0.0)),
-        listOf(Translation2d(0.5, 0.0), Translation2d(0.75, 0.0)),
-            Pose2d(1.0, 0.0, Rotation2d(0.0)),
+        Pose2d(0.0, 0.0, Rotation2d(0.0)),
+        listOf(),
+        Pose2d(3.0, 1.0, Rotation2d(0.0)),
         config
     )
 }

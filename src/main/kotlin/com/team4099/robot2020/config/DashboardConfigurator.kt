@@ -6,6 +6,7 @@ import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.loop.Loop
 import com.team4099.lib.subsystem.ServoMotorSubsystem
 import com.team4099.robot2020.auto.modes.DriveCharacterizeMode
+import com.team4099.robot2020.auto.modes.DriveForwardMode
 import com.team4099.robot2020.auto.modes.StandStillMode
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.networktables.NetworkTableEntry
@@ -40,6 +41,7 @@ object DashboardConfigurator : Loop {
      */
     private val allModes = mapOf<String, AutoModeProvider>(
         Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode,
+        "Drive Forward" to { _: StartingPosition, delay: Double -> DriveForwardMode(delay) },
         "Drivetrain Characterization" to { _: StartingPosition, delay: Double -> DriveCharacterizeMode(delay) }
     )
 
