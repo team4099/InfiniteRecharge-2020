@@ -51,7 +51,7 @@ object Constants {
 
         const val OUTPUT_POWER_DEADBAND = 0.0
 
-        const val SLOW_MODE_SCALE = 0.5
+        const val SLOW_MODE_SCALE = 0.4
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
@@ -198,7 +198,7 @@ object Constants {
         const val DRIVER_PORT = 0
         const val SHOTGUN_PORT = 1
 
-        const val QUICK_TURN_THROTTLE_TOLERANCE = 0.1
+        const val QUICK_TURN_THROTTLE_TOLERANCE = 0.8
         const val THROTTLE_DEADBAND = 0.04
         const val TURN_DEADBAND = 0.035
     }
@@ -239,6 +239,6 @@ object Constants {
         const val FEEDER_HOLD_POWER = 0.1
         const val FEEDER_INTAKE_POWER = 0.35
         const val STOPPER_MAX_POWER = 0.45
-        const val STOPPER_HOLD_POWER = 0.1
+        const val STOPPER_HOLD_POWER = 0.25
     }
 }
