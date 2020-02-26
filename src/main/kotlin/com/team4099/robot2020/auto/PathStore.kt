@@ -45,13 +45,35 @@ object PathStore {
         Constants.Drive.MAX_VEL_METERS_PER_SEC,
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
     )
-        .setKinematics(Drive.kinematics)
+//        .setKinematics(Drive.kinematics)
+        //.addConstraint(voltageConstraint)
+
+    val reversedConfig: TrajectoryConfig = TrajectoryConfig(
+        Constants.Drive.MAX_VEL_METERS_PER_SEC,
+        Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
+    )
+//        .setKinematics(Drive.kinematics)
+        .setReversed(true)
         //.addConstraint(voltageConstraint)
 
     val driveForward: Trajectory = TrajectoryGenerator.generateTrajectory(
         Pose2d(0.0, 0.0, Rotation2d(0.0)),
         listOf(),
-        Pose2d(3.0, 1.0, Rotation2d(0.0)),
+        Pose2d(1.0, 0.0, Rotation2d(0.0)),
         config
+    )
+
+    val toNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
+        Pose2d(0.0, 0.0, Rotation2d(0.0)),
+        listOf(),
+        Pose2d(3.0, 2.0, Rotation2d(0.0)),
+        config
+    )
+
+    val fromNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
+        Pose2d(3.0, 2.0, Rotation2d(0.0)),
+        listOf(),
+        Pose2d(0.0, 0.0, Rotation2d(0.0)),
+        reversedConfig
     )
 }

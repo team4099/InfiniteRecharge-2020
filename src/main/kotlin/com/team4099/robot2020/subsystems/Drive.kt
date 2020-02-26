@@ -453,13 +453,13 @@ object Drive : Subsystem {
             ControlMode.Velocity,
             leftTargetVel,
             DemandType.ArbitraryFeedForward,
-            leftFeedForward
+            leftFeedForward / 12.0
         )
         rightMasterTalon.set(
             ControlMode.Velocity,
             rightTargetVel,
             DemandType.ArbitraryFeedForward,
-            rightFeedForward
+            rightFeedForward / 12.0
         )
     }
 
