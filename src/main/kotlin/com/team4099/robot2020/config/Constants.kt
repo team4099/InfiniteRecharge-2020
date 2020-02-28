@@ -219,7 +219,7 @@ object Constants {
         "degrees",
         PIDGains(0, 1.3, 0.0, 0.0, 3.5, 0),
         PIDGains(1, 0.8, 0.0, 0.0, 0.15, 0),
-        if (Robot.robotName == Tuning.RobotName.PRACTICE) -154.5 else -288.5,
+        if (Robot.robotName == Tuning.RobotName.PRACTICE) 154.5 else 168.0,
         ServoMotorSubsystemMotionConstraints(-130.0, 1.0, 1500.0, 3072.0, 1),
         360.0,
         4096

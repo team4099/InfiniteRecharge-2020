@@ -181,7 +181,7 @@ abstract class ServoMotorSubsystem(
     }
 
     protected fun ticksToHomedUnits(ticks: Int): Double {
-        return ticksToUnits(ticks) + config.homePosition
+        return ticksToUnits(ticks) - config.homePosition
     }
 
     protected fun unitsToTicks(units: Double): Int {
@@ -189,7 +189,7 @@ abstract class ServoMotorSubsystem(
     }
 
     protected fun homeAwareUnitsToTicks(units: Double): Int {
-        return unitsToTicks(units - config.homePosition)
+        return unitsToTicks(units + config.homePosition)
     }
 
     protected fun constrainPositionUnits(units: Double): Double {

@@ -54,6 +54,8 @@ object Superstructure : Subsystem {
                 Intake.intakeState = Intake.IntakeState.IN
                 if (Intake.hasPowerCell) {
                     Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
+                } else {
+                    Feeder.feederState = Feeder.FeederState.IDLE
                 }
             }
             SuperstructureState.INTAKE_OUT -> {

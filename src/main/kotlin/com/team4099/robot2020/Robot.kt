@@ -17,13 +17,9 @@ import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.Feeder
 import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Shooter
-<<<<<<< HEAD
 import com.team4099.robot2020.subsystems.Superstructure
 import com.team4099.robot2020.subsystems.Vision
-=======
->>>>>>> feature/pbot-tuning
 import com.team4099.robot2020.subsystems.Wrist
-import com.team4099.robot2020.subsystems.Vision
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.TimedRobot
