@@ -17,7 +17,6 @@ import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.Feeder
 import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Shooter
-import com.team4099.robot2020.subsystems.Superstructure
 import com.team4099.robot2020.subsystems.Vision
 import com.team4099.robot2020.subsystems.Wrist
 import edu.wpi.first.wpilibj.DigitalInput
@@ -177,12 +176,18 @@ object Robot : TimedRobot() {
             }
 
             when {
-                ControlBoard.startShooter && ControlBoard.runIntakeIn ->
-                    Superstructure.state = Superstructure.SuperstructureState.INTAKE_AND_SHOOT
-                ControlBoard.startShooter -> Superstructure.state = Superstructure.SuperstructureState.SHOOTING
-                ControlBoard.runIntakeIn -> Superstructure.state = Superstructure.SuperstructureState.INTAKE_IN
-                ControlBoard.runIntakeOut -> Superstructure.state = Superstructure.SuperstructureState.INTAKE_OUT
-                else -> Superstructure.state = Superstructure.SuperstructureState.IDLE
+                ControlBoard.runIntakeIn -> {
+                    Intake.intakeState = Intake.IntakeState.IN
+                    Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
+                }
+                ControlBoard.runIntakeOut -> {
+                    Intake.intakeState = Intake.IntakeState.OUT
+                    Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
+                }
+                else -> {
+                    Intake.intakeState = Intake.IntakeState.IDLE
+                    Wrist.positionSetpoint = Constants.Wrist.WristPosition.VERTICAL
+                }
             }
 
             when {
@@ -192,6 +197,23 @@ object Robot : TimedRobot() {
                 ControlBoard.runFeederOut -> {
                     Feeder.feederState = Feeder.FeederState.EXHAUST
                 }
+            }
+            when {
+                ControlBoard.startShooter -> {
+                    Shooter.shooterState = Shooter.State.SHOOTING
+                    Feeder.feederState = Feeder.FeederState.AUTO_SHOOT
+                }
+                else -> {
+                    Shooter.shooterState = Shooter.State.IDLE
+                }
+            }
+
+            if (!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn) {
+                Feeder.feederState = Feeder.FeederState.IDLE
+            }
+
+            if (Intake.hasPowerCell) {
+                Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
             }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
