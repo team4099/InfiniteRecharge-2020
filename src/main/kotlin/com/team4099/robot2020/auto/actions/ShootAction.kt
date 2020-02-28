@@ -2,7 +2,9 @@ package com.team4099.robot2020.auto.actions
 
 import com.team4099.lib.auto.Action
 import com.team4099.robot2020.config.Constants
-import com.team4099.robot2020.subsystems.Superstructure
+import com.team4099.robot2020.subsystems.Feeder
+import com.team4099.robot2020.subsystems.Shooter
+import com.team4099.robot2020.subsystems.Vision
 
 class ShootAction : Action {
     private var startTime = 0.0
@@ -13,13 +15,16 @@ class ShootAction : Action {
 
     override fun onStart(timestamp: Double) {
         startTime = timestamp
-        Superstructure.alignWithVision = true
-        Superstructure.state = Superstructure.SuperstructureState.SHOOTING
+        Shooter.shooterState = Shooter.State.SHOOTING
+        Vision.state = Vision.VisionState.AIMING
+        Feeder.feederState = Feeder.FeederState.AUTO_SHOOT
     }
 
     override fun onLoop(timestamp: Double, dT: Double) {}
 
     override fun onStop(timestamp: Double) {
-        Superstructure.state = Superstructure.SuperstructureState.IDLE
+        Shooter.shooterState = Shooter.State.IDLE
+        Vision.state = Vision.VisionState.IDLE
+        Feeder.feederState = Feeder.FeederState.IDLE
     }
 }

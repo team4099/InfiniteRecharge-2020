@@ -58,12 +58,11 @@ object Robot : TimedRobot() {
 //            CameraServer.getInstance().startAutomaticCapture()
 
             // Register all subsystems
-            SubsystemManager.register(Vision)
-            SubsystemManager.register(Superstructure)
             SubsystemManager.register(Drive)
             SubsystemManager.register(Climber)
             SubsystemManager.register(Intake)
             SubsystemManager.register(Wrist)
+            SubsystemManager.register(Vision)
             SubsystemManager.register(Feeder)
             SubsystemManager.register(Shooter)
 
@@ -149,10 +148,13 @@ object Robot : TimedRobot() {
         try {
             if (ControlBoard.enableVisionAlignment) {
                 Vision.state = Vision.VisionState.AIMING
-                Superstructure.alignWithVision = true
+                Drive.setCheesyishDrive(
+                    0.0,
+                    Vision.steeringAdjust,
+                    true
+                )
             } else {
                 Vision.state = Vision.VisionState.IDLE
-                Superstructure.alignWithVision = false
                 if (ControlBoard.slowMode) {
                     Drive.setCheesyishDrive(
                         ControlBoard.throttle * Constants.Drive.SLOW_MODE_SCALE,
