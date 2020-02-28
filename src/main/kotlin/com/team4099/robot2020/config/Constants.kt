@@ -4,6 +4,7 @@ import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.config.ServoMotorSubsystemMotionConstraints
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import com.team4099.robot2020.Robot
 import kotlin.math.PI
 
 /**
@@ -214,7 +215,7 @@ object Constants {
         "degrees",
         PIDGains(0, 1.3, 0.0, 0.0, 3.5, 0),
         PIDGains(1, 0.8, 0.0, 0.0, 0.15, 0),
-        -154.5,
+        if (Robot.robotName == Tuning.RobotName.PRACTICE) -154.5 else -288.5,
         ServoMotorSubsystemMotionConstraints(-130.0, 1.0, 1500.0, 3072.0, 1),
         360.0,
         4096
