@@ -127,6 +127,8 @@ object Shooter : Subsystem {
 
         val shuffleboardTab = Shuffleboard.getTab("Shooter")
         shuffleboardTab.addString("State") { shooterState.toString() }
+        shuffleboardTab.addNumber("Velocity Setpoint") { velocitySetpoint }
+        shuffleboardTab.addNumber("Master Percent Output") { masterSparkMax.appliedOutput }
         shuffleboardTab.addNumber("Current Speed") { currentVelocity }
     }
 
