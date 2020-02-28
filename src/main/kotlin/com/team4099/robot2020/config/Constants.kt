@@ -4,6 +4,7 @@ import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.config.ServoMotorSubsystemMotionConstraints
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import com.team4099.robot2020.Robot
 import kotlin.math.PI
 
 /**
@@ -51,11 +52,11 @@ object Constants {
 
         const val OUTPUT_POWER_DEADBAND = 0.0
 
-        const val SLOW_MODE_SCALE = 0.5
+        const val SLOW_MODE_SCALE = 0.4
 
         const val CONTINUOUS_CURRENT_LIMIT = 40
 
-        const val ENCODER_RESOLUTION = 4096
+        const val ENCODER_RESOLUTION = 2048
         const val NATIVE_UNITS_PER_REV = ENCODER_RESOLUTION / 0.08665966387
 
         const val WHEEL_DIAMETER_METERS = 0.1524
@@ -68,8 +69,8 @@ object Constants {
 
         const val GYRO_BAD_VALUE = -31337.0
 
-        const val MAX_VEL_METERS_PER_SEC = 3.5
-        const val MAX_ACCEL_METERS_PER_SEC_SQ = 3.5
+        const val MAX_VEL_METERS_PER_SEC = 2.5
+        const val MAX_ACCEL_METERS_PER_SEC_SQ = 0.1
 
         object Characterization {
             const val LEFT_KV_FORWARD = 2.67
@@ -189,8 +190,6 @@ object Constants {
     }
 
     object Dashboard {
-        const val ALLIANCE_COLOR_KEY = "dashboard/allianceColor"
-
         const val AUTO_OPTIONS_KEY = "autonomous/autoOptions"
         const val SELECTED_AUTO_MODE_KEY = "autonomous/selectedMode"
 
@@ -204,7 +203,7 @@ object Constants {
         const val DRIVER_PORT = 0
         const val SHOTGUN_PORT = 1
 
-        const val QUICK_TURN_THROTTLE_TOLERANCE = 0.1
+        const val QUICK_TURN_THROTTLE_TOLERANCE = 0.8
         const val THROTTLE_DEADBAND = 0.04
         const val TURN_DEADBAND = 0.035
     }
@@ -220,7 +219,7 @@ object Constants {
         "degrees",
         PIDGains(0, 1.3, 0.0, 0.0, 3.5, 0),
         PIDGains(1, 0.8, 0.0, 0.0, 0.15, 0),
-        -154.5,
+        if (Robot.robotName == Tuning.RobotName.PRACTICE) -154.5 else -288.5,
         ServoMotorSubsystemMotionConstraints(-130.0, 1.0, 1500.0, 3072.0, 1),
         360.0,
         4096
@@ -245,6 +244,6 @@ object Constants {
         const val FEEDER_HOLD_POWER = 0.1
         const val FEEDER_INTAKE_POWER = 0.35
         const val STOPPER_MAX_POWER = 0.45
-        const val STOPPER_HOLD_POWER = 0.1
+        const val STOPPER_HOLD_POWER = 0.25
     }
 }

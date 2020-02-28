@@ -5,7 +5,7 @@ import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 object Intake : Subsystem {
     private val talon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Intake.INTAKE_TALON_ID)
@@ -33,10 +33,7 @@ object Intake : Subsystem {
         talon.configClosedloopRamp(0.9)
     }
 
-    override fun outputTelemetry() {
-        SmartDashboard.putString("intake/intakeState", intakeState.toString())
-        SmartDashboard.putNumber("intake/intakePower", intakePower)
-    }
+    override fun outputTelemetry() {}
 
     override fun checkSystem() {}
 
@@ -44,6 +41,10 @@ object Intake : Subsystem {
         HelixLogger.addSource("Intake Motor Power") { talon.motorOutputPercent }
         HelixLogger.addSource("Intake Motor Current") { talon.supplyCurrent }
         HelixLogger.addSource("Intake State") { intakeState.toString() }
+
+        val shuffleboardTab = Shuffleboard.getTab("Intake")
+        shuffleboardTab.addString("State") { intakeState.toString() }
+        shuffleboardTab.addNumber("Power") { intakePower }
     }
 
     override fun zeroSensors() {}

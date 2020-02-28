@@ -65,7 +65,6 @@ object HelixEvents {
             while (events.isNotEmpty()) {
                 try {
                     val event = events.removeAt(0)
-                    println(event)
                     Files.write(file, listOf(event), StandardOpenOption.APPEND)
                 } catch (e: Exception) {
                     e.printStackTrace()

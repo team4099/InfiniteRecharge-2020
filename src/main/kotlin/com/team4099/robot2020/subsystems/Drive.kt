@@ -9,14 +9,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.kauailabs.navx.frc.AHRS
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
-import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.controller.RamseteController
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import kotlin.math.abs
 import kotlin.math.ln
@@ -27,6 +25,8 @@ import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.SPI
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonFX
@@ -201,16 +201,20 @@ object Drive : Subsystem {
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
         synchronized(this@Drive) {
+            autoOdometry.update(Rotation2d.fromDegrees(-angle), leftDistanceMeters, rightDistanceMeters)
+
             when (currentState) {
                 DriveControlState.OPEN_LOOP -> {
                     leftTargetVel = 0.0
                     rightTargetVel = 0.0
                 }
-                DriveControlState.VELOCITY_SETPOINT -> {}
+                DriveControlState.VELOCITY_SETPOINT -> {
+                }
                 DriveControlState.PATH_FOLLOWING -> {
                     updatePathFollowing(timestamp, dT)
                 }
-                DriveControlState.MOTION_MAGIC -> {}
+                DriveControlState.MOTION_MAGIC -> {
+                }
             }
         }
     }
@@ -241,8 +245,10 @@ object Drive : Subsystem {
 
         HelixLogger.addSource("DT Left Velocity (in/s)") { leftVelocityMetersPerSec }
         HelixLogger.addSource("DT Right Velocity (in/s)") { rightVelocityMetersPerSec }
-        HelixLogger.addSource("DT Left Target Velocity (in/s)") { leftTargetVel }
-        HelixLogger.addSource("DT Left Target Velocity (in/s)") { rightTargetVel }
+        HelixLogger.addSource("DT Left Target Velocity (in/s)") { nativeToMetersPerSecond(leftTargetVel.toInt()) }
+        HelixLogger.addSource("DT Right Target Velocity (in/s)") {
+            nativeToMetersPerSecond(rightTargetVel.toInt())
+        }
 
         HelixLogger.addSource("DT Left Position (in)") { leftDistanceMeters }
         HelixLogger.addSource("DT Right Position (in)") { rightDistanceMeters }
@@ -250,20 +256,36 @@ object Drive : Subsystem {
         HelixLogger.addSource("DT Gyro Angle") { angle }
 
         HelixLogger.addSource("DT Pathfollow Timestamp") { trajCurTime }
+
+        Shuffleboard.getTab("Drive").addBoolean("Gyro Good") { ahrs.isConnected }
+        Shuffleboard.getTab("Drive").add(ahrs)
+
+        val tab = Shuffleboard.getTab("Drivetrain")
+        tab.add(ahrs)
+        tab.addNumber("Pose X") { autoOdometry.poseMeters.translation.x }
+        tab.addNumber("Pose Y") { autoOdometry.poseMeters.translation.y }
+        tab.addNumber("Wheel Speeds Left") {
+            if (::lastWheelSpeeds.isInitialized) lastWheelSpeeds.leftMetersPerSecond
+            else 0.0
+        }
+        tab.addNumber("Wheel Speeds Right") {
+            if (::lastWheelSpeeds.isInitialized) lastWheelSpeeds.rightMetersPerSecond
+            else 0.0
+        }
+        tab.addNumber("Left Position (m)") { leftDistanceMeters }
+        tab.addNumber("Right Position (m)") { rightDistanceMeters }
+        tab.addNumber("Left Velocity (m per s)") { leftVelocityMetersPerSec }
+        tab.addNumber("Right Velocity (m per s)") { rightVelocityMetersPerSec }
+        tab.addNumber("Left Target Velocity (m per s)") { nativeToMetersPerSecond(leftTargetVel.toInt()) }
+        tab.addNumber("Right Target Velocity (m per s)") { nativeToMetersPerSecond(rightTargetVel.toInt()) }
     }
 
-    override fun outputTelemetry() {
-        if (ahrs.isConnected) {
-            SmartDashboard.putNumber("drive/gyro", yaw)
-        } else {
-            SmartDashboard.putNumber("drive/gyro", Constants.Drive.GYRO_BAD_VALUE)
-        }
-    }
+    override fun outputTelemetry() {}
 
     override fun zeroSensors() {
         if (ahrs.isConnected) {
-            while (!yaw.around(0.0, 1.0)) {
-                ahrs.reset()
+            if (!yaw.around(0.0, 1.0)) {
+                ahrs.reset() // TODO: Delay auto until zeroed?
             }
         } else {
             HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
@@ -431,13 +453,13 @@ object Drive : Subsystem {
             ControlMode.Velocity,
             leftTargetVel,
             DemandType.ArbitraryFeedForward,
-            leftFeedForward
+            leftFeedForward / 12.0
         )
         rightMasterTalon.set(
             ControlMode.Velocity,
             rightTargetVel,
             DemandType.ArbitraryFeedForward,
-            rightFeedForward
+            rightFeedForward / 12.0
         )
     }
 
@@ -483,7 +505,6 @@ object Drive : Subsystem {
      */
     private fun updatePathFollowing(timestamp: Double, dT: Double) {
         trajCurTime = timestamp - trajStartTime
-        autoOdometry.update(Rotation2d.fromDegrees(-angle), leftDistanceMeters, rightDistanceMeters)
 
         val sample = path.sample(trajCurTime)
         val wheelSpeeds = kinematics.toWheelSpeeds(pathFollowController.calculate(autoOdometry.poseMeters, sample))

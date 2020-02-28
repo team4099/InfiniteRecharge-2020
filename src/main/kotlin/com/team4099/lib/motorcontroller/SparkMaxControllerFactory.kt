@@ -74,6 +74,7 @@ object SparkMaxControllerFactory {
         Timer.delay(config.delayBeforeCreation)
 
         return LazySparkMax(id).apply {
+            restoreFactoryDefaults()
             set(ControlType.kDutyCycle, 0.0)
 
             setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, config.statusFrame0RateMs)
