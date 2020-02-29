@@ -34,7 +34,7 @@ object Vision : Subsystem {
                 field = value
             }
         }
-    private var distance = 0.0
+    var distance = 0.0
     private var distanceError = 0.0
     var steeringAdjust = 0.0
     var distanceAdjust = 0.0
@@ -81,7 +81,7 @@ object Vision : Subsystem {
             VisionState.IDLE -> {}
             VisionState.AIMING -> {
                 if (tv != 0.0) {
-                    onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR && distance < Constants.Vision.MAX_DIST_ERROR
+                    onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR
                     steeringAdjust = turnController.calculate(tx, 0.0)
 
                     steeringAdjust += sign(tx) * Constants.Vision.MIN_TURN_COMMAND

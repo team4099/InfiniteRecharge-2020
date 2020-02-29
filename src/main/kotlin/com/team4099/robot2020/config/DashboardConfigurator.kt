@@ -5,10 +5,7 @@ import com.team4099.lib.auto.AutoModeProvider
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.loop.Loop
 import com.team4099.lib.subsystem.ServoMotorSubsystem
-import com.team4099.robot2020.auto.modes.DriveCharacterizeMode
-import com.team4099.robot2020.auto.modes.DriveForwardMode
-import com.team4099.robot2020.auto.modes.SixBallMode
-import com.team4099.robot2020.auto.modes.StandStillMode
+import com.team4099.robot2020.auto.modes.*
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.wpilibj.DriverStation
@@ -35,7 +32,7 @@ object DashboardConfigurator : Loop {
     }
 
     private val defaultStart = StartingPosition.CENTER
-    private val defaultMode = { _: StartingPosition, _: Double -> StandStillMode(0.0) }
+    private val defaultMode = { _: StartingPosition, _: Double -> Shoot3Mode(0.0) }
 
     /**
      * Maps the name of a mode to a function that creates an instance of it.

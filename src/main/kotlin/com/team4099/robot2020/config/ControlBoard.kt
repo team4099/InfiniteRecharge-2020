@@ -53,6 +53,9 @@ object ControlBoard {
     val runFeederOut: Boolean
         get() = operator.dPadUp
 
+    val runFeederShoot: Boolean
+        get() = operator.dPadLeft || operator.dPadRight
+
     val slowMode: Boolean
         get() = driver.dPadDown
 }

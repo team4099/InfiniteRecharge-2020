@@ -8,6 +8,7 @@ import com.team4099.robot2020.config.Constants
 import kotlin.math.abs
 import kotlin.math.sign
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import kotlin.math.pow
 
 object Shooter : Subsystem {
     private val masterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(
@@ -48,8 +49,10 @@ object Shooter : Subsystem {
         get() = encoder.velocity
 
     var shooterState = State.IDLE
-
     var shooterReady = false
+
+    val shuffleboardTab = Shuffleboard.getTab("Shooter")
+//    val manualVelocitySetpointEntry = shuffleboardTab.add("Manual Velocity Setpoint", Constants.Shooter.TARGET_VELOCITY).entry
 
     init {
         masterSparkMax.pidController.setP(Constants.Shooter.SHOOTER_PID.kP)
@@ -95,7 +98,12 @@ object Shooter : Subsystem {
                 idleTime = timestamp
             }
             State.SHOOTING -> {
-                velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
+//                velocitySetpoint = Constants.Shooter.  TARGET_VELOCITY
+                velocitySetpoint =
+                    Constants.Shooter.REG_QUAD_TERM * Vision.distance.pow(2) +
+                        Constants.Shooter.REG_LIN_TERM * Vision.distance +
+                        Constants.Shooter.REG_CONST_TERM
+//                 velocitySetpoint = manualVelocitySetpointEntry.g
                 shooterReady = abs(currentVelocity - velocitySetpoint) <=
                     Constants.Shooter.VELOCITY_ERROR_THRESHOLD
                 if (shooterReady && spinupTime == 0.0) {
@@ -125,7 +133,6 @@ object Shooter : Subsystem {
             slaveSparkMax.appliedOutput
         }
 
-        val shuffleboardTab = Shuffleboard.getTab("Shooter")
         shuffleboardTab.addString("State") { shooterState.toString() }
         shuffleboardTab.addNumber("Velocity Setpoint") { velocitySetpoint }
         shuffleboardTab.addNumber("Master Percent Output") { masterSparkMax.appliedOutput }

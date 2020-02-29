@@ -30,7 +30,7 @@ object Robot : TimedRobot() {
     private val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
     private val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
 
-    private val tuningTogglePin = DigitalInput(Constants.Tuning.TUNING_TOGGLE_PIN)
+//    private val tuningTogglePin = DigitalInput(Constants.Tuning.TUNING_TOGGLE_PIN)
     val tuningEnabled: Boolean
         get() = true
 
@@ -193,14 +193,6 @@ object Robot : TimedRobot() {
             }
 
             when {
-                ControlBoard.runFeederIn -> {
-                    Feeder.feederState = Feeder.FeederState.SHOOT
-                }
-                ControlBoard.runFeederOut -> {
-                    Feeder.feederState = Feeder.FeederState.EXHAUST
-                }
-            }
-            when {
                 ControlBoard.startShooter -> {
                     Shooter.shooterState = Shooter.State.SHOOTING
                     Feeder.feederState = Feeder.FeederState.AUTO_SHOOT
@@ -210,7 +202,19 @@ object Robot : TimedRobot() {
                 }
             }
 
-            if (!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn) {
+            when {
+                ControlBoard.runFeederIn -> {
+                    Feeder.feederState = Feeder.FeederState.INTAKE
+                }
+                ControlBoard.runFeederShoot -> {
+                    Feeder.feederState = Feeder.FeederState.SHOOT
+                }
+                ControlBoard.runFeederOut -> {
+                    Feeder.feederState = Feeder.FeederState.EXHAUST
+                }
+            }
+
+            if (!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn && !ControlBoard.runFeederShoot) {
                 Feeder.feederState = Feeder.FeederState.IDLE
             }
 

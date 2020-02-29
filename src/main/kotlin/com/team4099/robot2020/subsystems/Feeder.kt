@@ -112,7 +112,7 @@ object Feeder : Subsystem {
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.AUTO_SHOOT -> {
-                if (Shooter.shooterReady) {
+                if (Shooter.shooterReady && Vision.onTarget) {
                     stopperPower = Constants.Feeder.STOPPER_MAX_POWER
                     inPower = Constants.Feeder.FEEDER_MAX_POWER
                 } else {

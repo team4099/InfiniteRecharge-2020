@@ -133,8 +133,12 @@ object Constants {
         const val SHOOTER_KV = 0.126 / 60 // .12545
         val SHOOTER_PID = PIDGains(0, 1.7 / 6000, 0.0, 5.5, 0.0, 0)
 
+        const val REG_QUAD_TERM = 0.0694
+        const val REG_LIN_TERM = -16.4
+        const val REG_CONST_TERM = 5100
+
         const val TARGET_VELOCITY = 4500.0
-        const val VELOCITY_ERROR_THRESHOLD = 20.0
+        const val VELOCITY_ERROR_THRESHOLD = 30.0
     }
 
     object Climber : ServoMotorSubsystemConfig(
@@ -160,7 +164,7 @@ object Constants {
 
     object Intake {
         const val INTAKE_TALON_ID = 5
-        const val INTAKE_POWER = 0.8
+        const val INTAKE_POWER = 1.0
         const val STALL_LIMIT_AMPS = 13.0
         const val STALL_LIMIT_SECONDS = 0.25 // seconds
     }
@@ -171,7 +175,7 @@ object Constants {
 
     object Autonomous {
         const val AUTON_DT = 0.02 // 50 Hz
-        const val DEFAULT_MODE_NAME = "Stand Still"
+        const val DEFAULT_MODE_NAME = "Shoot 3 + Forward"
         const val DEFAULT_DELAY = 0.0
 
         const val TURN_POWER = 0.5
@@ -215,7 +219,7 @@ object Constants {
         "degrees",
         PIDGains(0, 1.3, 0.0, 0.0, 3.5, 0),
         PIDGains(1, 0.8, 0.0, 0.0, 0.15, 0),
-        if (Robot.robotName == Tuning.RobotName.PRACTICE) 154.5 else 168.0,
+        if (Robot.robotName == Tuning.RobotName.PRACTICE) 154.5 else 161.9,
         ServoMotorSubsystemMotionConstraints(-130.0, 1.0, 1500.0, 3072.0, 1),
         360.0,
         4096
@@ -240,6 +244,6 @@ object Constants {
         const val FEEDER_HOLD_POWER = 0.1
         const val FEEDER_INTAKE_POWER = 0.35
         const val STOPPER_MAX_POWER = 0.45
-        const val STOPPER_HOLD_POWER = 0.25
+        const val STOPPER_HOLD_POWER = 0.2
     }
 }
