@@ -2,7 +2,6 @@ package com.team4099.robot2020.auto
 
 import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
-import edu.wpi.first.wpilibj.geometry.Translation2d
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
@@ -45,16 +44,16 @@ object PathStore {
         Constants.Drive.MAX_VEL_METERS_PER_SEC,
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
     )
-//        .setKinematics(Drive.kinematics)
-        //.addConstraint(voltageConstraint)
+        // .setKinematics(Drive.kinematics)
+        // .addConstraint(voltageConstraint)
 
     val reversedConfig: TrajectoryConfig = TrajectoryConfig(
         Constants.Drive.MAX_VEL_METERS_PER_SEC,
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
     )
-//        .setKinematics(Drive.kinematics)
+        // .setKinematics(Drive.kinematics)
         .setReversed(true)
-        //.addConstraint(voltageConstraint)
+        // .addConstraint(voltageConstraint)
 
     val driveForward: Trajectory = TrajectoryGenerator.generateTrajectory(
         Pose2d(0.0, 0.0, Rotation2d(0.0)),
