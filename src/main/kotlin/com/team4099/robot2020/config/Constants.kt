@@ -203,7 +203,7 @@ object Constants {
         const val DRIVER_PORT = 0
         const val SHOTGUN_PORT = 1
 
-        const val QUICK_TURN_THROTTLE_TOLERANCE = 0.8
+        const val QUICK_TURN_THROTTLE_TOLERANCE = 0.1
         const val THROTTLE_DEADBAND = 0.04
         const val TURN_DEADBAND = 0.035
     }
