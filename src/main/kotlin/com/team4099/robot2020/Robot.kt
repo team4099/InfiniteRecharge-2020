@@ -38,6 +38,8 @@ object Robot : TimedRobot() {
 
     val robotName: Constants.Tuning.RobotName
 
+    private var hasUltimatum = true
+
     init {
         // Determine what robot we're running on.
         val robotId = Constants.Tuning.ROBOT_ID_PINS.withIndex().map {
@@ -184,12 +186,18 @@ object Robot : TimedRobot() {
                 ControlBoard.runIntakeOut -> Intake.intakeState = Intake.IntakeState.OUT
                 else -> Intake.intakeState = Intake.IntakeState.IDLE
             }
+
+            if (ControlBoard.climberUltimatumKill)
+                hasUltimatum = false
+
+            if (Timer.getMatchTime() >= 148 && this.hasUltimatum)
+                Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+
+
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
             throw t
         }
-        if (Timer.getMatchTime() >= 148)
-            Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
 
     }
 

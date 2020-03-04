@@ -41,6 +41,9 @@ object ControlBoard {
     val climberDown: Boolean
         get() = operator.dPadDown
 
+    val climberUltimatumKill: Boolean
+        get() = operator.leftShoulderButton && operator.rightShoulderButton
+
     val runIntakeIn: Boolean
         get() = operator.aButton
 
