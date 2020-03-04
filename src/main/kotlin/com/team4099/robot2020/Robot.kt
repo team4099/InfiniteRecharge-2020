@@ -24,6 +24,7 @@ import com.team4099.robot2020.subsystems.Drive
 import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Wrist
 import com.team4099.robot2020.subsystems.Vision
+import edu.wpi.first.wpilibj.Timer
 
 object Robot : TimedRobot() {
     private lateinit var autoModeExecuter: AutoModeExecuter
@@ -187,6 +188,9 @@ object Robot : TimedRobot() {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
             throw t
         }
+        if (Timer.getMatchTime() >= 148)
+            Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
+
     }
 
     override fun testInit() {
