@@ -235,8 +235,8 @@ object Constants {
     }
 
     object Feeder {
-        const val FEEDER_IN_MASTER_ID = 11
-        const val FEEDER_IN_SLAVE_ID = 12
+        const val FEEDER_IN_ID = 11
+        const val FEEDER_UP_ID = 12
 
         const val FEEDER_OUT_ID = 13
 

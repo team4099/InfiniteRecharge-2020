@@ -11,19 +11,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 object Feeder : Subsystem {
 
-    private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_OUT_ID)
-    private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
-            Constants.Feeder.FEEDER_IN_SLAVE_ID,
-            inMasterSparkMax,
-            invertToMaster = true
-    )
+    private val inSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_IN_ID)
+//    private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
+//            Constants.Feeder.FEEDER_IN_SLAVE_ID,
+//            inMasterSparkMax,
+//            invertToMaster = true
+//    )
 
-    private val inEncoder = inMasterSparkMax.encoder
+    private val upSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_UP_ID)
+
+    private val inEncoder = inSparkMax.encoder
 
     private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.FEEDER_OUT_ID)
 
     private var outBeamBroken = false
-        get() = stopperTalon.isFwdLimitSwitchClosed() > 0
+        get() = stopperTalon.isFwdLimitSwitchClosed > 0
     private var beamNeverBroken = true
 
     private var outBeamBrokenTimestamp = -1.0
@@ -41,9 +43,15 @@ object Feeder : Subsystem {
     private var inPower = 0.0
         set(value) {
             if (value != field) {
-                inMasterSparkMax.set(value)
+                inSparkMax.set(value)
             }
             field = value
+        }
+    private var upPower = 0.0
+        set(value) {
+            if (value != field) {
+                upSparkMax.set(value)
+            }
         }
     private var stopperPower = 0.0
         set(value) {
@@ -70,12 +78,12 @@ object Feeder : Subsystem {
     override fun checkSystem() {}
 
     override fun registerLogging() {
-        HelixLogger.addSource("Feeder Master Motor Power") { inMasterSparkMax.appliedOutput }
-        HelixLogger.addSource("Feeder Slave Motor Power") { inSlaveSparkMax.appliedOutput }
+        HelixLogger.addSource("Feeder Master Motor Power") { inSparkMax.appliedOutput }
+        HelixLogger.addSource("Feeder Vertical Motor Power") { upSparkMax.appliedOutput }
         HelixLogger.addSource("Feeder Stopper Motor Power") { stopperTalon.motorOutputPercent }
 
-        HelixLogger.addSource("Feeder Master Motor Current") { inMasterSparkMax.outputCurrent }
-        HelixLogger.addSource("Feeder Slave Motor Current") { inSlaveSparkMax.outputCurrent }
+        HelixLogger.addSource("Feeder Master Motor Current") { inSparkMax.outputCurrent }
+        HelixLogger.addSource("Feeder Vertical Motor Current") { upSparkMax.outputCurrent }
         HelixLogger.addSource("Feeder Stopper Motor Current") { stopperTalon.supplyCurrent }
 
         HelixLogger.addSource("Feeder State") { feederState.toString() }
@@ -116,11 +124,13 @@ object Feeder : Subsystem {
             FeederState.INTAKE -> {
                 stopperPower = -Constants.Feeder.FEEDER_HOLD_POWER
                 inPower = Constants.Feeder.FEEDER_MAX_POWER
+                upPower = Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.SHOOT -> {
                 if (beamNeverBroken || outBeamBroken) {
                     stopperPower = Constants.Feeder.FEEDER_MAX_POWER
                     inPower = Constants.Feeder.FEEDER_MAX_POWER
+                    upPower = Constants.Feeder.FEEDER_MAX_POWER
                 } else {
                     feederState = FeederState.IDLE
                 }
@@ -128,10 +138,12 @@ object Feeder : Subsystem {
             FeederState.EXHAUST -> {
                 stopperPower = -Constants.Feeder.FEEDER_MAX_POWER
                 inPower = -Constants.Feeder.FEEDER_MAX_POWER
+                upPower = -Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.IDLE -> {
                 stopperPower = 0.0
                 inPower = 0.0
+                upPower = 0.0
             }
         }
     }
