@@ -186,6 +186,10 @@ object Robot : TimedRobot() {
                     Intake.intakeState = Intake.IntakeState.OUT
                     Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
                 }
+                ControlBoard.runBoundaryIntakeIn -> {
+                    Intake.intakeState = Intake.IntakeState.IN
+                    Wrist.positionSetpoint = Constants.Wrist.WristPosition.BOUNDARY
+                }
                 else -> {
                     Intake.intakeState = Intake.IntakeState.IDLE
                     Wrist.positionSetpoint = Constants.Wrist.WristPosition.VERTICAL

@@ -45,6 +45,9 @@ object ControlBoard {
         get() = operator.aButton
 
     val runIntakeOut: Boolean
+        get() = operator.yButton
+
+    val runBoundaryIntakeIn: Boolean
         get() = operator.bButton
 
     val runFeederIn: Boolean

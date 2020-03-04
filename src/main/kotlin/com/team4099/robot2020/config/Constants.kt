@@ -230,6 +230,7 @@ object Constants {
 
         enum class WristPosition(val position: Double) {
             HORIZONTAL(-3.0),
+            BOUNDARY(-40.0),
             VERTICAL(-126.0)
         }
     }
