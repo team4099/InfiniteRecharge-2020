@@ -187,18 +187,14 @@ object Robot : TimedRobot() {
                 else -> Intake.intakeState = Intake.IntakeState.IDLE
             }
 
-            if (ControlBoard.climberUltimatumKill)
-                hasUltimatum = false
+            if (ControlBoard.climberUltimatumKill) hasUltimatum = false
 
-            if (Timer.getMatchTime() >= 148 && this.hasUltimatum)
+            if (Timer.getMatchTime() >= Constants.Climber.ULTIMATUM_TIME && this.hasUltimatum)
                 Climber.positionSetpoint = Constants.Climber.ClimberPosition.DOWN
-
-
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
             throw t
         }
-
     }
 
     override fun testInit() {

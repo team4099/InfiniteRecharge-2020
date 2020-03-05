@@ -152,6 +152,8 @@ object Constants {
             DOWN(0.0),
             UP(45.0)
         }
+
+        const val ULTIMATUM_TIME = 148
     }
 
     object Intake {
