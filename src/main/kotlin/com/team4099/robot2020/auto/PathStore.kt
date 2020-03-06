@@ -9,6 +9,7 @@ import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.subsystems.Drive
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.geometry.Translation2d
+import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint
 
 /**
@@ -41,12 +42,17 @@ object PathStore {
         8.0
     )
 
+    private val centripetalConstraint = CentripetalAccelerationConstraint(
+        Constants.Drive.CENTRIPETAL_ACCEL_METERS_PER_SEC_SQ
+    )
+
     val config: TrajectoryConfig = TrajectoryConfig(
         Constants.Drive.MAX_VEL_METERS_PER_SEC,
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
     )
         .setKinematics(Drive.kinematics)
         .addConstraint(voltageConstraint)
+        .addConstraint(centripetalConstraint)
 
     val slowConfig: TrajectoryConfig = TrajectoryConfig(
         Constants.Drive.SLOW_VEL_METERS_PER_SEC,
@@ -54,6 +60,7 @@ object PathStore {
     )
         .setKinematics(Drive.kinematics)
         .addConstraint(voltageConstraint)
+        .addConstraint(centripetalConstraint)
 
     val reversedConfig: TrajectoryConfig = TrajectoryConfig(
         Constants.Drive.MAX_VEL_METERS_PER_SEC,

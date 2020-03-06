@@ -74,6 +74,8 @@ object Constants {
         const val MAX_ACCEL_METERS_PER_SEC_SQ = 2.0
         const val SLOW_ACCEL_METERS_PER_SEC_SQ = 1.0
 
+        const val CENTRIPETAL_ACCEL_METERS_PER_SEC_SQ = 1.2
+
         object Characterization {
             const val LEFT_KV_FORWARD = 2.67
             const val RIGHT_KV_FORWARD = 2.67
