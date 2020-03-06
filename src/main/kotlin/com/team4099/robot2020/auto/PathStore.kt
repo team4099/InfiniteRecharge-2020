@@ -45,16 +45,16 @@ object PathStore {
         Constants.Drive.MAX_VEL_METERS_PER_SEC,
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
     )
-        // .setKinematics(Drive.kinematics)
-        // .addConstraint(voltageConstraint)
+        .setKinematics(Drive.kinematics)
+        .addConstraint(voltageConstraint)
 
     val reversedConfig: TrajectoryConfig = TrajectoryConfig(
         Constants.Drive.MAX_VEL_METERS_PER_SEC,
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
     )
-        // .setKinematics(Drive.kinematics)
+        .setKinematics(Drive.kinematics)
         .setReversed(true)
-        // .addConstraint(voltageConstraint)
+        .addConstraint(voltageConstraint)
 
     val driveForward: Trajectory = TrajectoryGenerator.generateTrajectory(
         Pose2d(0.0, 0.0, Rotation2d(0.0)),
