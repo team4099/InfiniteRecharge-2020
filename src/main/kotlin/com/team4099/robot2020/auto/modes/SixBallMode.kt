@@ -10,8 +10,9 @@ import com.team4099.robot2020.config.Constants
 
 class SixBallMode(delay: Double) : AutoMode(delay, Constants.Autonomous.AUTON_DT) {
     override fun routine() {
+        runAction(FollowPathAction(PathStore.toNearTrench))
         runAction(ParallelRaceAction(listOf(
-            FollowPathAction(PathStore.toNearTrench),
+            FollowPathAction(PathStore.intakeInNearTrench),
             IntakeAction()
         )))
         runAction(FollowPathAction(PathStore.fromNearTrench))

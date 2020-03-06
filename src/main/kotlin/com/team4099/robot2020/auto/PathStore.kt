@@ -48,9 +48,24 @@ object PathStore {
         .setKinematics(Drive.kinematics)
         .addConstraint(voltageConstraint)
 
+    val slowConfig: TrajectoryConfig = TrajectoryConfig(
+        Constants.Drive.SLOW_VEL_METERS_PER_SEC,
+        Constants.Drive.SLOW_ACCEL_METERS_PER_SEC_SQ
+    )
+        .setKinematics(Drive.kinematics)
+        .addConstraint(voltageConstraint)
+
     val reversedConfig: TrajectoryConfig = TrajectoryConfig(
         Constants.Drive.MAX_VEL_METERS_PER_SEC,
         Constants.Drive.MAX_ACCEL_METERS_PER_SEC_SQ
+    )
+        .setKinematics(Drive.kinematics)
+        .setReversed(true)
+        .addConstraint(voltageConstraint)
+
+    val slowReversedConfig: TrajectoryConfig = TrajectoryConfig(
+        Constants.Drive.SLOW_VEL_METERS_PER_SEC,
+        Constants.Drive.SLOW_ACCEL_METERS_PER_SEC_SQ
     )
         .setKinematics(Drive.kinematics)
         .setReversed(true)
@@ -65,9 +80,16 @@ object PathStore {
 
     val toNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
         Pose2d(3.195, -2.429, Rotation2d(0.0)),
-        listOf(Translation2d(5.0, -0.719)),
-        Pose2d(8.226, -0.719, Rotation2d(0.0)),
+        listOf(),
+        Pose2d(5.0, -0.719, Rotation2d(0.0)),
         config
+    )
+
+    val intakeInNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
+        Pose2d(5.0, -0.719, Rotation2d(0.0)),
+        listOf(),
+        Pose2d(8.226, -0.719, Rotation2d(0.0)),
+        slowConfig
     )
 
     val fromNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
