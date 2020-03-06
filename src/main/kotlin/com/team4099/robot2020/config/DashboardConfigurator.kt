@@ -41,6 +41,7 @@ object DashboardConfigurator : Loop {
         Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode,
         "Drive Forward" to { _: StartingPosition, delay: Double -> DriveForwardMode(delay) },
         "6 Ball" to { _: StartingPosition, delay: Double -> SixBallMode(delay) },
+        "Far Trench 5 Ball" to { _: StartingPosition, delay: Double -> FarTrenchFiveBallMode(delay) },
         "Drivetrain Characterization" to { _: StartingPosition, delay: Double -> DriveCharacterizeMode(delay) }
     )
 

@@ -105,4 +105,18 @@ object PathStore {
         Pose2d(3.627, -2.429, Rotation2d(0.0)),
         reversedConfig.setStartVelocity(0.0).setEndVelocity(0.0)
     )
+
+    val toFarTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
+        Pose2d(3.627, -6.824, Rotation2d(0.0)),
+        listOf(),
+        Pose2d(5.794, -7.243, Rotation2d(-20.0)),
+        config.setStartVelocity(0.0).setEndVelocity(Constants.Drive.SLOW_VEL_METERS_PER_SEC)
+    )
+
+    val fromFarTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
+        Pose2d(5.794, -7.243, Rotation2d(-20.0)),
+        listOf(),
+        Pose2d(3.627, -2.429, Rotation2d(0.0)),
+        reversedConfig.setStartVelocity(0.0).setEndVelocity(0.0)
+    )
 }
