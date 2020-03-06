@@ -39,7 +39,7 @@ object PathStore {
             ).min() ?: 0.0
         ),
         Drive.kinematics,
-        8.0
+        9.0
     )
 
     private val centripetalConstraint = CentripetalAccelerationConstraint(
@@ -86,7 +86,7 @@ object PathStore {
     )
 
     val toNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
-        Pose2d(3.195, -2.429, Rotation2d(0.0)),
+        Pose2d(3.627, -2.429, Rotation2d(0.0)),
         listOf(),
         Pose2d(5.0, -0.719, Rotation2d(0.0)),
         config.setStartVelocity(0.0).setEndVelocity(Constants.Drive.SLOW_VEL_METERS_PER_SEC)
@@ -95,14 +95,14 @@ object PathStore {
     val intakeInNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
         Pose2d(5.0, -0.719, Rotation2d(0.0)),
         listOf(),
-        Pose2d(8.226, -0.719, Rotation2d(0.0)),
+        Pose2d(7.5, -0.719, Rotation2d(0.0)),
         slowConfig.setStartVelocity(Constants.Drive.SLOW_VEL_METERS_PER_SEC).setEndVelocity(0.0)
     )
 
     val fromNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
-        Pose2d(8.226, -0.719, Rotation2d(0.0)),
+        Pose2d(7.5, -0.719, Rotation2d(0.0)),
         listOf(),
-        Pose2d(3.195, -2.429, Rotation2d(0.0)),
+        Pose2d(3.627, -2.429, Rotation2d(0.0)),
         reversedConfig.setStartVelocity(0.0).setEndVelocity(0.0)
     )
 }

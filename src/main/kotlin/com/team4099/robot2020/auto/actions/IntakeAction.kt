@@ -17,11 +17,12 @@ class IntakeAction : Action {
     }
 
     override fun onLoop(timestamp: Double, dT: Double) {
-        if (Intake.hasPowerCell) {
-            Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
-        } else {
-            Feeder.feederState = Feeder.FeederState.IDLE
-        }
+//        if (Intake.hasPowerCell) {
+//            Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
+//        } else {
+//            Feeder.feederState = Feeder.FeederState.IDLE
+//        }
+        Feeder.feederState = Feeder.FeederState.INTAKE
     }
 
     override fun onStop(timestamp: Double) {

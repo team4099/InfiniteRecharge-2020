@@ -69,12 +69,12 @@ object Constants {
 
         const val GYRO_BAD_VALUE = -31337.0
 
-        const val MAX_VEL_METERS_PER_SEC = 2.5
+        const val MAX_VEL_METERS_PER_SEC = 3.5
         const val SLOW_VEL_METERS_PER_SEC = 1.5
         const val MAX_ACCEL_METERS_PER_SEC_SQ = 2.0
         const val SLOW_ACCEL_METERS_PER_SEC_SQ = 1.0
 
-        const val CENTRIPETAL_ACCEL_METERS_PER_SEC_SQ = 1.2
+        const val CENTRIPETAL_ACCEL_METERS_PER_SEC_SQ = 1.0
 
         object Characterization {
             const val LEFT_KV_FORWARD = 2.67

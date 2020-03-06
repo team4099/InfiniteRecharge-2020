@@ -284,9 +284,9 @@ object Drive : Subsystem {
 
     override fun zeroSensors() {
         if (ahrs.isConnected) {
-            if (!yaw.around(0.0, 1.0)) {
-                ahrs.reset() // TODO: Delay auto until zeroed?
-            }
+//            if (!yaw.around(0.0, 1.0)) {
+//                ahrs.reset() // TODO: Delay auto until zeroed?
+//            }
         } else {
             HelixEvents.addEvent("DRIVETRAIN", "Gyroscope queried but not connected")
         }
