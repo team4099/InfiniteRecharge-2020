@@ -60,7 +60,7 @@ object Constants {
         const val NATIVE_UNITS_PER_REV = ENCODER_RESOLUTION / 0.08665966387
 
         const val WHEEL_DIAMETER_METERS = 0.1524
-        const val WHEEL_TRACK_WIDTH_INCHES = 27.0
+        const val WHEEL_TRACK_WIDTH_INCHES = 21.0
         const val WHEEL_TRACK_WIDTH_METERS = WHEEL_TRACK_WIDTH_INCHES * 0.0254
         const val WHEEL_GAIN = 0.05
         const val WHEEL_NON_LINEARITY = 0.05
@@ -70,7 +70,7 @@ object Constants {
         const val GYRO_BAD_VALUE = -31337.0
 
         const val MAX_VEL_METERS_PER_SEC = 2.5
-        const val MAX_ACCEL_METERS_PER_SEC_SQ = 0.1
+        const val MAX_ACCEL_METERS_PER_SEC_SQ = 2.0
 
         object Characterization {
             const val LEFT_KV_FORWARD = 2.67

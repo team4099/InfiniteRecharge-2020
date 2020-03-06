@@ -2,6 +2,7 @@ package com.team4099.robot2020.auto.actions
 
 import com.team4099.lib.auto.Action
 import com.team4099.robot2020.config.Constants
+import com.team4099.robot2020.subsystems.Feeder
 import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Wrist
 
@@ -15,7 +16,13 @@ class IntakeAction : Action {
         Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
     }
 
-    override fun onLoop(timestamp: Double, dT: Double) {}
+    override fun onLoop(timestamp: Double, dT: Double) {
+        if (Intake.hasPowerCell) {
+            Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
+        } else {
+            Feeder.feederState = Feeder.FeederState.IDLE
+        }
+    }
 
     override fun onStop(timestamp: Double) {
         Intake.intakeState = Intake.IntakeState.IDLE

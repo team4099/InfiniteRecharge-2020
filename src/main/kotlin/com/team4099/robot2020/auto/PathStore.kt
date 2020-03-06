@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.subsystems.Drive
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
+import edu.wpi.first.wpilibj.geometry.Translation2d
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint
 
 /**
@@ -63,16 +64,16 @@ object PathStore {
     )
 
     val toNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
-        Pose2d(0.0, 0.0, Rotation2d(0.0)),
-        listOf(),
-        Pose2d(3.0, 2.0, Rotation2d(0.0)),
+        Pose2d(3.195, -2.429, Rotation2d(0.0)),
+        listOf(Translation2d(5.0, -0.719)),
+        Pose2d(8.226, -0.719, Rotation2d(0.0)),
         config
     )
 
     val fromNearTrench: Trajectory = TrajectoryGenerator.generateTrajectory(
-        Pose2d(3.0, 2.0, Rotation2d(0.0)),
+        Pose2d(8.226, -0.719, Rotation2d(0.0)),
         listOf(),
-        Pose2d(0.0, 0.0, Rotation2d(0.0)),
+        Pose2d(3.195, -2.429, Rotation2d(0.0)),
         reversedConfig
     )
 }
