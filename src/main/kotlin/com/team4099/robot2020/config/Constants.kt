@@ -69,10 +69,10 @@ object Constants {
 
         const val GYRO_BAD_VALUE = -31337.0
 
-        const val MAX_VEL_METERS_PER_SEC = 3.5
-        const val SLOW_VEL_METERS_PER_SEC = 1.5
+        const val MAX_VEL_METERS_PER_SEC = 4.0
+        const val SLOW_VEL_METERS_PER_SEC = 1.0
         const val MAX_ACCEL_METERS_PER_SEC_SQ = 2.0
-        const val SLOW_ACCEL_METERS_PER_SEC_SQ = 1.0
+        const val SLOW_ACCEL_METERS_PER_SEC_SQ = 2.0
 
         const val CENTRIPETAL_ACCEL_METERS_PER_SEC_SQ = 1.0
 
@@ -100,12 +100,12 @@ object Constants {
             const val RAMSETE_B = 2.0
             const val RAMSETE_ZETA = 0.7
 
-            const val LEFT_KP = 0.0000 // .1 * 1500 / 70
+            const val LEFT_KP = 0.1000 // .1 * 1500 / 70
             const val LEFT_KI = 0.0000
             const val LEFT_KD = 0.0000
             const val LEFT_KF = 0.0000 // 1023.0 / 2220.0
 
-            const val RIGHT_KP = 0.0000 // .1 * 1023 / 70
+            const val RIGHT_KP = 0.1000 // .1 * 1023 / 70
             const val RIGHT_KI = 0.0000
             const val RIGHT_KD = 0.0000
             const val RIGHT_KF = 0.0000 // 1023.0 / 4420.0
@@ -149,8 +149,8 @@ object Constants {
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
         "inches",
-        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0),
         0.0,
         ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.562345085,

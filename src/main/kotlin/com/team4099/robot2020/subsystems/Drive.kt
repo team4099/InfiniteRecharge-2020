@@ -189,6 +189,7 @@ object Drive : Subsystem {
 
         setOpenLoop(DriveSignal.NEUTRAL)
         zeroSensors()
+        ahrs.reset()
     }
 
     override fun checkSystem() {}
