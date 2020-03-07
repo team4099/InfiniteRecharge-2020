@@ -26,12 +26,10 @@ object DashboardConfigurator : Loop {
      * @param dashboardName A human readable name for the location.
      */
     enum class StartingPosition(val dashboardName: String) {
-        LEFT("LEFT"),
-        CENTER("CENTER"),
-        RIGHT("RIGHT")
+        INIT_LINE("Initiation Line")
     }
 
-    private val defaultStart = StartingPosition.CENTER
+    private val defaultStart = StartingPosition.INIT_LINE
     private val defaultMode = { _: StartingPosition, _: Double -> Shoot3Mode(0.0) }
 
     /**
@@ -41,7 +39,9 @@ object DashboardConfigurator : Loop {
         Constants.Autonomous.DEFAULT_MODE_NAME to defaultMode,
         "Drive Forward" to { _: StartingPosition, delay: Double -> DriveForwardMode(delay) },
         "6 Ball" to { _: StartingPosition, delay: Double -> SixBallMode(delay) },
+        "8 Ball" to { _: StartingPosition, delay: Double -> EightBallMode(delay) },
         "Far Trench 5 Ball" to { _: StartingPosition, delay: Double -> FarTrenchFiveBallMode(delay) },
+        "Far Trench 7 Ball" to { _: StartingPosition, delay: Double -> FarTrenchSevenBallMode(delay) },
         "Drivetrain Characterization" to { _: StartingPosition, delay: Double -> DriveCharacterizeMode(delay) }
     )
 
