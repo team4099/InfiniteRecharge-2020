@@ -19,9 +19,11 @@ import com.team4099.robot2020.subsystems.Intake
 import com.team4099.robot2020.subsystems.Shooter
 import com.team4099.robot2020.subsystems.Vision
 import com.team4099.robot2020.subsystems.Wrist
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import kotlin.math.pow
 
 object Robot : TimedRobot() {

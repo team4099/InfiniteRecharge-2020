@@ -52,13 +52,17 @@ object Feeder : Subsystem {
         inMasterSparkMax.inverted = true
         @Suppress("MagicNumber")
         inMasterSparkMax.setSmartCurrentLimit(30)
+        stopperTalon.enableCurrentLimit(true)
+        stopperTalon.configContinuousCurrentLimit(20)
+        stopperTalon.enableVoltageCompensation(true)
+        stopperTalon.configVoltageCompSaturation(8.0)
         stopperTalon.setInverted(InvertType.None)
         inMasterSparkMax.burnFlash()
         inSlaveSparkMax.burnFlash()
     }
 
     enum class FeederState {
-        HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_SHOOT, AUTO_INTAKE
+        HOLD, INTAKE, SHOOT, EXHAUST, IDLE, AUTO_SHOOT, AUTO_INTAKE, SLOW_INTAKE
     }
 
     override fun outputTelemetry() {}
@@ -96,12 +100,16 @@ object Feeder : Subsystem {
         when (feederState) {
             FeederState.AUTO_INTAKE -> {
 //                ballIn = !frontLimitSwitch.get()
-                stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
-                inPower = Constants.Feeder.FEEDER_INTAKE_POWER
+                stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
+                inPower = Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
+            }
+            FeederState.SLOW_INTAKE -> {
+                stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
+                inPower = Constants.Feeder.FEEDER_MAX_POWER / 3
             }
             FeederState.INTAKE -> {
-                stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
-                inPower = Constants.Feeder.FEEDER_MAX_POWER
+                stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
+                inPower = Constants.Feeder.FEEDER_INTAKE_POWER
             }
             FeederState.HOLD -> {
                 stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
@@ -114,7 +122,12 @@ object Feeder : Subsystem {
             FeederState.AUTO_SHOOT -> {
                 if (Shooter.shooterReady && Vision.onTarget) {
                     stopperPower = Constants.Feeder.STOPPER_MAX_POWER
-                    inPower = Constants.Feeder.FEEDER_MAX_POWER
+                    inPower = when (Vision.currentDistance) {
+                        Vision.DistanceState.LINE -> Constants.Feeder.FEEDER_MAX_POWER
+                        Vision.DistanceState.NEAR -> Constants.Feeder.FEEDER_MAX_POWER
+                        Vision.DistanceState.MID -> Constants.Feeder.FEEDER_MAX_POWER / 2.33
+                        Vision.DistanceState.FAR -> Constants.Feeder.FEEDER_MAX_POWER / 3
+                    }
                 } else {
                     stopperPower = 0.0
                     inPower = 0.0

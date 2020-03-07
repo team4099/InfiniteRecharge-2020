@@ -86,8 +86,8 @@ object PathStore {
 
     private val initLinePowerPort =  Pose2d(3.627, -2.429, Rotation2d(0.0))
     private val initLineFarTrench =  Pose2d(3.627, -6.824, Rotation2d(0.0))
-    private val nearTrenchEdge = Pose2d(5.0, -0.719, Rotation2d(0.0))
-    private val nearTrenchEnd = Pose2d(7.5, -0.719, Rotation2d(0.0))
+    private val nearTrenchEdge = Pose2d(5.0, -0.869, Rotation2d(0.0))
+    private val nearTrenchEnd = Pose2d(7.5, -0.869, Rotation2d(0.0))
     private val farTrench = Pose2d(5.794, -7.243, Rotation2d(-20.0))
     private val rendezvousPoint2Balls = Pose2d(5.878, -2.755, Rotation2d(-20.0))
 

@@ -22,11 +22,12 @@ class IntakeAction : Action {
 //        } else {
 //            Feeder.feederState = Feeder.FeederState.IDLE
 //        }
-        Feeder.feederState = Feeder.FeederState.INTAKE
+        Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
     }
 
     override fun onStop(timestamp: Double) {
         Intake.intakeState = Intake.IntakeState.IDLE
+        Feeder.feederState = Feeder.FeederState.IDLE
         Wrist.positionSetpoint = Constants.Wrist.WristPosition.VERTICAL
     }
 }
