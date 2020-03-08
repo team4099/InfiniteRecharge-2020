@@ -99,19 +99,19 @@ object Shooter : Subsystem {
                 shooterReady = false
             }
             State.SHOOTING -> {
-//                velocitySetpoint = when (Vision.currentDistance) {
-//                    Vision.DistanceState.LINE -> 4600.0
-//                    Vision.DistanceState.NEAR -> 4700.0
-//                    Vision.DistanceState.MID -> 5100.0
-//                    Vision.DistanceState.FAR -> 5700.0
-//                }
+                velocitySetpoint = when (Vision.currentDistance) {
+                    Vision.DistanceState.LINE -> 4600.0
+                    Vision.DistanceState.NEAR -> 4700.0
+                    Vision.DistanceState.MID -> 5300.0
+                    Vision.DistanceState.FAR -> 5700.0
+                }
 
 //                velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
 //                velocitySetpoint =
 //                    Constants.Shooter.REG_QUAD_TERM * Vision.distance.pow(2) +
 //                        Constants.Shooter.REG_LIN_TERM * Vision.distance +
 //                        Constants.Shooter.REG_CONST_TERM
-                 velocitySetpoint = manualVelocitySetpointEntry.getDouble(0.0)
+//                 velocitySetpoint = manualVelocitySetpointEntry.getDouble(0.0)
                 if(abs(currentVelocity - velocitySetpoint) <=
                     Constants.Shooter.VELOCITY_ERROR_THRESHOLD) {
                     shooterReady = true

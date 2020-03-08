@@ -56,6 +56,7 @@ object Vision : Subsystem {
     var steeringAdjust = 0.0
     var distanceAdjust = 0.0
     var onTarget = false
+    private var onTargetTime = 0.0
 
     private val table: NetworkTable = NetworkTableInstance.getDefault().getTable("limelight")
     private val tx get() = table.getEntry("tx").getDouble(0.0)
@@ -67,8 +68,13 @@ object Vision : Subsystem {
     private val turnController = PIDController(
         Constants.Vision.TURN_GAINS.kP,
         Constants.Vision.TURN_GAINS.kI,
-        Constants.Vision.TURN_GAINS.kD,
-        Constants.Vision.TURN_GAINS.kF
+        Constants.Vision.TURN_GAINS.kD
+    )
+
+    private val onTargetController = PIDController(
+            Constants.Vision.ON_TARGET_GAINS.kP,
+            Constants.Vision.ON_TARGET_GAINS.kI,
+            Constants.Vision.ON_TARGET_GAINS.kD
     )
 
     private var pipeline = Constants.Vision.DRIVER_PIPELINE_ID
@@ -95,9 +101,15 @@ object Vision : Subsystem {
                     if (abs(tx) < Constants.Vision.MAX_ANGLE_ERROR) {
                         onTarget = true
                     }
-                    steeringAdjust = turnController.calculate(tx, 0.0)
+                    if (!onTarget) {
+                        steeringAdjust = turnController.calculate(tx, 0.0)
 
-                    steeringAdjust += sign(tx) * Constants.Vision.MIN_TURN_COMMAND
+                        steeringAdjust += sign(steeringAdjust) * Constants.Vision.MIN_TURN_COMMAND
+                    } else {
+                        steeringAdjust = onTargetController.calculate(tx, 0.0)
+
+                        steeringAdjust += sign(steeringAdjust) * Constants.Vision.MIN_TURN_COMMAND
+                    }
                     distance = (Constants.Vision.TARGET_HEIGHT - Constants.Vision.CAMERA_HEIGHT) /
                         tan(Constants.Vision.CAMERA_ANGLE + Math.toRadians(ty))
                     distance = ((distance / 10.0).roundToInt()) * 10.0

@@ -121,10 +121,12 @@ object Constants {
         const val SHOOTING_DISTANCE = 0
 
         const val MAX_DIST_ERROR = 0.1
-        const val MAX_ANGLE_ERROR = 2.2
+        const val MAX_ANGLE_ERROR = 1.0
 
-        val TURN_GAINS = PIDGains(0, 0.03, 0.0, 0.0, 0.07, 0)
-        const val MIN_TURN_COMMAND = 0.0 // 0.35
+        val TURN_GAINS = PIDGains(0, 0.013, 0.0, 0.00025, 0.0, 0)
+        val ON_TARGET_GAINS = PIDGains(0, 0.011, 0.0, 0.00025, 0.0, 0)
+        const val MIN_TURN_COMMAND = 0.06 // 0.35
+        const val ON_TARGET_TIME_THRESHOLD = 0.1
     }
 
     object Shooter {
