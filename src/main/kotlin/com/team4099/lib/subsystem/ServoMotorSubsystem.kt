@@ -45,8 +45,12 @@ abstract class ServoMotorSubsystem(
     var positionSetpointMotionProfile: Double = Double.NaN
         set(value) {
             if (!state.usesVelocityControl) {
-                state = ControlState.MOTION_MAGIC
-                enterVelocityClosedLoop()
+                if (!hardware.checkHardware()) {
+                    state = ControlState.OPEN_LOOP
+                } else {
+                    state = ControlState.MOTION_MAGIC
+                    enterVelocityClosedLoop()
+                }
             }
             field = constrainPositionUnits(value)
             hardware.setMotionProfile(homeAwareUnitsToTicks(field).toDouble())

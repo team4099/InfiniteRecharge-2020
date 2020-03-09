@@ -53,6 +53,10 @@ class SparkMaxServoMotorHardware(
         masterMotorController.pidController.setIZone(gains.iZone.toDouble(), gains.slotNumber)
     }
 
+    override fun checkHardware(): Boolean {
+        return true //this is because the encoder is built in, dont hurt me parth oza -bhog
+    }
+
     override fun applyMotionConstraints(
         enableReverseSoftLimit: Boolean,
         reverseSoftLimit: Int,

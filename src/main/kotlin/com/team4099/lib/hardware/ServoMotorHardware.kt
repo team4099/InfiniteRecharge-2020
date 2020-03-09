@@ -18,6 +18,8 @@ interface ServoMotorHardware {
 
     fun applyPIDGains(gains: PIDGains)
 
+    fun checkHardware(): Boolean
+
     @Suppress("LongParameterList")
     fun applyMotionConstraints(
         enableReverseSoftLimit: Boolean,

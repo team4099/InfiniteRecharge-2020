@@ -66,6 +66,10 @@ class CTREServoMotorHardware(
         masterMotorController.config_IntegralZone(gains.slotNumber, gains.iZone, timeout)
     }
 
+    override fun checkHardware(): Boolean {
+        return masterMotorController.sensorCollection.pulseWidthRiseToRiseUs != 0
+    }
+
     override fun applyMotionConstraints(
         enableReverseSoftLimit: Boolean,
         reverseSoftLimit: Int,
