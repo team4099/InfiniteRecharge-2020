@@ -41,6 +41,8 @@ object Shooter : Subsystem {
             field = value
         }
 
+    private lateinit var previousDistance: Vision.DistanceState
+
     enum class State {
         SHOOTING, IDLE
     }
@@ -99,6 +101,7 @@ object Shooter : Subsystem {
                 shooterReady = false
             }
             State.SHOOTING -> {
+                previousDistance = Vision.currentDistance
                 velocitySetpoint = when (Vision.currentDistance) {
                     Vision.DistanceState.LINE -> 4600.0
                     Vision.DistanceState.NEAR -> 4700.0
@@ -114,7 +117,7 @@ object Shooter : Subsystem {
 //                 velocitySetpoint = manualVelocitySetpointEntry.getDouble(0.0)
                 if(abs(currentVelocity - velocitySetpoint) <=
                     Constants.Shooter.VELOCITY_ERROR_THRESHOLD) {
-                    shooterReady = true
+                    shooterReady = Vision.currentDistance == previousDistance
                 }
                 if (shooterReady && spinupTime == 0.0) {
                     spinupTime = idleTime - timestamp
