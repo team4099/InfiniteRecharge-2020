@@ -120,16 +120,18 @@ object Feeder : Subsystem {
         if (feederBeamBroken) {
             lastFeederBeamBroken = timestamp
         }
+        if (feederState == FeederState.IDLE || feederState == FeederState.AUTO_INTAKE) {
+            upPower = if ((timestamp - lastFeederBeamBroken < 0.5)&& !shooterBeamBroken) {
+                Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
+            } else {
+                0.0
+            }
+        }
 
         when (feederState) {
             FeederState.AUTO_INTAKE -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
                 inPower = Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
-                upPower = if ((timestamp - lastFeederBeamBroken < 0.5)&& !shooterBeamBroken) {
-                    Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
-                } else {
-                    0.0
-                }
             }
             FeederState.SLOW_INTAKE -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER

@@ -182,7 +182,7 @@ object Robot : TimedRobot() {
             when {
                 ControlBoard.runIntakeIn -> {
                     Intake.intakeState = Intake.IntakeState.IN
-                    Feeder.feederState = Feeder.FeederState.INTAKE
+                    Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
                     Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
                 }
                 ControlBoard.runIntakeOut -> {
@@ -217,7 +217,7 @@ object Robot : TimedRobot() {
                 }
             }
 
-            Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
+
 
             if (!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn && !ControlBoard.runFeederShoot) {
                 Feeder.feederState = Feeder.FeederState.IDLE
