@@ -29,7 +29,7 @@ object Feeder : Subsystem {
 
     private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.STOPPER_ID)
 
-
+    private var lastFeederBeamBroken = 0.0
 
     private var feederBeamBroken = false
         get() = feederLimitSwitch.get()
@@ -117,13 +117,15 @@ object Feeder : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
+        if (feederBeamBroken) {
+            lastFeederBeamBroken = timestamp
+        }
 
         when (feederState) {
             FeederState.AUTO_INTAKE -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
                 inPower = Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
-//                ballIn = !frontLimitSwitch.get()
-                upPower = if (feederBeamBroken && !shooterBeamBroken) {
+                upPower = if ((timestamp - lastFeederBeamBroken < 0.5)&& !shooterBeamBroken) {
                     Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
                 } else {
                     0.0
