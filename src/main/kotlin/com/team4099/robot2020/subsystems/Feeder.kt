@@ -8,23 +8,34 @@ import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 object Feeder : Subsystem {
-//    private val frontLimitSwitch = DigitalInput(2)
+    private val feederLimitSwitch = DigitalInput(2)
+    private val shooterLimitSwitch = DigitalInput(3)
 
     var ballIn = false
 
-    private val inMasterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_IN_MASTER_ID)
-    private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
-            Constants.Feeder.FEEDER_IN_SLAVE_ID,
-            inMasterSparkMax,
-            invertToMaster = false
-    )
+    private val inSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_IN_ID)
+//    private val inSlaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
+//            Constants.Feeder.FEEDER_IN_SLAVE_ID,
+//            inMasterSparkMax,
+//            invertToMaster = false
+//    )
 
-    private val inEncoder = inMasterSparkMax.encoder
+    private val upSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Feeder.FEEDER_UP_ID)
+    private val inEncoder = inSparkMax.encoder
 
     private val stopperTalon = CTREMotorControllerFactory.createDefaultTalonSRX(Constants.Feeder.STOPPER_ID)
+
+
+
+    private var feederBeamBroken = false
+        get() = feederLimitSwitch.get()
+
+    private var shooterBeamBroken = false
+        get() = shooterLimitSwitch.get()
 
     var feederState = FeederState.IDLE
         set(value) {
@@ -36,10 +47,18 @@ object Feeder : Subsystem {
     private var inPower = 0.0
         set(value) {
             if (value != field) {
-                inMasterSparkMax.set(value)
+                inSparkMax.set(value)
             }
             field = value
         }
+
+    private var upPower = 0.0
+        set(value) {
+            if (value != field) {
+                upSparkMax.set(value)
+            }
+        }
+
     private var stopperPower = 0.0
         set(value) {
             if (value != field) {
@@ -49,16 +68,17 @@ object Feeder : Subsystem {
         }
 
     init {
-        inMasterSparkMax.inverted = true
+//        inSparkMax.inverted = true
         @Suppress("MagicNumber")
-        inMasterSparkMax.setSmartCurrentLimit(30)
+        inSparkMax.setSmartCurrentLimit(30)
+        upSparkMax.setSmartCurrentLimit(30)
         stopperTalon.enableCurrentLimit(true)
         stopperTalon.configContinuousCurrentLimit(20)
         stopperTalon.enableVoltageCompensation(true)
         stopperTalon.configVoltageCompSaturation(8.0)
         stopperTalon.setInverted(InvertType.None)
-        inMasterSparkMax.burnFlash()
-        inSlaveSparkMax.burnFlash()
+        inSparkMax.burnFlash()
+        upSparkMax.burnFlash()
     }
 
     enum class FeederState {
@@ -70,12 +90,12 @@ object Feeder : Subsystem {
     override fun checkSystem() {}
 
     override fun registerLogging() {
-        HelixLogger.addSource("Feeder Master Motor Power") { inMasterSparkMax.appliedOutput }
-        HelixLogger.addSource("Feeder Slave Motor Power") { inSlaveSparkMax.appliedOutput }
+        HelixLogger.addSource("Feeder In Motor Power") { inSparkMax.appliedOutput }
+        HelixLogger.addSource("Feeder Up Motor Power") { upSparkMax.appliedOutput }
         HelixLogger.addSource("Feeder Stopper Motor Power") { stopperTalon.motorOutputPercent }
 
-        HelixLogger.addSource("Feeder Master Motor Current") { inMasterSparkMax.outputCurrent }
-        HelixLogger.addSource("Feeder Slave Motor Current") { inSlaveSparkMax.outputCurrent }
+        HelixLogger.addSource("Feeder In Motor Current") { inSparkMax.outputCurrent }
+        HelixLogger.addSource("Feeder Up Motor Current") { upSparkMax.outputCurrent }
         HelixLogger.addSource("Feeder Stopper Motor Current") { stopperTalon.supplyCurrent }
 
         HelixLogger.addSource("Feeder State") { feederState.toString() }
@@ -83,6 +103,7 @@ object Feeder : Subsystem {
         val shuffleboardTab = Shuffleboard.getTab("Feeder")
         shuffleboardTab.addString("State") { feederState.toString() }
         shuffleboardTab.addNumber("In Power") { inPower }
+        shuffleboardTab.addNumber("Up Power") { upPower}
         shuffleboardTab.addNumber("Stopper Power") { stopperPower }
     }
 
@@ -99,9 +120,14 @@ object Feeder : Subsystem {
 
         when (feederState) {
             FeederState.AUTO_INTAKE -> {
-//                ballIn = !frontLimitSwitch.get()
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
                 inPower = Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
+//                ballIn = !frontLimitSwitch.get()
+                upPower = if (feederBeamBroken && !shooterBeamBroken) {
+                    Constants.Feeder.FEEDER_AUTO_INTAKE_POWER
+                } else {
+                    0.0
+                }
             }
             FeederState.SLOW_INTAKE -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
@@ -110,6 +136,7 @@ object Feeder : Subsystem {
             FeederState.INTAKE -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
                 inPower = Constants.Feeder.FEEDER_INTAKE_POWER
+                upPower = Constants.Feeder.FEEDER_INTAKE_POWER
             }
             FeederState.HOLD -> {
                 stopperPower = -Constants.Feeder.STOPPER_HOLD_POWER
@@ -128,6 +155,12 @@ object Feeder : Subsystem {
                         Vision.DistanceState.MID -> Constants.Feeder.FEEDER_MAX_POWER / 2.33
                         Vision.DistanceState.FAR -> Constants.Feeder.FEEDER_MAX_POWER / 3
                     }
+                    upPower = when (Vision.currentDistance) {
+                        Vision.DistanceState.LINE -> Constants.Feeder.FEEDER_MAX_POWER
+                        Vision.DistanceState.NEAR -> Constants.Feeder.FEEDER_MAX_POWER
+                        Vision.DistanceState.MID -> Constants.Feeder.FEEDER_MAX_POWER / 2.33
+                        Vision.DistanceState.FAR -> Constants.Feeder.FEEDER_MAX_POWER / 3
+                    }
                 } else {
                     stopperPower = 0.0
                     inPower = 0.0
@@ -136,6 +169,7 @@ object Feeder : Subsystem {
             FeederState.EXHAUST -> {
                 stopperPower = -Constants.Feeder.STOPPER_MAX_POWER
                 inPower = -Constants.Feeder.FEEDER_MAX_POWER
+                upPower = -Constants.Feeder.FEEDER_MAX_POWER
             }
             FeederState.IDLE -> {
                 stopperPower = 0.0

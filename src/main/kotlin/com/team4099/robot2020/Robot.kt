@@ -182,6 +182,7 @@ object Robot : TimedRobot() {
             when {
                 ControlBoard.runIntakeIn -> {
                     Intake.intakeState = Intake.IntakeState.IN
+                    Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
                     Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
                 }
                 ControlBoard.runIntakeOut -> {
