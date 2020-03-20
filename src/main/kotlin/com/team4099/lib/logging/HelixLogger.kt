@@ -13,7 +13,7 @@ object HelixLogger {
     private val dataSources = mutableListOf<LogSource>()
     private lateinit var file: Path
     private var loggingLocation: String =
-            if (File("/media/sda1/").exists()) "/media/sda1/logs/" else "/home/lvuser/logs/"
+        if (File("/media/sda1/").exists()) "/media/sda1/logs/" else "/home/lvuser/logs/"
 
     var values: String = ""
         get() {
@@ -36,7 +36,7 @@ object HelixLogger {
 
             file = if (DriverStation.getInstance().isFMSAttached) {
                 Paths.get("$loggingLocation${DriverStation.getInstance().eventName}_" +
-                        "${DriverStation.getInstance().matchType}${DriverStation.getInstance().matchNumber}.csv")
+                    "${DriverStation.getInstance().matchType}${DriverStation.getInstance().matchNumber}.csv")
             } else {
                 Paths.get("${loggingLocation}test.csv")
             }

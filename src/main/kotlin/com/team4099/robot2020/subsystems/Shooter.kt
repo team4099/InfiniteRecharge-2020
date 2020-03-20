@@ -5,16 +5,15 @@ import com.team4099.lib.logging.HelixLogger
 import com.team4099.lib.motorcontroller.SparkMaxControllerFactory
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import kotlin.math.abs
 import kotlin.math.sign
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import kotlin.math.pow
 
 object Shooter : Subsystem {
     private val masterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Shooter.MASTER_SPARKMAX_ID)
 
     private val slaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
-            Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax, invertToMaster = true)
+        Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax, invertToMaster = true)
 
     private val encoder = masterSparkMax.encoder
 
@@ -40,6 +39,8 @@ object Shooter : Subsystem {
             field = value
         }
 
+    private lateinit var previousDistance: Vision.DistanceState
+
     enum class State {
         SHOOTING, IDLE
     }
@@ -51,21 +52,22 @@ object Shooter : Subsystem {
     var shooterReady = false
 
     val shuffleboardTab = Shuffleboard.getTab("Shooter")
-    val manualVelocitySetpointEntry = shuffleboardTab.add(
-        "Manual Velocity Setpoint",
-        Constants.Shooter.TARGET_VELOCITY
-    ).entry
+//    val manualVelocitySetpointEntry = shuffleboardTab.add(
+//        "Manual Velocity Setpoint",
+//        Constants.Shooter.TARGET_VELOCITY
+//    ).entry
 
     init {
-        masterSparkMax.pidController.setP(Constants.Shooter.SHOOTER_PID.kP)
-        masterSparkMax.pidController.setI(Constants.Shooter.SHOOTER_PID.kI)
-        masterSparkMax.pidController.setD(Constants.Shooter.SHOOTER_PID.kD)
-        masterSparkMax.pidController.setFF(Constants.Shooter.SHOOTER_PID.kF)
-        masterSparkMax.pidController.setIZone(Constants.Shooter.SHOOTER_PID.iZone.toDouble())
+        masterSparkMax.pidController.p = Constants.Shooter.SHOOTER_PID.kP
+        masterSparkMax.pidController.i = Constants.Shooter.SHOOTER_PID.kI
+        masterSparkMax.pidController.d = Constants.Shooter.SHOOTER_PID.kD
+        masterSparkMax.pidController.ff = Constants.Shooter.SHOOTER_PID.kF
+        masterSparkMax.pidController.iZone = Constants.Shooter.SHOOTER_PID.iZone.toDouble()
 
         masterSparkMax.pidController.setOutputRange(Constants.Shooter.SHOOTER_KS, 1.0, 0)
 
-        masterSparkMax.setSmartCurrentLimit(0)
+        @Suppress("MagicNumber")
+        masterSparkMax.setSmartCurrentLimit(80)
 
         masterSparkMax.inverted = true
 
@@ -75,7 +77,8 @@ object Shooter : Subsystem {
         masterSparkMax.disableVoltageCompensation()
         slaveSparkMax.disableVoltageCompensation()
 
-        masterSparkMax.closedLoopRampRate = 1.0
+        @Suppress("MagicNumber")
+        masterSparkMax.closedLoopRampRate = 0.2
 
         masterSparkMax.burnFlash()
         slaveSparkMax.burnFlash()
@@ -98,16 +101,29 @@ object Shooter : Subsystem {
                 openLoopPowerTarget = 0.0
                 spinupTime = 0.0
                 idleTime = timestamp
+                shooterReady = false
             }
             State.SHOOTING -> {
-//                velocitySetpoint = Constants.Shooter.  TARGET_VELOCITY
-                velocitySetpoint =
-                    Constants.Shooter.REG_QUAD_TERM * Vision.distance.pow(2) +
-                        Constants.Shooter.REG_LIN_TERM * Vision.distance +
-                        Constants.Shooter.REG_CONST_TERM
-//                 velocitySetpoint = manualVelocitySetpointEntry.g
-                shooterReady = abs(currentVelocity - velocitySetpoint) <=
-                    Constants.Shooter.VELOCITY_ERROR_THRESHOLD
+                previousDistance = Vision.currentDistance
+
+                @Suppress("MagicNumber")
+                velocitySetpoint = when (Vision.currentDistance) {
+                    Vision.DistanceState.LINE -> 4600.0
+                    Vision.DistanceState.NEAR -> 4700.0
+                    Vision.DistanceState.MID -> 5300.0
+                    Vision.DistanceState.FAR -> 5700.0
+                }
+
+//                velocitySetpoint = Constants.Shooter.TARGET_VELOCITY
+//                velocitySetpoint =
+//                    Constants.Shooter.REG_QUAD_TERM * Vision.distance.pow(2) +
+//                        Constants.Shooter.REG_LIN_TERM * Vision.distance +
+//                        Constants.Shooter.REG_CONST_TERM
+//                 velocitySetpoint = manualVelocitySetpointEntry.getDouble(0.0)
+                if (abs(currentVelocity - velocitySetpoint) <=
+                    Constants.Shooter.VELOCITY_ERROR_THRESHOLD) {
+                    shooterReady = Vision.currentDistance == previousDistance
+                }
                 if (shooterReady && spinupTime == 0.0) {
                     spinupTime = idleTime - timestamp
                 }

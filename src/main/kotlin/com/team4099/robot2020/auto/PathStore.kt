@@ -1,13 +1,13 @@
 package com.team4099.robot2020.auto
 
+import com.team4099.robot2020.config.Constants
+import com.team4099.robot2020.subsystems.Drive
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
-import com.team4099.robot2020.config.Constants
-import com.team4099.robot2020.subsystems.Drive
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint
 
@@ -86,8 +86,8 @@ object PathStore {
 
     private val initLinePowerPort = Pose2d(3.627, -2.429, Rotation2d(0.0))
     private val initLineFarTrench = Pose2d(3.627, -6.824, Rotation2d(0.0))
-    private val nearTrenchEdge = Pose2d(5.0, -0.719, Rotation2d(0.0))
-    private val nearTrenchEnd = Pose2d(7.5, -0.719, Rotation2d(0.0))
+    private val nearTrenchEdge = Pose2d(5.0, -0.869, Rotation2d(0.0))
+    private val nearTrenchEnd = Pose2d(7.5, -0.869, Rotation2d(0.0))
     private val farTrench = Pose2d(5.794, -7.243, Rotation2d(-20.0))
     private val rendezvousPoint2Balls = Pose2d(5.878, -2.755, Rotation2d(-20.0))
 

@@ -9,9 +9,9 @@ import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource
 import com.ctre.phoenix.motorcontrol.StatusFrame
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
+import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import com.ctre.phoenix.motorcontrol.can.VictorSPX
-import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.team4099.robot2020.config.Constants
 
 /**
@@ -93,9 +93,9 @@ object CTREMotorControllerFactory {
      *
      * @param id The CAN ID of the Talon FX to create
      */
-     fun createDefaultTalonFX(id: Int): TalonFX {
-         return createTalonFX(id, defaultConfiguration)
-     }
+    fun createDefaultTalonFX(id: Int): TalonFX {
+        return createTalonFX(id, defaultConfiguration)
+    }
 
     /**
      * Create a Talon SRX that follows another motor controller.
@@ -200,9 +200,9 @@ object CTREMotorControllerFactory {
             clearMotionProfileTrajectories()
             clearStickyFaults(config.timeout)
             configForwardLimitSwitchSource(
-                    config.limitSwitchSource,
-                    config.limitSwitchNormallyOpen,
-                    config.timeout
+                config.limitSwitchSource,
+                config.limitSwitchNormallyOpen,
+                config.timeout
             )
             configPeakOutputForward(config.maxOutputVoltage, config.timeout)
             configPeakOutputReverse(-config.maxOutputVoltage, config.timeout)
@@ -210,9 +210,9 @@ object CTREMotorControllerFactory {
             configNominalOutputReverse(-config.nominalVoltage, config.timeout)
 
             configReverseLimitSwitchSource(
-                    config.limitSwitchSource,
-                    config.limitSwitchNormallyOpen,
-                    config.timeout
+                config.limitSwitchSource,
+                config.limitSwitchNormallyOpen,
+                config.timeout
             )
             setNeutralMode(config.neutralMode)
             configForwardSoftLimitEnable(config.enableSoftLimit, config.timeout)
@@ -248,29 +248,29 @@ object CTREMotorControllerFactory {
             configMotionAcceleration(config.motionMagicAcceleration, config.timeout)
 
             setStatusFramePeriod(
-                    StatusFrameEnhanced.Status_1_General,
-                    config.generalStatusFrameRateMs,
-                    config.timeout
+                StatusFrameEnhanced.Status_1_General,
+                config.generalStatusFrameRateMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrameEnhanced.Status_2_Feedback0,
-                    config.feedbackStatusFrameRateMs,
-                    config.timeout
+                StatusFrameEnhanced.Status_2_Feedback0,
+                config.feedbackStatusFrameRateMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrameEnhanced.Status_3_Quadrature,
-                    config.quadEncoderStatusFrameRateMs,
-                    config.timeout
+                StatusFrameEnhanced.Status_3_Quadrature,
+                config.quadEncoderStatusFrameRateMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrameEnhanced.Status_4_AinTempVbat,
-                    config.analogTempVbatStatusFrameMs,
-                    config.timeout
+                StatusFrameEnhanced.Status_4_AinTempVbat,
+                config.analogTempVbatStatusFrameMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrameEnhanced.Status_8_PulseWidth,
-                    config.pulseWidthStatusFrameMs,
-                    config.timeout
+                StatusFrameEnhanced.Status_8_PulseWidth,
+                config.pulseWidthStatusFrameMs,
+                config.timeout
             )
         }
     }
@@ -294,9 +294,9 @@ object CTREMotorControllerFactory {
             clearMotionProfileTrajectories()
             clearStickyFaults(config.timeout)
             configForwardLimitSwitchSource(
-                    config.remoteLimitSwitchSource,
-                    config.limitSwitchNormallyOpen,
-                    config.timeout
+                config.remoteLimitSwitchSource,
+                config.limitSwitchNormallyOpen,
+                config.timeout
             )
             configPeakOutputForward(config.maxOutputVoltage, config.timeout)
             configPeakOutputReverse(-config.maxOutputVoltage, config.timeout)
@@ -304,9 +304,9 @@ object CTREMotorControllerFactory {
             configNominalOutputReverse(-config.nominalVoltage, config.timeout)
 
             configReverseLimitSwitchSource(
-                    config.remoteLimitSwitchSource,
-                    config.limitSwitchNormallyOpen,
-                    config.timeout
+                config.remoteLimitSwitchSource,
+                config.limitSwitchNormallyOpen,
+                config.timeout
             )
             setNeutralMode(config.neutralMode)
             configForwardSoftLimitEnable(config.enableSoftLimit, config.timeout)
@@ -335,19 +335,19 @@ object CTREMotorControllerFactory {
             configMotionAcceleration(config.motionMagicAcceleration, config.timeout)
 
             setStatusFramePeriod(
-                    StatusFrame.Status_1_General,
-                    config.generalStatusFrameRateMs,
-                    config.timeout
+                StatusFrame.Status_1_General,
+                config.generalStatusFrameRateMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrame.Status_2_Feedback0,
-                    config.feedbackStatusFrameRateMs,
-                    config.timeout
+                StatusFrame.Status_2_Feedback0,
+                config.feedbackStatusFrameRateMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrame.Status_4_AinTempVbat,
-                    config.analogTempVbatStatusFrameMs,
-                    config.timeout
+                StatusFrame.Status_4_AinTempVbat,
+                config.analogTempVbatStatusFrameMs,
+                config.timeout
             )
         }
     }
@@ -371,9 +371,9 @@ object CTREMotorControllerFactory {
             clearMotionProfileTrajectories()
             clearStickyFaults(config.timeout)
             configForwardLimitSwitchSource(
-                    config.limitSwitchSource,
-                    config.limitSwitchNormallyOpen,
-                    config.timeout
+                config.limitSwitchSource,
+                config.limitSwitchNormallyOpen,
+                config.timeout
             )
             configPeakOutputForward(config.maxOutputVoltage, config.timeout)
             configPeakOutputReverse(-config.maxOutputVoltage, config.timeout)
@@ -381,9 +381,9 @@ object CTREMotorControllerFactory {
             configNominalOutputReverse(-config.nominalVoltage, config.timeout)
 
             configReverseLimitSwitchSource(
-                    config.remoteLimitSwitchSource,
-                    config.limitSwitchNormallyOpen,
-                    config.timeout
+                config.remoteLimitSwitchSource,
+                config.limitSwitchNormallyOpen,
+                config.timeout
             )
             setNeutralMode(config.neutralMode)
             configForwardSoftLimitEnable(config.enableSoftLimit, config.timeout)
@@ -412,19 +412,19 @@ object CTREMotorControllerFactory {
             configMotionAcceleration(config.motionMagicAcceleration, config.timeout)
 
             setStatusFramePeriod(
-                    StatusFrame.Status_1_General,
-                    config.generalStatusFrameRateMs,
-                    config.timeout
+                StatusFrame.Status_1_General,
+                config.generalStatusFrameRateMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrame.Status_2_Feedback0,
-                    config.feedbackStatusFrameRateMs,
-                    config.timeout
+                StatusFrame.Status_2_Feedback0,
+                config.feedbackStatusFrameRateMs,
+                config.timeout
             )
             setStatusFramePeriod(
-                    StatusFrame.Status_4_AinTempVbat,
-                    config.analogTempVbatStatusFrameMs,
-                    config.timeout
+                StatusFrame.Status_4_AinTempVbat,
+                config.analogTempVbatStatusFrameMs,
+                config.timeout
             )
         }
     }

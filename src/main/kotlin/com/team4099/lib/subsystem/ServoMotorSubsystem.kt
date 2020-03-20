@@ -1,12 +1,12 @@
 package com.team4099.lib.subsystem
 
-import com.team4099.lib.logging.HelixEvents
-import com.team4099.lib.logging.HelixLogger
-import kotlin.math.roundToInt
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.hardware.ServoMotorHardware
 import com.team4099.lib.limit
+import com.team4099.lib.logging.HelixEvents
+import com.team4099.lib.logging.HelixLogger
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import kotlin.math.roundToInt
 
 abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,

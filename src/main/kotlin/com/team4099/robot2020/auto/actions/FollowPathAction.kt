@@ -1,9 +1,9 @@
 package com.team4099.robot2020.auto.actions
 
-import edu.wpi.first.wpilibj.trajectory.Trajectory
 import com.team4099.lib.auto.Action
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.robot2020.subsystems.Drive
+import edu.wpi.first.wpilibj.trajectory.Trajectory
 
 class FollowPathAction(private val path: Trajectory) : Action {
     override fun isFinished(timestamp: Double): Boolean {

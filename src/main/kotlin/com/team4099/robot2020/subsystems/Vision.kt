@@ -1,14 +1,15 @@
 package com.team4099.robot2020.subsystems
 
 import com.team4099.lib.logging.HelixLogger
-import edu.wpi.first.networktables.NetworkTable
-import edu.wpi.first.networktables.NetworkTableInstance
 import com.team4099.lib.subsystem.Subsystem
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.networktables.NetworkTableEntry
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.controller.PIDController
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.math.sign
 import kotlin.math.tan
 
@@ -34,11 +35,27 @@ object Vision : Subsystem {
                 field = value
             }
         }
-    var distance = 0.0
+
+    enum class DistanceState {
+        LINE, NEAR, MID, FAR
+    }
+
+    val currentDistance: DistanceState
+        get() {
+            return when (distance) {
+                in 0.0..100.0 -> DistanceState.LINE
+                in 101.0..129.0 -> DistanceState.NEAR
+                in 129.0..241.0 -> DistanceState.MID
+                else -> DistanceState.FAR
+            }
+        }
+
+    private var distance = 0.0
     private var distanceError = 0.0
     var steeringAdjust = 0.0
     var distanceAdjust = 0.0
     var onTarget = false
+    private var onTargetTime = 0.0
 
     private val table: NetworkTable = NetworkTableInstance.getDefault().getTable("limelight")
     private val tx get() = table.getEntry("tx").getDouble(0.0)
@@ -51,13 +68,12 @@ object Vision : Subsystem {
         Constants.Vision.TURN_GAINS.kP,
         Constants.Vision.TURN_GAINS.kI,
         Constants.Vision.TURN_GAINS.kD
-//        Constants.Vision.TURN_GAINS.kF
     )
-    private val distanceController = PIDController(
-        Constants.Vision.DISTANCE_GAINS.kP,
-        Constants.Vision.DISTANCE_GAINS.kI,
-        Constants.Vision.DISTANCE_GAINS.kD,
-        Constants.Vision.DISTANCE_GAINS.kF
+
+    private val onTargetController = PIDController(
+        Constants.Vision.ON_TARGET_GAINS.kP,
+        Constants.Vision.ON_TARGET_GAINS.kI,
+        Constants.Vision.ON_TARGET_GAINS.kD
     )
 
     private var pipeline = Constants.Vision.DRIVER_PIPELINE_ID
@@ -74,19 +90,29 @@ object Vision : Subsystem {
 
     @Synchronized
     override fun onLoop(timestamp: Double, dT: Double) {
-        distance = (Constants.Vision.TARGET_HEIGHT - Constants.Vision.CAMERA_HEIGHT) /
-            tan(Constants.Vision.CAMERA_ANGLE + Math.toRadians(ty))
-        distanceError = distance - Constants.Vision.SHOOTING_DISTANCE
         when (state) {
-            VisionState.IDLE -> {}
+            VisionState.IDLE -> {
+                onTarget = false
+                distance = 120.0
+            }
             VisionState.AIMING -> {
                 if (tv != 0.0) {
-                    onTarget = abs(tx) < Constants.Vision.MAX_ANGLE_ERROR
-                    steeringAdjust = turnController.calculate(tx, 0.0)
+                    if (abs(tx) < Constants.Vision.MAX_ANGLE_ERROR) {
+                        onTarget = true
+                    }
+                    if (!onTarget) {
+                        steeringAdjust = turnController.calculate(tx, 0.0)
 
-                    steeringAdjust += sign(tx) * Constants.Vision.MIN_TURN_COMMAND
-                    distanceAdjust = distanceController.calculate(distanceError)
-                    distanceAdjust += sign(distanceError) * Constants.Vision.MIN_DIST_COMMAND
+                        steeringAdjust += sign(steeringAdjust) * Constants.Vision.MIN_TURN_COMMAND
+                    } else {
+                        steeringAdjust = onTargetController.calculate(tx, 0.0)
+
+                        steeringAdjust += sign(steeringAdjust) * Constants.Vision.MIN_TURN_COMMAND
+                    }
+                    distance = (Constants.Vision.TARGET_HEIGHT - Constants.Vision.CAMERA_HEIGHT) /
+                        tan(Constants.Vision.CAMERA_ANGLE + Math.toRadians(ty))
+                    @Suppress("MagicNumber")
+                    distance = ((distance / 10.0).roundToInt()) * 10.0
                 } else {
                     steeringAdjust = 0.0
                 }
@@ -108,26 +134,21 @@ object Vision : Subsystem {
         HelixLogger.addSource("VISION Pipeline") { pipeline }
 
         HelixLogger.addSource("VISION Steering Adjust") { steeringAdjust }
-        HelixLogger.addSource("VISION Distance Adjust") { distanceAdjust }
         HelixLogger.addSource("VISION On Target") { onTarget }
 
         HelixLogger.addSource("VISION Distance") { distance }
-        HelixLogger.addSource("VISION Distance Error") { distanceError }
 
         val shuffleboardTab = Shuffleboard.getTab("Vision")
         shuffleboardTab.addString("State") { state.toString() }
         shuffleboardTab.addNumber("Pipeline") { pipeline.toDouble() }
 
         shuffleboardTab.addNumber("Steering Adjust") { steeringAdjust }
-        shuffleboardTab.addNumber("Distance Adjust") { distanceAdjust }
         shuffleboardTab.addBoolean("On Target") { onTarget }
 
         shuffleboardTab.addNumber("Distance") { distance }
-        shuffleboardTab.addNumber("Distance Error") { distanceError }
     }
 
     override fun zeroSensors() {
         turnController.reset()
-        distanceController.reset()
     }
 }

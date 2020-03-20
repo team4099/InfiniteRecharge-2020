@@ -69,10 +69,10 @@ object Constants {
 
         const val GYRO_BAD_VALUE = -31337.0
 
-        const val MAX_VEL_METERS_PER_SEC = 3.5
-        const val SLOW_VEL_METERS_PER_SEC = 1.5
+        const val MAX_VEL_METERS_PER_SEC = 4.0
+        const val SLOW_VEL_METERS_PER_SEC = 0.66
         const val MAX_ACCEL_METERS_PER_SEC_SQ = 2.0
-        const val SLOW_ACCEL_METERS_PER_SEC_SQ = 1.0
+        const val SLOW_ACCEL_METERS_PER_SEC_SQ = 2.0
 
         const val CENTRIPETAL_ACCEL_METERS_PER_SEC_SQ = 1.0
 
@@ -100,12 +100,12 @@ object Constants {
             const val RAMSETE_B = 2.0
             const val RAMSETE_ZETA = 0.7
 
-            const val LEFT_KP = 0.0000 // .1 * 1500 / 70
+            const val LEFT_KP = 0.1000 // .1 * 1500 / 70
             const val LEFT_KI = 0.0000
             const val LEFT_KD = 0.0000
             const val LEFT_KF = 0.0000 // 1023.0 / 2220.0
 
-            const val RIGHT_KP = 0.0000 // .1 * 1023 / 70
+            const val RIGHT_KP = 0.1000 // .1 * 1023 / 70
             const val RIGHT_KI = 0.0000
             const val RIGHT_KD = 0.0000
             const val RIGHT_KF = 0.0000 // 1023.0 / 4420.0
@@ -121,12 +121,12 @@ object Constants {
         const val SHOOTING_DISTANCE = 0
 
         const val MAX_DIST_ERROR = 0.1
-        const val MAX_ANGLE_ERROR = 2.0
+        const val MAX_ANGLE_ERROR = 1.0
 
-        val TURN_GAINS = PIDGains(0, 0.019, 0.0, 0.0, 0.0, 0)
-        val DISTANCE_GAINS = PIDGains(0, 0.0, 0.0, 0.0, 0.1, 0)
-        const val MIN_TURN_COMMAND = 0.0 // 0.35
-        const val MIN_DIST_COMMAND = 0.0838
+        val TURN_GAINS = PIDGains(0, 0.013, 0.0, 0.00025, 0.0, 0)
+        val ON_TARGET_GAINS = PIDGains(0, 0.011, 0.0, 0.00025, 0.0, 0)
+        const val MIN_TURN_COMMAND = 0.06 // 0.35
+        const val ON_TARGET_TIME_THRESHOLD = 0.1
     }
 
     object Shooter {
@@ -135,22 +135,22 @@ object Constants {
 
         const val SHOOTER_KS = 0.149 / 60 // .192
         const val SHOOTER_KV = 0.126 / 60 // .12545
-        val SHOOTER_PID = PIDGains(0, 1.7 / 6000, 0.0, 5.5, 0.0, 0)
+        val SHOOTER_PID = PIDGains(0, 1.7 / 300, 0.0, 5.5 * 14000, 0.0, 0)
 
         const val REG_QUAD_TERM = 0.0694
         const val REG_LIN_TERM = -16.4
         const val REG_CONST_TERM = 5100
 
         const val TARGET_VELOCITY = 4500.0
-        const val VELOCITY_ERROR_THRESHOLD = 30.0
+        const val VELOCITY_ERROR_THRESHOLD = 60.0
     }
 
     object Climber : ServoMotorSubsystemConfig(
         CTREMotorControllerFactory.defaultConfiguration,
         "CLIMBER",
         "inches",
-        PIDGains(0, 1.0, 0.0, 0.0, 0.0, 0),
-        PIDGains(1, 1.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(0, 0.0, 0.0, 0.0, 0.0, 0),
+        PIDGains(1, 0.0, 0.0, 0.0, 0.0, 0),
         0.0,
         ServoMotorSubsystemMotionConstraints(0.0, 90.0, 90.0, 90.0, 0),
         0.562345085,
@@ -188,7 +188,7 @@ object Constants {
         const val FORWARD_POWER = 1.0
         const val SLOW_FORWARD_POWER = 0.6
         const val FORWARD_MAX_TIME_SECONDS = 3
-        const val SHOOT_MAX_TIME_SECONDS = 7.0
+        const val SHOOT_MAX_TIME_SECONDS = 2.5
         const val FORWARD_CORRECTION_KP = 0.01
         const val FORWARD_GIVE_UP_ANGLE = 30.0
     }
@@ -239,15 +239,16 @@ object Constants {
     }
 
     object Feeder {
-        const val FEEDER_IN_MASTER_ID = 7
-        const val FEEDER_IN_SLAVE_ID = 8
+        const val FEEDER_IN_ID = 7
+        const val FEEDER_UP_ID = 8
 
         const val STOPPER_ID = 6
 
-        const val FEEDER_MAX_POWER = 0.65
+        const val FEEDER_MAX_POWER = 1.0
         const val FEEDER_HOLD_POWER = 0.1
         const val FEEDER_INTAKE_POWER = 0.35
-        const val STOPPER_MAX_POWER = 0.45
-        const val STOPPER_HOLD_POWER = 0.2
+        const val FEEDER_AUTO_INTAKE_POWER = 0.3
+        const val STOPPER_MAX_POWER = 0.9
+        const val STOPPER_HOLD_POWER = 0.45
     }
 }

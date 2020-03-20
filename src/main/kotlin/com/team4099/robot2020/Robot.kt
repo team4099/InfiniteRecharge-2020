@@ -30,7 +30,7 @@ object Robot : TimedRobot() {
     private val disabledLooper = Looper("disabledLooper", Constants.Looper.LOOPER_DT)
     private val enabledLooper = Looper("enabledLooper", Constants.Looper.LOOPER_DT)
 
-//    private val tuningTogglePin = DigitalInput(Constants.Tuning.TUNING_TOGGLE_PIN)
+    //    private val tuningTogglePin = DigitalInput(Constants.Tuning.TUNING_TOGGLE_PIN)
     val tuningEnabled: Boolean
         get() = true
 
@@ -180,6 +180,7 @@ object Robot : TimedRobot() {
             when {
                 ControlBoard.runIntakeIn -> {
                     Intake.intakeState = Intake.IntakeState.IN
+                    Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
                     Wrist.positionSetpoint = Constants.Wrist.WristPosition.HORIZONTAL
                 }
                 ControlBoard.runIntakeOut -> {
@@ -223,9 +224,9 @@ object Robot : TimedRobot() {
                 Feeder.feederState = Feeder.FeederState.IDLE
             }
 
-            if (Intake.hasPowerCell) {
-                Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
-            }
+//            if (Intake.hasPowerCell) {
+//                Feeder.feederState = Feeder.FeederState.AUTO_INTAKE
+//            }
         } catch (t: Throwable) {
             CrashTracker.logThrowableCrash("teleopPeriodic", t)
             throw t

@@ -42,8 +42,8 @@ object CrashTracker {
         HelixEvents.addEvent("CRASH", mark)
         try {
             FileWriter(
-                    "/home/lvuser/crash_tracking.txt",
-                    true).use { fw ->
+                "/home/lvuser/crash_tracking.txt",
+                true).use { fw ->
                 BufferedWriter(fw).use { bw ->
                     PrintWriter(bw).use { out ->
                         out.print(RUN_INSTANCE_UUID.toString())

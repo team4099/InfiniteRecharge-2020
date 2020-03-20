@@ -7,26 +7,26 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.kauailabs.navx.frc.AHRS
+import com.team4099.lib.around
+import com.team4099.lib.drive.DriveSignal
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
+import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
+import com.team4099.lib.subsystem.Subsystem
+import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.controller.RamseteController
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.trajectory.Trajectory
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sin
-import com.team4099.lib.around
-import com.team4099.lib.drive.DriveSignal
-import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
-import com.team4099.lib.subsystem.Subsystem
-import com.team4099.robot2020.config.Constants
-import edu.wpi.first.wpilibj.SPI
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 object Drive : Subsystem {
     private val rightMasterTalon: TalonFX
@@ -74,8 +74,8 @@ object Drive : Subsystem {
             val initialSample = value.sample(0.0)
             autoOdometry.resetPosition(initialSample.poseMeters, Rotation2d.fromDegrees(-angle))
             pathFollowController = RamseteController(
-                    Constants.Drive.Gains.RAMSETE_B,
-                    Constants.Drive.Gains.RAMSETE_ZETA
+                Constants.Drive.Gains.RAMSETE_B,
+                Constants.Drive.Gains.RAMSETE_ZETA
             )
             lastWheelSpeeds = kinematics.toWheelSpeeds(
                 pathFollowController.calculate(autoOdometry.poseMeters, initialSample)
@@ -100,7 +100,7 @@ object Drive : Subsystem {
         }
 
     var brakeMode: NeutralMode =
-            NeutralMode.Coast // sets whether the brake mode should be coast (no resistance) or by force
+        NeutralMode.Coast // sets whether the brake mode should be coast (no resistance) or by force
         set(type) {
             if (brakeMode != type) {
                 rightMasterTalon.setNeutralMode(type)
@@ -189,6 +189,7 @@ object Drive : Subsystem {
 
         setOpenLoop(DriveSignal.NEUTRAL)
         zeroSensors()
+        ahrs.reset()
     }
 
     override fun checkSystem() {}
