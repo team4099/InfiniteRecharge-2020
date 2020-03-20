@@ -1,8 +1,8 @@
 package com.team4099.lib.auto
 
 import com.team4099.lib.logging.HelixEvents
-import edu.wpi.first.wpilibj.Timer
 import com.team4099.robot2020.auto.actions.WaitAction
+import edu.wpi.first.wpilibj.Timer
 
 /**
  * An autonomous mode. Represents a routine that runs various actions.

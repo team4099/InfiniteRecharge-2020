@@ -1,19 +1,16 @@
 package com.team4099.lib.subsystem
 
-import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController
-import com.ctre.phoenix.motorcontrol.can.TalonSRX
+import com.team4099.lib.config.ServoMotorSubsystemConfig
+import com.team4099.lib.hardware.ServoMotorHardware
+import com.team4099.lib.limit
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.logging.HelixLogger
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import kotlin.math.roundToInt
-import com.team4099.lib.config.PIDGains
-import com.team4099.lib.config.ServoMotorSubsystemConfig
-import com.team4099.lib.limit
 
 abstract class ServoMotorSubsystem(
     val config: ServoMotorSubsystemConfig,
-    val masterMotorController: TalonSRX,
-    val slaveMotorControllers: List<BaseMotorController>
+    protected val hardware: ServoMotorHardware
 ) : Subsystem {
     enum class ControlState(val usesPositionControl: Boolean, val usesVelocityControl: Boolean) {
         OPEN_LOOP(false, false),
@@ -25,11 +22,12 @@ abstract class ServoMotorSubsystem(
     private var state: ControlState = ControlState.OPEN_LOOP
 
     private val positionTicks: Int
-        get() = masterMotorController.selectedSensorPosition
+        get() = hardware.positionTicks
 
     init {
         updateMotionConstraints()
         updatePIDGains()
+        zeroSensors()
     }
 
     /**
@@ -51,7 +49,7 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainPositionUnits(value)
-            masterMotorController.set(ControlMode.MotionMagic, field)
+            hardware.setMotionProfile(homeAwareUnitsToTicks(field).toDouble())
         }
 
     /**
@@ -66,11 +64,11 @@ abstract class ServoMotorSubsystem(
                 enterPositionClosedLoop()
             }
             field = constrainPositionUnits(value)
-            masterMotorController.set(ControlMode.Position, field)
+            hardware.setPosition(homeAwareUnitsToTicks(field).toDouble())
         }
 
     private val velocityTicksPer100Ms: Int
-        get() = masterMotorController.selectedSensorVelocity
+        get() = hardware.velocityTicksPer100Ms
 
     /**
      * The current velocity of the mechanism in units per second.
@@ -91,7 +89,7 @@ abstract class ServoMotorSubsystem(
                 enterVelocityClosedLoop()
             }
             field = constrainVelocityUnitsPerSecond(value)
-            masterMotorController.set(ControlMode.Velocity, field)
+            hardware.setVelocity(field)
         }
 
     /**
@@ -101,7 +99,7 @@ abstract class ServoMotorSubsystem(
     var openLoopPower: Double = 0.0
         set(value) {
             if (state != ControlState.OPEN_LOOP) state = ControlState.OPEN_LOOP
-            masterMotorController.set(ControlMode.PercentOutput, value)
+            hardware.setOpenLoop(value)
             field = value
         }
 
@@ -110,12 +108,18 @@ abstract class ServoMotorSubsystem(
     }
 
     override fun registerLogging() {
+        HelixLogger.addSource("${config.name} State") { state.toString() }
         HelixLogger.addSource("${config.name} Position (${config.unitsName})") { position }
         HelixLogger.addSource("${config.name} Velocity (${config.unitsName}/s)") { velocity }
+        val shuffleboardTab = Shuffleboard.getTab(config.name)
+        shuffleboardTab.addString("State") { state.toString() }
+        shuffleboardTab.addNumber("Position (${config.unitsName})") { position }
+        shuffleboardTab.addNumber("Velocity (${config.unitsName} per s)") { velocity }
     }
 
     override fun onStart(timestamp: Double) {
         openLoopPower = 0.0
+        zeroSensors()
     }
 
     override fun onLoop(timestamp: Double, dT: Double) {}
@@ -127,54 +131,27 @@ abstract class ServoMotorSubsystem(
     override fun outputTelemetry() {}
 
     override fun zeroSensors() {
-        masterMotorController.selectedSensorPosition = 0
-    }
-
-    private fun applyPIDGains(gains: PIDGains) {
-        val timeout = config.masterMotorControllerConfiguration.timeout
-
-        masterMotorController.config_kP(gains.slotNumber, gains.kP, timeout)
-        masterMotorController.config_kI(gains.slotNumber, gains.kI, timeout)
-        masterMotorController.config_kD(gains.slotNumber, gains.kD, timeout)
-        masterMotorController.config_IntegralZone(gains.slotNumber, gains.iZone, timeout)
+        hardware.zeroSensors()
     }
 
     fun updatePIDGains() {
-        applyPIDGains(config.velocityPIDGains)
-        applyPIDGains(config.positionPIDGains)
+        hardware.applyPIDGains(config.velocityPIDGains)
+        hardware.applyPIDGains(config.positionPIDGains)
 
         HelixEvents.addEvent(config.name, "Updated PID gains")
     }
 
     fun updateMotionConstraints() {
-        masterMotorController.configReverseSoftLimitEnable(
-            !config.motionConstraints.reverseSoftLimit.isNaN(),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configReverseSoftLimitThreshold(
+        hardware.applyMotionConstraints(
+            config.motionConstraints.reverseSoftLimit.isNaN(),
             homeAwareUnitsToTicks(config.motionConstraints.reverseSoftLimit),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configForwardSoftLimitEnable(
-            !config.motionConstraints.forwardSoftLimit.isNaN(),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configForwardSoftLimitThreshold(
+            config.motionConstraints.forwardSoftLimit.isNaN(),
             homeAwareUnitsToTicks(config.motionConstraints.forwardSoftLimit),
-            config.masterMotorControllerConfiguration.timeout
-        )
-
-        masterMotorController.configMotionCruiseVelocity(
             unitsPerSecondToTicksPer100ms(config.motionConstraints.cruiseVelocity),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configMotionAcceleration(
             unitsPerSecondToTicksPer100ms(config.motionConstraints.maxAccel),
-            config.masterMotorControllerConfiguration.timeout
-        )
-        masterMotorController.configMotionSCurveStrength(
             config.motionConstraints.motionProfileCurveStrength,
-            config.masterMotorControllerConfiguration.timeout
+            config.velocityPIDGains.slotNumber,
+            brakeMode = config.brakeMode
         )
 
         HelixEvents.addEvent(config.name, "Updated motion constraints")
@@ -186,8 +163,7 @@ abstract class ServoMotorSubsystem(
      */
     @Synchronized
     private fun enterVelocityClosedLoop() {
-        masterMotorController.selectProfileSlot(config.velocityPIDGains.slotNumber, 0)
-
+        hardware.pidSlot = config.velocityPIDGains.slotNumber
         HelixEvents.addEvent(config.name, "Entered velocity closed loop")
     }
 
@@ -196,8 +172,7 @@ abstract class ServoMotorSubsystem(
      */
     @Synchronized
     private fun enterPositionClosedLoop() {
-        masterMotorController.selectProfileSlot(config.positionPIDGains.slotNumber, 0)
-
+        hardware.pidSlot = config.positionPIDGains.slotNumber
         HelixEvents.addEvent(config.name, "Entered position closed loop")
     }
 
@@ -206,7 +181,7 @@ abstract class ServoMotorSubsystem(
     }
 
     protected fun ticksToHomedUnits(ticks: Int): Double {
-        return ticksToUnits(ticks) + config.homePosition
+        return ticksToUnits(ticks) - config.homePosition
     }
 
     protected fun unitsToTicks(units: Double): Int {
@@ -214,7 +189,7 @@ abstract class ServoMotorSubsystem(
     }
 
     protected fun homeAwareUnitsToTicks(units: Double): Int {
-        return unitsToTicks(units - config.homePosition)
+        return unitsToTicks(units + config.homePosition)
     }
 
     protected fun constrainPositionUnits(units: Double): Double {

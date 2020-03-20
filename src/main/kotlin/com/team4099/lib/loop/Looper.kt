@@ -1,9 +1,9 @@
 package com.team4099.lib.loop
 
+import com.team4099.lib.logging.CrashTrackingRunnable
 import com.team4099.lib.logging.HelixEvents
 import edu.wpi.first.wpilibj.Notifier
 import edu.wpi.first.wpilibj.Timer
-import com.team4099.lib.logging.CrashTrackingRunnable
 
 /**
  * Calls multiple [Loop] objects at a target interval.

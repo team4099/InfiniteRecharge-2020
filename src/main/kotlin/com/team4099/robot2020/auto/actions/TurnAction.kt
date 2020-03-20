@@ -1,11 +1,11 @@
 package com.team4099.robot2020.auto.actions
 
-import kotlin.math.abs
-import kotlin.math.sign
 import com.team4099.lib.auto.Action
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.subsystems.Drive
+import kotlin.math.abs
+import kotlin.math.sign
 
 class TurnAction(angleToTurn: Double, slowMode: Boolean) : Action {
     private val direction = sign(angleToTurn)

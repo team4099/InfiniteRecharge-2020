@@ -1,9 +1,9 @@
 package com.team4099.robot2020.loops
 
-import edu.wpi.first.wpilibj.Compressor
-import edu.wpi.first.wpilibj.PowerDistributionPanel
 import com.team4099.lib.loop.Loop
 import com.team4099.robot2020.config.Constants
+import edu.wpi.first.wpilibj.Compressor
+import edu.wpi.first.wpilibj.PowerDistributionPanel
 
 // import com.team4099.robot.subsystems.Elevator
 
@@ -23,7 +23,7 @@ object BrownoutDefender : Loop {
 
     override fun onLoop(timestamp: Double, dT: Double) {
         if (pdp.voltage < Constants.BrownoutDefender.COMPRESSOR_STOP_VOLTAGE ||
-                pdp.totalCurrent > Constants.BrownoutDefender.COMPRESSOR_STOP_CURRENT) {
+            pdp.totalCurrent > Constants.BrownoutDefender.COMPRESSOR_STOP_CURRENT) {
             compressor.stop()
         } else {
             compressor.start()

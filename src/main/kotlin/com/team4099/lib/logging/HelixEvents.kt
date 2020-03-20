@@ -1,5 +1,7 @@
 package com.team4099.lib.logging
 
+import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.Notifier
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -7,14 +9,12 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 import java.time.Instant
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.Notifier
 
 object HelixEvents {
     private val log = Notifier(LogSaver())
     private lateinit var file: Path
     private var loggingLocation =
-            if (File("/media/sda1/").exists()) "/media/sda1/logs/" else "/home/lvuser/logs/"
+        if (File("/media/sda1/").exists()) "/media/sda1/logs/" else "/home/lvuser/logs/"
 
     private val events = mutableListOf<String>()
 
@@ -36,7 +36,7 @@ object HelixEvents {
 
             file = if (DriverStation.getInstance().isFMSAttached) {
                 Paths.get("$loggingLocation${DriverStation.getInstance().eventName}_" +
-                        "${DriverStation.getInstance().matchType}${DriverStation.getInstance().matchNumber}Events.csv")
+                    "${DriverStation.getInstance().matchType}${DriverStation.getInstance().matchNumber}Events.csv")
             } else {
                 Paths.get("${loggingLocation}testEvents.csv")
             }
@@ -65,7 +65,6 @@ object HelixEvents {
             while (events.isNotEmpty()) {
                 try {
                     val event = events.removeAt(0)
-                    println(event)
                     Files.write(file, listOf(event), StandardOpenOption.APPEND)
                 } catch (e: Exception) {
                     e.printStackTrace()

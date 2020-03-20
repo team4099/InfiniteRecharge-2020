@@ -10,7 +10,8 @@ import com.team4099.robot2020.config.Constants
  */
 class StandStillMode(delay: Double) : AutoMode(delay, Constants.Autonomous.AUTON_DT) {
     @Throws(AutoModeEndedException::class)
-    override fun routine() {}
+    override fun routine() {
+    }
 
     override fun done() {}
 }

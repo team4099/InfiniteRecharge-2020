@@ -1,13 +1,13 @@
 package com.team4099.robot2020.auto.actions
 
-import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import kotlin.math.abs
-import kotlin.math.sign
 import com.team4099.lib.auto.Action
 import com.team4099.lib.drive.DriveSignal
 import com.team4099.robot2020.config.Constants
 import com.team4099.robot2020.subsystems.Drive
+import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import kotlin.math.abs
+import kotlin.math.sign
 
 class DistanceAction(metersToMove: Double, slowMode: Boolean) : Action {
     private val direction = sign(metersToMove)
@@ -27,9 +27,9 @@ class DistanceAction(metersToMove: Double, slowMode: Boolean) : Action {
 
     override fun isFinished(timestamp: Double): Boolean {
         return abs(Drive.leftDistanceMeters) - startDist >= metersToMove ||
-                abs(Drive.rightDistanceMeters) - otherStart >= metersToMove ||
-                abort ||
-                timestamp - startTime > Constants.Autonomous.FORWARD_MAX_TIME_SECONDS
+            abs(Drive.rightDistanceMeters) - otherStart >= metersToMove ||
+            abort ||
+            timestamp - startTime > Constants.Autonomous.FORWARD_MAX_TIME_SECONDS
     }
 
     override fun onLoop(timestamp: Double, dT: Double) {
@@ -39,7 +39,7 @@ class DistanceAction(metersToMove: Double, slowMode: Boolean) : Action {
             return
         }
         Drive.arcadeDrive(power * direction,
-                correctionAngle * Constants.Autonomous.FORWARD_CORRECTION_KP * direction)
+            correctionAngle * Constants.Autonomous.FORWARD_CORRECTION_KP * direction)
         SmartDashboard.putNumber("distanceInAction", abs(Drive.rightDistanceMeters) - otherStart)
     }
 

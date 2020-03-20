@@ -1,8 +1,8 @@
 package com.team4099.robot2020.loops
 
 import com.team4099.lib.logging.HelixLogger
-import edu.wpi.first.wpilibj.RobotController
 import com.team4099.lib.loop.Loop
+import edu.wpi.first.wpilibj.RobotController
 
 /**
  * Constantly measures battery voltage before the match begins.
