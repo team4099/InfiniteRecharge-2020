@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import kotlin.math.pow
 
 object Shooter : Subsystem {
-    private val masterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(
-            Constants.Shooter.MASTER_SPARKMAX_ID)
+    private val masterSparkMax = SparkMaxControllerFactory.createDefaultSparkMax(Constants.Shooter.MASTER_SPARKMAX_ID)
 
     private val slaveSparkMax = SparkMaxControllerFactory.createPermanentSlaveSparkMax(
             Constants.Shooter.SLAVE_SPARKMAX_ID, masterSparkMax, invertToMaster = true)
@@ -52,7 +51,10 @@ object Shooter : Subsystem {
     var shooterReady = false
 
     val shuffleboardTab = Shuffleboard.getTab("Shooter")
-//    val manualVelocitySetpointEntry = shuffleboardTab.add("Manual Velocity Setpoint", Constants.Shooter.TARGET_VELOCITY).entry
+    val manualVelocitySetpointEntry = shuffleboardTab.add(
+        "Manual Velocity Setpoint",
+        Constants.Shooter.TARGET_VELOCITY
+    ).entry
 
     init {
         masterSparkMax.pidController.setP(Constants.Shooter.SHOOTER_PID.kP)

@@ -84,8 +84,8 @@ object PathStore {
         config.setStartVelocity(0.0).setEndVelocity(0.0)
     )
 
-    private val initLinePowerPort =  Pose2d(3.627, -2.429, Rotation2d(0.0))
-    private val initLineFarTrench =  Pose2d(3.627, -6.824, Rotation2d(0.0))
+    private val initLinePowerPort = Pose2d(3.627, -2.429, Rotation2d(0.0))
+    private val initLineFarTrench = Pose2d(3.627, -6.824, Rotation2d(0.0))
     private val nearTrenchEdge = Pose2d(5.0, -0.719, Rotation2d(0.0))
     private val nearTrenchEnd = Pose2d(7.5, -0.719, Rotation2d(0.0))
     private val farTrench = Pose2d(5.794, -7.243, Rotation2d(-20.0))

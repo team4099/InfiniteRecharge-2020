@@ -214,7 +214,12 @@ object Robot : TimedRobot() {
                 }
             }
 
-            if (!ControlBoard.startShooter && !ControlBoard.runFeederOut && !ControlBoard.runFeederIn && !ControlBoard.runFeederShoot) {
+            if (
+                !ControlBoard.startShooter &&
+                !ControlBoard.runFeederOut &&
+                !ControlBoard.runFeederIn &&
+                !ControlBoard.runFeederShoot
+            ) {
                 Feeder.feederState = Feeder.FeederState.IDLE
             }
 

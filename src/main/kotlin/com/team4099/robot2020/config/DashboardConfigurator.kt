@@ -5,7 +5,13 @@ import com.team4099.lib.auto.AutoModeProvider
 import com.team4099.lib.logging.HelixEvents
 import com.team4099.lib.loop.Loop
 import com.team4099.lib.subsystem.ServoMotorSubsystem
-import com.team4099.robot2020.auto.modes.*
+import com.team4099.robot2020.auto.modes.DriveCharacterizeMode
+import com.team4099.robot2020.auto.modes.DriveForwardMode
+import com.team4099.robot2020.auto.modes.EightBallMode
+import com.team4099.robot2020.auto.modes.FarTrenchFiveBallMode
+import com.team4099.robot2020.auto.modes.FarTrenchSevenBallMode
+import com.team4099.robot2020.auto.modes.Shoot3Mode
+import com.team4099.robot2020.auto.modes.SixBallMode
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.wpilibj.DriverStation
