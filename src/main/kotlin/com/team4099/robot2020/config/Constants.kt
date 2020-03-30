@@ -3,9 +3,12 @@ package com.team4099.robot2020.config
 import com.team4099.lib.config.PIDGains
 import com.team4099.lib.config.ServoMotorSubsystemConfig
 import com.team4099.lib.config.ServoMotorSubsystemMotionConstraints
+import com.team4099.lib.geometry.Pose3d
 import com.team4099.lib.motorcontroller.CTREMotorControllerFactory
 import com.team4099.robot2020.Robot
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import kotlin.math.PI
+import kotlin.math.tan
 
 /**
  * Stores constants used by the robot.
@@ -115,10 +118,26 @@ object Constants {
     object Vision {
         const val DRIVER_PIPELINE_ID = 1
         const val TARGETING_PIPELINE_ID = 0
-        const val TARGET_HEIGHT = 98.25
-        const val CAMERA_HEIGHT = 35.0
-        const val CAMERA_ANGLE = 24.0 * PI / 180
-        const val SHOOTING_DISTANCE = 0
+
+        object Camera {
+            const val X_RESOLUTION = 320.0
+            const val Y_RESOLUTION = 160.0
+
+            const val X_FOV = 54.0
+            const val Y_FOV = 41.0
+
+            val VIEW_PLANE_WIDTH = 2 * tan(X_FOV / 2)
+            val VIEW_PLANE_HEIGHT = 2 * tan(Y_FOV / 2)
+        }
+
+        object Target {
+            const val TOP_CORNERS_HEIGHT = 2.49555
+            const val BOTTOM_CORNERS_HEIGHT = 2.0621625
+
+            val TARGET_POSE = Pose3d(0.0, -2.404364, TOP_CORNERS_HEIGHT, Rotation2d(180.0), Rotation2d(0.0))
+        }
+
+        val CAMERA_POSITION = Pose3d(0.0, 0.0, 0.889, Rotation2d(0.0), Rotation2d.fromDegrees(24.0))
 
         const val MAX_DIST_ERROR = 0.1
         const val MAX_ANGLE_ERROR = 1.0
