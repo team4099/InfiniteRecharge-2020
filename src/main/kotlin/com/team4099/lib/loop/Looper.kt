@@ -43,7 +43,7 @@ open class Looper(private val name: String, val targetDt: Double) {
      * @param loop The loop to add.
      */
     @Synchronized
-    fun register(loop: Loop) {
+    open fun register(loop: Loop) {
         synchronized(taskRunningLock) {
             loops.add(loop)
         }
@@ -53,7 +53,7 @@ open class Looper(private val name: String, val targetDt: Double) {
      * Start the looper.
      */
     @Synchronized
-    fun start() {
+    open fun start() {
         if (!running) {
             HelixEvents.addEvent("LOOPER $name", "Starting looper")
             synchronized(taskRunningLock) {
