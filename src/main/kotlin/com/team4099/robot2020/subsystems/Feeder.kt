@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
 object Feeder : Subsystem {
-    private val feederLimitSwitch = DigitalInput(2)
-    private val shooterLimitSwitch = DigitalInput(3)
+    private val feederLimitSwitch = DigitalInput(5)
+    private val shooterLimitSwitch = DigitalInput(6)
 
     var ballIn = false
 
