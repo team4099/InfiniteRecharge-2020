@@ -1,3 +1,5 @@
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/team4099/InfiniteRecharge-2020) 
+
 # InfiniteRecharge-2020
 ![Infinite Recharge 2020](./assets/infiniterecharge_logo.png)
 
